@@ -31,3 +31,23 @@ Or install it yourself as:
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+
+### TODO
+
+Following code is a good sample that track file running sequence, how to change it into a good code design and merge into the gem
+
+```ruby
+
+    files = []
+    tp = TracePoint.new(:line) do |tp|
+      if tp.path =~ /bole_api/
+        unless files.include? tp.path
+          puts "#{tp.path}".inspect
+          files.push(tp.path)
+        end
+      end
+    end
+    tp.enable
+
+```
