@@ -17,6 +17,12 @@ class Class
   end
 end
 
+class Module
+  def nature_value
+    self.name
+  end
+end
+
 class Symbol
   def nature_value
     to_s
