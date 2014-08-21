@@ -10,8 +10,11 @@ module SourceRoute
       @results = []
     end
 
+    # TODO: make event can be array
     def event(v)
       @conditions[:event] = v.to_sym unless v.nil?
+      # temply workround
+      @conditions[:output_format] = [:defined_class, :event, :method_id, :return_value] if @conditions[:event] == :return
     end
 
     TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
@@ -46,6 +49,7 @@ module SourceRoute
       end
     end
 
+    # Not completed yet
     def tp_event_map_to_methods
       @tp_event_map_to_methods ||= {
         return_value: [:return, :c_return, :b_return]
