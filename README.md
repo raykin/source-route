@@ -51,3 +51,5 @@ Following code is a good sample that track file running sequence, how to change 
     tp.enable
 
 ```
+
+It's better to add html output format, 'cause it can be kept.
