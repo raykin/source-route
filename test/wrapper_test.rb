@@ -16,6 +16,7 @@ module SourceRoute
       @source_route = SourceRoute.enable do
         event :call
         method_id /nonsense/
+        output_format :console
       end
       SampleApp.new.nonsense
       w = Wrapper.instance
@@ -30,8 +31,19 @@ module SourceRoute
     end
 
     def test_show_local_variables
-      @source_route = SourceRoute.enable 'nonsense'
-      SampleApp.new.nonsense(88)
+      @source_route = SourceRoute.enable 'nonsense_with_params' do
+        output_format :test
+        output_include_local_variables
+      end
+
+      SampleApp.new.nonsense_with_params(88)
+      w = Wrapper.instance
+      assert_equal 1, w.tp_caches.size
+
+      ret_value = w.result_attrs_value.last
+
+      assert ret_value.last.is_a?(Hash)
+      assert_equal 88, ret_value.last[:param1]
     end
   end
 

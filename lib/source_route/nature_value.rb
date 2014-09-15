@@ -2,7 +2,6 @@ class NilClass
   def nature_value
     nil
   end
-
 end
 
 class String

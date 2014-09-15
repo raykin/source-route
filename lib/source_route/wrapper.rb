@@ -3,16 +3,23 @@ module SourceRoute
   class Wrapper
     include Singleton
 
-    attr_accessor :conditions, :tp_caches
+    attr_accessor :conditions, :tp_caches, :result_attrs_value
     attr_accessor :output_include_local_variables, :output_include_instance_variables
 
     def initialize
       reset
     end
 
+    # output_format can be console, html
     def reset
-      @conditions = OpenStruct.new event: :call, negative: {}, positive: {}, result_config: {output_format: nil}
+      @conditions = OpenStruct.new(event: :call, negative: {}, positive: {},
+                                   result_config: { output_format: 'console',
+                                     selected_attrs: nil,
+                                     include_local_var: false,
+                                     include_instance_var: false
+                                   })
       @tp_caches = []
+      @result_attrs_value = []
     end
 
     # TODO: make event can be array
@@ -20,20 +27,30 @@ module SourceRoute
       @conditions.event = v.to_sym unless v.nil?
     end
 
+    def set_result_config(value)
+      unless value.is_a? Hash
+        conditions.result_config = value
+      end
+    end
+
     def output_format(data = nil, &block)
       conditions.result_config[:output_format] = if data.nil?
                                                    block
                                                  else
-                                                   [data].flatten
+                                                   data
                                                  end
     end
 
-    def output_include_local_variables(bool_value)
-      conditions.result_config[:include_local_var] = bool_value
+    def selected_attrs(data)
+      conditions.result_config[:selected_attrs] = [data].flatten
     end
 
-    def output_include_instance_variables(bool_value)
-      conditions.result_config[:include_instance_var] = bool_value
+    def output_include_local_variables
+      conditions.result_config[:include_local_var] = true
+    end
+
+    def output_include_instance_variables
+      conditions.result_config[:include_instance_var] = true
     end
 
     TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]

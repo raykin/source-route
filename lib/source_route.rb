@@ -15,9 +15,10 @@ module SourceRoute
 
   def enable(match = nil, &block)
     wrapper = Wrapper.instance
-
+    wrapper.reset
     wrapper.method_id(match) if match
     wrapper.instance_eval(&block) if block_given?
+    results = Results.new(wrapper)
 
     trace = TracePoint.new wrapper.conditions.event do |tp|
       negative_broken = wrapper.conditions.negative.any? do |method_key, value|
@@ -29,8 +30,9 @@ module SourceRoute
       end
       next if positive_broken
       wrapper.tp_caches.push(tp)
-      results = Results.new(wrapper)
-      results.output(tp)
+
+      ret_data = results.output(tp)
+      wrapper.result_attrs_value.push(ret_data)
     end
     trace.enable
     trace

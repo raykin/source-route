@@ -2,7 +2,10 @@
 # When add more complex test, update FakeApp
 class SampleApp
 
-  def nonsense(para1 = nil)
-    local_para2 = 5
+  def nonsense
+  end
+
+  def nonsense_with_params(param1 = nil)
+    param2 = 5
   end
 end
