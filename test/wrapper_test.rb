@@ -42,8 +42,8 @@ module SourceRoute
 
       ret_value = w.result_attrs_value.last
 
-      assert ret_value.last.is_a?(Hash)
-      assert_equal 88, ret_value.last[:param1]
+      assert ret_value.last.is_a?(Hash), 'the last of returned value should be hash'
+      assert_equal 88, ret_value.last[:local_var][:param1]
     end
   end
 

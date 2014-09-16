@@ -51,8 +51,10 @@ module SourceRoute
 
     def collect_data
       collect_tp_data
+      @collect_data.push({})
       collect_local_var_data
       collect_instance_var_data
+      @collect_data.pop if @collect_data.last == {}
     end
 
     def collect_tp_data
@@ -69,7 +71,7 @@ module SourceRoute
           local_var_hash[v] = @tp.binding.local_variable_get v
         end
 
-        @collect_data.push(local_var_hash)
+        @collect_data.last.merge!(local_var: local_var_hash)
       end
     end
 
