@@ -24,20 +24,20 @@ module SourceRoute
 
       @tp = trace_point_instance
 
-      format = @output_config[:output_format]
+      format = @output_config[:output_format].to_sym
 
       collect_data
 
       case format
-      when String
-        case format.to_sym
+      when Symbol
+        case format
         when :console
           console_put
-        when :html
-          # not implemented yet
         when :test
           # do nothing at now
         else
+          klass = "SourceRoute::Formats::#{format.to_s.capitalize}"
+          ::SourceRoute.const_get(klass).render(self)
         end
       when Proc
         format.call(tp)

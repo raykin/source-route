@@ -9,7 +9,6 @@ require "source_route/wrapper"
 require "source_route/results"
 require "source_route/nature_value"
 
-
 module SourceRoute
   extend self
 
@@ -32,7 +31,7 @@ module SourceRoute
       wrapper.tp_caches.push(tp)
 
       ret_data = results.output(tp)
-      wrapper.result_attrs_value.push(ret_data)
+      wrapper.tp_attrs_results.push(ret_data)
     end
     trace.enable
     trace
@@ -40,5 +39,11 @@ module SourceRoute
 
   # Not implement yet
   class Logger < Logger
+  end
+end
+
+module SourceRoute
+  module Formats
+    autoload :Html, 'source_route/formats/html'
   end
 end

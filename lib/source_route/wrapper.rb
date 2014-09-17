@@ -3,7 +3,7 @@ module SourceRoute
   class Wrapper
     include Singleton
 
-    attr_accessor :conditions, :tp_caches, :result_attrs_value
+    attr_accessor :conditions, :tp_caches, :tp_attrs_results
     attr_accessor :output_include_local_variables, :output_include_instance_variables
 
     def initialize
@@ -19,7 +19,7 @@ module SourceRoute
                                      include_instance_var: false
                                    })
       @tp_caches = []
-      @result_attrs_value = []
+      @tp_attrs_results = []
     end
 
     # TODO: make event can be array

@@ -16,7 +16,7 @@ module SourceRoute
       @source_route = SourceRoute.enable do
         event :call
         method_id /nonsense/
-        output_format :console
+        output_format :test
       end
       SampleApp.new.nonsense
       w = Wrapper.instance
@@ -40,7 +40,7 @@ module SourceRoute
       w = Wrapper.instance
       assert_equal 1, w.tp_caches.size
 
-      ret_value = w.result_attrs_value.last
+      ret_value = w.tp_attrs_results.last
 
       assert ret_value.last.is_a?(Hash), 'the last of returned value should be hash'
       assert_equal 88, ret_value.last[:local_var][:param1]
@@ -54,9 +54,16 @@ module SourceRoute
 
       SampleApp.new(:cool).nonsense_with_instance_var
       w = Wrapper.instance
-      ret_value = w.result_attrs_value.pop
+      ret_value = w.tp_attrs_results.pop
 
       assert_equal :cool, ret_value.pop[:instance_var][:@cool]
+    end
+
+    def test_html_format_output
+      @source_route = SourceRoute.enable 'nonsense' do
+        output_format :html
+      end
+      SampleApp.new.nonsense
     end
   end
 

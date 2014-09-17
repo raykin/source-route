@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title Source Route Result
+    script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
+
+  body(ng-app="SourceRoute")
+    .data-collect
+      #trace-data data-trace="#{@collect_data.to_json}"
+
+    .main(ng-controller="MainCtrl")
+      .top-header
+        h4
+          | Event:
+          =< @tp_event
+      .trace-flow
+
+    script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"
+
+    javascript:
+      sourceRoute = angular.module('SourceRoute', [])
+      sourceRoute.controller('MainCtrl', function($scope) {
+        $scope.trace = angular.element("#trace-data").data('trace')
+      })
