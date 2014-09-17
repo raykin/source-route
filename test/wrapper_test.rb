@@ -45,6 +45,19 @@ module SourceRoute
       assert ret_value.last.is_a?(Hash), 'the last of returned value should be hash'
       assert_equal 88, ret_value.last[:local_var][:param1]
     end
+
+    def test_show_instance_vars
+      @source_route = SourceRoute.enable 'nonsense_with_instance_var' do
+        output_format :test
+        output_include_instance_variables
+      end
+
+      SampleApp.new(:cool).nonsense_with_instance_var
+      w = Wrapper.instance
+      ret_value = w.result_attrs_value.pop
+
+      assert_equal :cool, ret_value.pop[:instance_var][:@cool]
+    end
   end
 
 end

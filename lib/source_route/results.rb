@@ -77,7 +77,11 @@ module SourceRoute
 
     def collect_instance_var_data
       if @wrapper.conditions.result_config[:include_instance_var]
-        # Not implement yet
+        instance_var_hash = {}
+        @tp.self.instance_variables.each do |key|
+          instance_var_hash[key] = @tp.self.instance_variable_get(key)
+        end
+        @collect_data.last.merge!(instance_var: instance_var_hash)
       end
     end
 
