@@ -82,7 +82,11 @@ module SourceRoute
 
       SampleApp.new(:cool).nonsense_with_instance_var
 
-      SourceRoute.build_html_output
+      if ENV['ignore_html_generation'] == 'true'
+        # do nothing. it was set in Rakefile, so rake test will not generate html file
+      else
+        SourceRoute.build_html_output
+      end
     end
 
   end
