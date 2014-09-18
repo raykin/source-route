@@ -3,7 +3,7 @@ module SourceRoute
   class Wrapper
     include Singleton
 
-    attr_accessor :conditions, :tp, :tp_caches, :tp_attrs_results
+    attr_accessor :conditions, :tp, :tp_attrs_results
     attr_accessor :output_include_local_variables, :output_include_instance_variables
 
     def initialize
@@ -19,7 +19,6 @@ module SourceRoute
                                      include_local_var: false,
                                      include_instance_var: false
                                    })
-      @tp_caches = []
       @tp_attrs_results = []
       self
     end

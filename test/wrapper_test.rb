@@ -26,7 +26,7 @@ module SourceRoute
       end
       SampleApp.new.nonsense
 
-      assert @wrapper.tp_caches.size > 0
+      assert @wrapper.tp
     end
 
     def test_catch_class_name_by_first_parameter
@@ -35,7 +35,7 @@ module SourceRoute
       @source_route = SourceRoute.enable 'sampleapp'
       SampleApp.new.nonsense
 
-      assert @wrapper.tp_caches.size > 0
+      assert @wrapper.tp_attrs_results.size > 0
     end
 
     def test_match_class_name_by_block_define
@@ -44,7 +44,7 @@ module SourceRoute
       end
 
       SampleApp.new.nonsense
-      assert @wrapper.tp_caches.size > 0
+      assert @wrapper.tp_attrs_results.size > 0
     end
 
     def test_source_route_with_only_one_parameter
@@ -72,7 +72,7 @@ module SourceRoute
       end
 
       SampleApp.new.nonsense_with_params(88)
-      assert_equal 1, @wrapper.tp_caches.size
+      assert_equal 1, @wrapper.tp_attrs_results.size
 
       ret_value = @wrapper.tp_attrs_results.last
 
@@ -86,7 +86,7 @@ module SourceRoute
 
       SampleApp.new(:cool).nonsense_with_instance_var
 
-      assert_equal 2, @wrapper.tp_caches.size
+      assert_equal 2, @wrapper.tp_attrs_results.size
       ret_value = @wrapper.tp_attrs_results.pop
 
       assert_equal :cool, ret_value[:instance_var][:@cool]

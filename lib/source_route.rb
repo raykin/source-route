@@ -31,7 +31,6 @@ module SourceRoute
         tp.send(method_key).nature_value !~ Regexp.new(value)
       end
       next if positive_break
-      wrapper.tp_caches.push(tp)
 
       ret_data = tp_result.build(tp)
       tp_result.output
