@@ -29,12 +29,21 @@ module SourceRoute
       assert @wrapper.tp_caches.size > 0
     end
 
-    def test_catch_class_name
+    def test_catch_class_name_by_first_parameter
       skip
       # not supported yet
       @source_route = SourceRoute.enable 'sampleapp'
       SampleApp.new.nonsense
-      binding.pry
+
+      assert @wrapper.tp_caches.size > 0
+    end
+
+    def test_match_class_name_by_block_define
+      @source_route = SourceRoute.enable do
+        defined_class 'SampleApp'
+      end
+
+      SampleApp.new.nonsense
       assert @wrapper.tp_caches.size > 0
     end
 
