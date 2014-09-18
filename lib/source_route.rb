@@ -15,7 +15,8 @@ module SourceRoute
   def enable(match = nil, &block)
     wrapper = Wrapper.instance.reset
 
-    wrapper.method_id(match) if match
+    wrapper.method_id(match)  # TODO in future future: should add as wrapper.method_id_or(match)
+
     wrapper.instance_eval(&block) if block_given?
 
     # dont wanna init it in tp block, cause tp block could run thousands of time in one cycle trace

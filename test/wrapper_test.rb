@@ -29,6 +29,15 @@ module SourceRoute
       assert @wrapper.tp_caches.size > 0
     end
 
+    def test_catch_class_name
+      skip
+      # not supported yet
+      @source_route = SourceRoute.enable 'sampleapp'
+      SampleApp.new.nonsense
+      binding.pry
+      assert @wrapper.tp_caches.size > 0
+    end
+
     def test_source_route_with_only_one_parameter
       @source_route = SourceRoute.enable 'nonsense'
       SampleApp.new.nonsense
