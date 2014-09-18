@@ -2,8 +2,9 @@ doctype html
 html
   head
     title Source Route Result
-    link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-    script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
+    link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+    script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
+    script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
 
   body(ng-app="SourceRoute")
     / workaround for following case:
@@ -23,20 +24,25 @@ html
           | Event:
           =< @conditions.event
       .trace-flow
-        .row(ng-repeat="trace in traces")
+        .row
           .left-info.col-sm-3
-          .well.well-lg.col-sm-5
-            p
-              span(ng-bind="trace.defined_class")
-              span #
-              span(ng-bind="trace.method_id")
+            .well.well-sm(ng-repeat="klass in definedClasses")
+              p.text-center(ng-bind="klass")
+          .center-info.col-sm-5
+            .well.well-lg(ng-repeat="trace in traces")
+              p
+                span(ng-bind="trace.defined_class")
+                span #
+                span(ng-bind="trace.method_id")
           .right-info.col-sm-3
 
-    script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"
+    script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"
 
     javascript:
       sourceRoute = angular.module('SourceRoute', [])
       sourceRoute.controller('MainCtrl', function($scope) {
         $scope.traces = angular.element("#trace-data").data('trace')
-
+        // it is possible to prevent dirty check on definedClasses after it was generated
+        $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
+        $scope.definedClasses.unshift('ALL')
       })
