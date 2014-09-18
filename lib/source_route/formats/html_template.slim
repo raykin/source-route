@@ -6,13 +6,13 @@ html
 
   body(ng-app="SourceRoute")
     .data-collect
-      #trace-data data-trace="#{@collect_data.to_json}"
+      #trace-data data-trace="#{@tp_attrs_results.to_json}"
 
     .main(ng-controller="MainCtrl")
       .top-header
         h4
           | Event:
-          =< @tp_event
+          =< @conditions.event
       .trace-flow
 
     script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"

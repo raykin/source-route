@@ -15,5 +15,6 @@ class SampleApp
 
   # call it with SampleApp.new(:cool), then the instance var will be init before call it
   def nonsense_with_instance_var
+    nonsense
   end
 end

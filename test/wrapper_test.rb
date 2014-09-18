@@ -52,11 +52,13 @@ module SourceRoute
     end
 
     def test_show_instance_vars
-      @source_route = SourceRoute.enable 'nonsense_with_instance_var' do
+      @source_route = SourceRoute.enable 'nonsense' do
+        output_format :test
         output_include_instance_variables
       end
 
       SampleApp.new(:cool).nonsense_with_instance_var
+      assert_equal 2, @wrapper.tp_caches.size
       ret_value = @wrapper.tp_attrs_results.pop
 
       assert_equal :cool, ret_value[:instance_var][:@cool]
@@ -64,10 +66,11 @@ module SourceRoute
 
     # Nothing has tested really
     def test_html_format_output
-      @source_route = SourceRoute.enable 'nonsense' do
-        output_format :html
-      end
+      @source_route = SourceRoute.enable 'nonsense'
+
       SampleApp.new.nonsense
+
+      SourceRoute::Formats::Html.render(@wrapper)
     end
   end
 
