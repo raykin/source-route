@@ -1,6 +1,6 @@
 module SourceRoute
 
-  # No Test Yet
+  #
   class Results
 
     DEFAULT_ATTRS = {
@@ -33,6 +33,9 @@ module SourceRoute
         case format
         when :console
           console_put
+        when :html
+          # I cant solve the problem: to generate html at the end,
+          # I have to know when the application is end
         when :test
           # do nothing at now
         else
