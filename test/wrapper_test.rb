@@ -32,14 +32,24 @@ module SourceRoute
     def test_source_route_with_only_one_parameter
       @source_route = SourceRoute.enable 'nonsense'
       SampleApp.new.nonsense
-      assert @wrapper.tp_caches.size > 0
+
       ret_value = @wrapper.tp_attrs_results.last
       assert_equal SampleApp, ret_value[:defined_class]
     end
 
+    def test_wrapper_reset
+      @source_route = SourceRoute.enable 'nonsense'
+      SampleApp.new.nonsense
+      assert 1, @wrapper.tp_attrs_results.size
+
+      @wrapper.reset
+      SampleApp.new.nonsense
+      assert 1, @wrapper.tp_attrs_results.size
+    end
+
     def test_show_local_variables
       @source_route = SourceRoute.enable 'nonsense_with_params' do
-        output_format :test
+        output_format :console
         output_include_local_variables
       end
 
@@ -53,11 +63,11 @@ module SourceRoute
 
     def test_show_instance_vars
       @source_route = SourceRoute.enable 'nonsense' do
-        output_format :test
         output_include_instance_variables
       end
 
       SampleApp.new(:cool).nonsense_with_instance_var
+
       assert_equal 2, @wrapper.tp_caches.size
       ret_value = @wrapper.tp_attrs_results.pop
 
@@ -67,7 +77,6 @@ module SourceRoute
     # Nothing has tested really
     def test_html_format_output
       @source_route = SourceRoute.enable 'nonsense' do
-        output_format :test
         output_include_instance_variables
       end
 
@@ -75,6 +84,7 @@ module SourceRoute
 
       SourceRoute.build_html_output
     end
+
   end
 
 end

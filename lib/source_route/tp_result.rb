@@ -32,6 +32,8 @@ module SourceRoute
       format = @output_config[:output_format].to_sym
 
       case format
+      when :none
+        # do nothing
       when :console
         console_put
       when :html

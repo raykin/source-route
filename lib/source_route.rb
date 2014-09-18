@@ -13,8 +13,8 @@ module SourceRoute
   extend self
 
   def enable(match = nil, &block)
-    wrapper = Wrapper.instance
-    wrapper.reset
+    wrapper = Wrapper.instance.reset
+
     wrapper.method_id(match) if match
     wrapper.instance_eval(&block) if block_given?
 
@@ -37,6 +37,7 @@ module SourceRoute
       wrapper.tp_attrs_results.push(ret_data)
     end
     trace.enable
+    wrapper.tp = trace
     trace
   end
 
