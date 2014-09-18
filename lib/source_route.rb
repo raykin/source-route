@@ -17,6 +17,8 @@ module SourceRoute
     wrapper.reset
     wrapper.method_id(match) if match
     wrapper.instance_eval(&block) if block_given?
+
+    # dont wanna init it in tp block, cause tp block could run thousands of time in one cycle trace
     tp_result = TpResult.new(wrapper)
 
     trace = TracePoint.new wrapper.conditions.event do |tp|
@@ -30,7 +32,8 @@ module SourceRoute
       next if positive_break
       wrapper.tp_caches.push(tp)
 
-      ret_data = tp_result.output(tp)
+      ret_data = tp_result.build(tp)
+      tp_result.output
       wrapper.tp_attrs_results.push(ret_data)
     end
     trace.enable

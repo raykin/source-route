@@ -3,8 +3,14 @@ require 'test_helper'
 module SourceRoute
   class WrapperTest < Minitest::Test
 
+    def setup
+      @wrapper = Wrapper.instance
+      super
+    end
+
     def teardown
       @source_route.disable if defined? @source_route
+      super
     end
 
     def test_enable_return_true
@@ -19,15 +25,14 @@ module SourceRoute
         output_format :test
       end
       SampleApp.new.nonsense
-      w = Wrapper.instance
-      assert w.tp_caches.size > 0
+
+      assert @wrapper.tp_caches.size > 0
     end
 
     def test_source_route_with_only_one_parameter
       @source_route = SourceRoute.enable 'nonsense'
       SampleApp.new.nonsense
-      w = Wrapper.instance
-      assert w.tp_caches.size > 0
+      assert @wrapper.tp_caches.size > 0
     end
 
     def test_show_local_variables
@@ -37,10 +42,9 @@ module SourceRoute
       end
 
       SampleApp.new.nonsense_with_params(88)
-      w = Wrapper.instance
-      assert_equal 1, w.tp_caches.size
+      assert_equal 1, @wrapper.tp_caches.size
 
-      ret_value = w.tp_attrs_results.last
+      ret_value = @wrapper.tp_attrs_results.last
 
       assert ret_value.last.is_a?(Hash), 'the last of returned value should be hash'
       assert_equal 88, ret_value.last[:local_var][:param1]
@@ -53,8 +57,7 @@ module SourceRoute
       end
 
       SampleApp.new(:cool).nonsense_with_instance_var
-      w = Wrapper.instance
-      ret_value = w.tp_attrs_results.pop
+      ret_value = @wrapper.tp_attrs_results.pop
 
       assert_equal :cool, ret_value.pop[:instance_var][:@cool]
     end

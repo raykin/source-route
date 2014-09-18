@@ -19,42 +19,36 @@ module SourceRoute
 
     end
 
-    def collect_data
+    def build(trace_point_instance)
+      @tp = trace_point_instance
       collect_tp_data
       @collect_data.push({})
       collect_local_var_data
       collect_instance_var_data
       @collect_data.pop if @collect_data.last == {}
+      @collect_data
     end
 
-    def output(trace_point_instance)
-
-      @tp = trace_point_instance
+    # always run build before it # not a good design
+    def output
 
       format = @output_config[:output_format].to_sym
 
-      collect_data
-
       case format
-      when Symbol
-        case format
-        when :console
-          console_put
-        when :html
-          # I cant solve the problem: to generate html at the end,
-          # I have to know when the application is end
-        when :test
-          # do nothing at now
-        else
-          klass = "SourceRoute::Formats::#{format.to_s.capitalize}"
-          ::SourceRoute.const_get(klass).render(self)
-        end
-      when Proc
-        format.call(tp)
+      when :console
+        console_put
+      when :html
+        # I cant solve the problem: to generate html at the end,
+        # I have to know when the application is end
+      when :test
+        # do nothing at now
+      when :Proc
+        # customize not defined yet
+        # format.call(tp)
       else
+        klass = "SourceRoute::Formats::#{format.to_s.capitalize}"
+        ::SourceRoute.const_get(klass).render(self, trace_point_instance)
       end
-
-      @collect_data
     end
 
     private
@@ -91,6 +85,6 @@ module SourceRoute
       ap @collect_data
     end
 
-  end
+  end # END TpResult
 
 end
