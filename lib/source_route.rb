@@ -40,6 +40,10 @@ module SourceRoute
     trace
   end
 
+  def build_html_output
+    SourceRoute::Formats::Html.render(Wrapper.instance)
+  end
+
   # Not implement yet
   class Logger < Logger
   end

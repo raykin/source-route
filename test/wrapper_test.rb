@@ -66,11 +66,14 @@ module SourceRoute
 
     # Nothing has tested really
     def test_html_format_output
-      @source_route = SourceRoute.enable 'nonsense'
+      @source_route = SourceRoute.enable 'nonsense' do
+        output_format :test
+        output_include_instance_variables
+      end
 
-      SampleApp.new.nonsense
+      SampleApp.new(:cool).nonsense_with_instance_var
 
-      SourceRoute::Formats::Html.render(@wrapper)
+      SourceRoute.build_html_output
     end
   end
 
