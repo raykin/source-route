@@ -6,8 +6,16 @@ html
     script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
 
   body(ng-app="SourceRoute")
+    / workaround for following case:
+    / pry(main)> ActiveRecord::Inheritance::ClassMethods.to_json => {} # Dont know why
+    ruby:
+      trace_data = @tp_attrs_results.map do |tp_result|
+        tp_result[:defined_class] = tp_result[:defined_class].name
+        tp_result
+      end
+
     .data-collect
-      #trace-data data-trace="#{@tp_attrs_results.to_json}"
+      #trace-data data-trace="#{trace_data.to_json}"
 
     .container(ng-controller="MainCtrl")
       .top-header
