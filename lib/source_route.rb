@@ -6,7 +6,7 @@ require 'awesome_print'
 
 require "source_route/version"
 require "source_route/wrapper"
-require "source_route/results"
+require "source_route/tp_result"
 require "source_route/nature_value"
 
 module SourceRoute
@@ -17,20 +17,20 @@ module SourceRoute
     wrapper.reset
     wrapper.method_id(match) if match
     wrapper.instance_eval(&block) if block_given?
-    results = Results.new(wrapper)
+    tp_result = TpResult.new(wrapper)
 
     trace = TracePoint.new wrapper.conditions.event do |tp|
-      negative_broken = wrapper.conditions.negative.any? do |method_key, value|
+      negative_break = wrapper.conditions.negative.any? do |method_key, value|
         tp.send(method_key).nature_value =~ Regexp.new(value)
       end
-      next if negative_broken
-      positive_broken = wrapper.conditions.positive.any? do |method_key, value|
+      next if negative_break
+      positive_break = wrapper.conditions.positive.any? do |method_key, value|
         tp.send(method_key).nature_value !~ Regexp.new(value)
       end
-      next if positive_broken
+      next if positive_break
       wrapper.tp_caches.push(tp)
 
-      ret_data = results.output(tp)
+      ret_data = tp_result.output(tp)
       wrapper.tp_attrs_results.push(ret_data)
     end
     trace.enable

@@ -1,7 +1,6 @@
 module SourceRoute
 
-  #
-  class Results
+  class TpResult
 
     DEFAULT_ATTRS = {
       call: [:defined_class, :event, :method_id],
@@ -18,6 +17,14 @@ module SourceRoute
         @output_config[:selected_attrs] = DEFAULT_ATTRS[@tp_event] - [:event]
       end
 
+    end
+
+    def collect_data
+      collect_tp_data
+      @collect_data.push({})
+      collect_local_var_data
+      collect_instance_var_data
+      @collect_data.pop if @collect_data.last == {}
     end
 
     def output(trace_point_instance)
@@ -51,14 +58,6 @@ module SourceRoute
     end
 
     private
-
-    def collect_data
-      collect_tp_data
-      @collect_data.push({})
-      collect_local_var_data
-      collect_instance_var_data
-      @collect_data.pop if @collect_data.last == {}
-    end
 
     def collect_tp_data
       @collect_data = @output_config[:selected_attrs].map do |key|
