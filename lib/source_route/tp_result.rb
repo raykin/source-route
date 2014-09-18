@@ -16,16 +16,13 @@ module SourceRoute
       if @output_config[:selected_attrs].nil? and [@wrapper.conditions.event].flatten.size == 1
         @output_config[:selected_attrs] = DEFAULT_ATTRS[@tp_event] - [:event]
       end
-
     end
 
     def build(trace_point_instance)
       @tp = trace_point_instance
       collect_tp_data
-      @collect_data.push({})
       collect_local_var_data
       collect_instance_var_data
-      @collect_data.pop if @collect_data.last == {}
       @collect_data
     end
 
@@ -54,8 +51,9 @@ module SourceRoute
     private
 
     def collect_tp_data
-      @collect_data = @output_config[:selected_attrs].map do |key|
-        @tp.respond_to?(key) ? @tp.send(key) : nil
+      @collect_data = @output_config[:selected_attrs].inject({}) do |memo, key|
+        memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
+        memo
       end
     end
 
@@ -67,7 +65,7 @@ module SourceRoute
           local_var_hash[v] = @tp.binding.local_variable_get v
         end
 
-        @collect_data.last.merge!(local_var: local_var_hash)
+        @collect_data.merge!(local_var: local_var_hash)
       end
     end
 
@@ -77,12 +75,18 @@ module SourceRoute
         @tp.self.instance_variables.each do |key|
           instance_var_hash[key] = @tp.self.instance_variable_get(key)
         end
-        @collect_data.last.merge!(instance_var: instance_var_hash)
+        @collect_data.merge!(instance_var: instance_var_hash)
       end
     end
 
     def console_put
-      ap @collect_data
+      ret = []
+      ret << "#{@collect_data[:defined_class].inspect}##{@collect_data[:method_id]}"
+      left_values = @collect_data.reject { |k, v| %w[defined_class method_id].include? k.to_s }
+      unless left_values == {}
+        ret << left_values
+      end
+      ap ret
     end
 
   end # END TpResult

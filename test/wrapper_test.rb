@@ -33,6 +33,8 @@ module SourceRoute
       @source_route = SourceRoute.enable 'nonsense'
       SampleApp.new.nonsense
       assert @wrapper.tp_caches.size > 0
+      ret_value = @wrapper.tp_attrs_results.last
+      assert_equal SampleApp, ret_value[:defined_class]
     end
 
     def test_show_local_variables
@@ -46,22 +48,21 @@ module SourceRoute
 
       ret_value = @wrapper.tp_attrs_results.last
 
-      assert ret_value.last.is_a?(Hash), 'the last of returned value should be hash'
-      assert_equal 88, ret_value.last[:local_var][:param1]
+      assert_equal 88, ret_value[:local_var][:param1]
     end
 
     def test_show_instance_vars
       @source_route = SourceRoute.enable 'nonsense_with_instance_var' do
-        output_format :test
         output_include_instance_variables
       end
 
       SampleApp.new(:cool).nonsense_with_instance_var
       ret_value = @wrapper.tp_attrs_results.pop
 
-      assert_equal :cool, ret_value.pop[:instance_var][:@cool]
+      assert_equal :cool, ret_value[:instance_var][:@cool]
     end
 
+    # Nothing has tested really
     def test_html_format_output
       @source_route = SourceRoute.enable 'nonsense' do
         output_format :html
