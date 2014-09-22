@@ -12,6 +12,14 @@ require "source_route/nature_value"
 module SourceRoute
   extend self
 
+  def wrapper
+    Wrapper.instance
+  end
+
+  def disable
+    wrapper.reset
+  end
+
   def enable(match = nil, &block)
     wrapper = Wrapper.instance.reset
 
