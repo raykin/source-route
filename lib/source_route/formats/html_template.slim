@@ -11,7 +11,7 @@ html
     / pry(main)> ActiveRecord::Inheritance::ClassMethods.to_json => {} # Dont know why
     ruby:
       trace_data = @tp_attrs_results.map do |tp_result|
-        tp_result[:defined_class] = tp_result[:defined_class].name
+        tp_result[:defined_class] = tp_result[:defined_class].nature_value
         tp_result
       end
 
