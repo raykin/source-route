@@ -13,7 +13,11 @@ module SourceRoute
   extend self
 
   def wrapper
-    Wrapper.instance
+    @@wrapper ||= Wrapper.instance
+  end
+
+  def reset
+    wrapper.reset
   end
 
   def disable
@@ -21,32 +25,25 @@ module SourceRoute
   end
 
   def enable(match = nil, &block)
-    wrapper = Wrapper.instance.reset
+    wrapper.reset
 
     wrapper.method_id(match) if match # TODO in future future: should add as wrapper.method_id_or(match)
 
     wrapper.instance_eval(&block) if block_given?
 
-    # dont wanna init it in tp block, cause tp block could run thousands of time in one cycle trace
-    tp_result = TpResult.new(wrapper)
+    wrapper.trace
+  end
 
-    trace = TracePoint.new wrapper.conditions.event do |tp|
-      negative_break = wrapper.conditions.negative.any? do |method_key, value|
-        tp.send(method_key).nature_value =~ Regexp.new(value)
-      end
-      next if negative_break
-      positive_break = wrapper.conditions.positive.any? do |method_key, value|
-        tp.send(method_key).nature_value !~ Regexp.new(value)
-      end
-      next if positive_break
-
-      ret_data = tp_result.build(tp)
-      tp_result.output
-      wrapper.tp_attrs_results.push(ret_data)
+  # Not implemented. used in irb or pry.
+  def trace(opt, &block)
+    wrapper.reset
+    opt.each do |k, v|
+      wrapper.send(k, v)
     end
-    trace.enable
-    wrapper.tp = trace
-    trace
+    wrapper.trace
+    yield
+    SourceRoute.build_html_output if opt[:output_format] == :html
+    wrapper.tp.disable
   end
 
   def build_html_output

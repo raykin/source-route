@@ -9,17 +9,18 @@ module SourceRoute
     end
 
     def teardown
-      @source_route.disable if defined? @source_route
+      SourceRoute.reset
       super
     end
 
     def test_enable_return_true
       @source_route = SourceRoute.enable /nnnonsense/
       assert @source_route
+      assert_equal @wrapper, SourceRoute.wrapper
     end
 
-    def test_catch_call_event
-      @source_route = SourceRoute.enable do
+    def test_catch_call_event_only
+      SourceRoute.enable do
         event :call
         method_id /nonsense/
         output_format :test
@@ -56,18 +57,26 @@ module SourceRoute
     end
 
     def test_wrapper_reset
-      @source_route = SourceRoute.enable 'nonsense'
+      SourceRoute.enable 'nonsense'
       SampleApp.new.nonsense
-      assert 1, @wrapper.tp_attrs_results.size
+      assert_equal 1, @wrapper.tp_attrs_results.size
 
-      @wrapper.reset
+      SourceRoute.reset
       SampleApp.new.nonsense
-      assert 1, @wrapper.tp_attrs_results.size
+
+      assert_equal 0, @wrapper.tp_attrs_results.size
+    end
+
+    def test_source_route_with_block
+      SourceRoute.trace method_id: 'nonsense', output_format: :html do
+        SampleApp.new.nonsense
+      end
+      assert_equal 1, @wrapper.tp_attrs_results.size
+      refute @wrapper.tp.enabled?
     end
 
     def test_show_local_variables
       @source_route = SourceRoute.enable 'nonsense_with_params' do
-        output_format :console
         output_include_local_variables
       end
 

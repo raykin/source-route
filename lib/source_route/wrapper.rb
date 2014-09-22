@@ -66,6 +66,29 @@ module SourceRoute
       end
     end
 
-  end
+    def trace
+      # dont wanna init it in tp block, cause tp block could run thousands of time in one cycle trace
+      tp_result = TpResult.new(self)
+
+      track = TracePoint.new conditions.event do |tp|
+        negative_break = conditions.negative.any? do |method_key, value|
+          tp.send(method_key).nature_value =~ Regexp.new(value)
+        end
+        next if negative_break
+        positive_break = conditions.positive.any? do |method_key, value|
+          tp.send(method_key).nature_value !~ Regexp.new(value)
+        end
+        next if positive_break
+
+        ret_data = tp_result.build(tp)
+        tp_result.output
+        tp_attrs_results.push(ret_data)
+      end
+      track.enable
+      self.tp = track
+      track
+    end
+
+  end # Wrapper
 
 end
