@@ -10,7 +10,7 @@ Wrapper of TracePoint
 
 Add this line to your application's Gemfile:
 
-    gem 'source_route', git: 'https://github.com/raykin/source-route'
+    gem 'source_route'
 
 And then execute:
 
