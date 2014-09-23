@@ -47,7 +47,6 @@ module SourceRoute
   end
 
   def build_html_output
-    wrapper = Wrapper.instance
     SourceRoute::Formats::Html.render(wrapper)
   end
 
