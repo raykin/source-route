@@ -42,8 +42,8 @@ module SourceRoute
     end
     wrapper.trace
     yield
-    SourceRoute.build_html_output if opt[:output_format] == :html
     wrapper.tp.disable
+    SourceRoute.build_html_output if opt[:output_format] == :html
   end
 
   def build_html_output

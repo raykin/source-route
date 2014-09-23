@@ -75,6 +75,14 @@ module SourceRoute
       refute @wrapper.tp.enabled?
     end
 
+    def test_trace_without_condition
+      SourceRoute.trace output_format: :html do
+        SampleApp.new.nonsense
+      end
+      assert @wrapper.tp_attrs_results.size > 0
+      refute @wrapper.tp.enabled?
+    end
+
     def test_show_local_variables
       @source_route = SourceRoute.enable 'nonsense_with_params' do
         output_include_local_variables
