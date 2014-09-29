@@ -19,7 +19,7 @@ module SourceRoute
       assert_equal @wrapper, SourceRoute.wrapper
     end
 
-    def test_catch_call_event_only
+    def test_catch_call_event
       SourceRoute.enable do
         event :call
         method_id /nonsense/
@@ -48,7 +48,7 @@ module SourceRoute
       assert @wrapper.tp_attrs_results.size > 0
     end
 
-    def test_source_route_with_only_one_parameter
+    def test_source_route_with_one_parameter
       @source_route = SourceRoute.enable 'nonsense'
       SampleApp.new.nonsense
 
@@ -68,15 +68,15 @@ module SourceRoute
     end
 
     def test_source_route_with_block
-      SourceRoute.trace method_id: 'nonsense', output_format: :html do
+      SourceRoute.trace method_id: 'nonsense', output_format: :test do
         SampleApp.new.nonsense
       end
       assert_equal 1, @wrapper.tp_attrs_results.size
       refute @wrapper.tp.enabled?
     end
 
-    def test_trace_without_condition
-      SourceRoute.trace output_format: :html do
+    def test_trace_without_first_hash_option
+      SourceRoute.trace output_format: :test do
         SampleApp.new.nonsense
       end
       assert @wrapper.tp_attrs_results.size > 0
@@ -109,13 +109,14 @@ module SourceRoute
       assert_equal :cool, ret_value[:instance_var][:@cool]
     end
 
-    # Nothing has tested really
-    def test_html_format_output
-      @source_route = SourceRoute.enable 'nonsense' do
+    # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true
+    def test_html_format_output_only
+      @source_route = SourceRoute.enable do
+        defined_class 'SampleApp'
         output_include_instance_variables
       end
 
-      SampleApp.new(:cool).nonsense_with_instance_var
+      SampleApp.new.init_cool_app
 
       if ENV['ignore_html_generation'] == 'true'
         # do nothing. it was set in Rakefile, so rake test will not generate html file

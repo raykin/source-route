@@ -11,7 +11,9 @@ html
     / pry(main)> ActiveRecord::Inheritance::ClassMethods.to_json => {} # Dont know why
     ruby:
       trace_data = @tp_attrs_results.map do |tp_result|
-        tp_result[:defined_class] = tp_result[:defined_class].nature_value
+        if tp_result.has_key?(:defined_class)
+          tp_result[:defined_class] = tp_result[:defined_class].nature_value
+        end
         tp_result
       end
 
@@ -25,16 +27,17 @@ html
           =< @conditions.event
       .trace-flow
         .row
-          .left-info.col-sm-3
+          .left-info.col-sm-4
             .well.well-sm(ng-repeat="klass in definedClasses")
-              p.text-center(ng-bind="klass")
-          .center-info.col-sm-5
-            .well.well-lg(ng-repeat="trace in traces")
+              button.btn.btn-default(ng-click="selectKlass(klass)")
+                span(ng-bind="klass")
+          .center-info.col-sm-6
+            .well.well-lg(ng-repeat="trace in traces | filter:{defined_class: selectedKlass}")
               p
                 span(ng-bind="trace.defined_class")
                 span #
                 span(ng-bind="trace.method_id")
-          .right-info.col-sm-3
+          .right-info.col-sm-2
 
     script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"
 
@@ -45,4 +48,13 @@ html
         // it is possible to prevent dirty check on definedClasses after it was generated
         $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
         $scope.definedClasses.unshift('ALL')
+
+        $scope.selectKlass = function(klass) {
+          if (klass == 'ALL') {
+            $scope.selectedKlass = undefined
+          } else {
+            $scope.selectedKlass = klass
+          }
+        }
+
       })

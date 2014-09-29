@@ -17,4 +17,16 @@ class SampleApp
   def nonsense_with_instance_var
     nonsense
   end
+
+  def init_cool_app
+    CoolApp.new.foo
+  end
+
+  class CoolApp
+    def initialize
+    end
+
+    def foo
+    end
+  end
 end
