@@ -33,10 +33,26 @@ html
                 span(ng-bind="klass")
           .center-info.col-sm-6
             .well.well-lg(ng-repeat="trace in traces | filter:{defined_class: selectedKlass}")
-              p
+              div(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
                 span #
                 span(ng-bind="trace.method_id")
+              .details(ng-if="showMoreDetail")
+                .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green")
+                  span Local Var
+                  .local-values(ng-repeat="(key, value) in trace.local_var")
+                    span<>(ng-bind="key")
+                    span<>
+                      | =>
+                    span<>(ng-bind="value || 'null'")
+                .ins-vars.well.well-sm(ng-if="trace.instance_var" style="color: blue")
+                  span Instance Var
+                  .ins-values(ng-repeat="(key, value) in trace.instance_var")
+                    span<>(ng-bind="key")
+                    span<>
+                      | =>
+                    span<>(ng-bind="value || 'null'")
+
           .right-info.col-sm-2
 
     script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"

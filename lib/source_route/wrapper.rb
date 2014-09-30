@@ -25,6 +25,7 @@ module SourceRoute
 
     # TODO: make event can be array
     def event(v)
+      # @conditions.event = Array(v).map(&:to_sym) unless v.nil?
       @conditions.event = v.to_sym unless v.nil?
     end
 

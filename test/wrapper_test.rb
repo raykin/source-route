@@ -94,6 +94,21 @@ module SourceRoute
       ret_value = @wrapper.tp_attrs_results.last
 
       assert_equal 88, ret_value[:local_var][:param1]
+      assert_equal nil, ret_value[:local_var][:param2]
+    end
+
+    def test_track_local_var_when_event_is_return
+      @source_route = SourceRoute.enable 'nonsense_with_params' do
+        event :return
+        output_include_local_variables
+      end
+
+      SampleApp.new.nonsense_with_params(88)
+      assert_equal 1, @wrapper.tp_attrs_results.size
+
+      ret_value_for_return_event = @wrapper.tp_attrs_results.last
+      assert_equal 88, ret_value_for_return_event[:local_var][:param1]
+      assert_equal 5, ret_value_for_return_event[:local_var][:param2]
     end
 
     def test_show_instance_vars
@@ -101,12 +116,12 @@ module SourceRoute
         output_include_instance_variables
       end
 
-      SampleApp.new(:cool).nonsense_with_instance_var
+      SampleApp.new('ins sure').nonsense_with_instance_var
 
       assert_equal 2, @wrapper.tp_attrs_results.size
       ret_value = @wrapper.tp_attrs_results.pop
 
-      assert_equal :cool, ret_value[:instance_var][:@cool]
+      assert_equal 'ins sure', ret_value[:instance_var][:@sample]
     end
 
     # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true
@@ -114,6 +129,7 @@ module SourceRoute
       @source_route = SourceRoute.enable do
         defined_class 'SampleApp'
         output_include_instance_variables
+        output_include_local_variables
       end
 
       SampleApp.new.init_cool_app

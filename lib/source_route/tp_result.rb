@@ -12,7 +12,8 @@ module SourceRoute
 
       @output_config = @wrapper.conditions.result_config
 
-      @tp_event = @wrapper.conditions.event.to_sym
+      # ToDo: Not support multiple events yet
+      @tp_event = @wrapper.conditions.event
       if @output_config[:selected_attrs].nil? and [@wrapper.conditions.event].flatten.size == 1
         @output_config[:selected_attrs] = DEFAULT_ATTRS[@tp_event] - [:event]
       end
@@ -66,8 +67,9 @@ module SourceRoute
         @tp.binding.eval('local_variables').each do |v|
           local_var_hash[v] = @tp.binding.local_variable_get v
         end
-
-        @collect_data.merge!(local_var: local_var_hash)
+        if local_var_hash != {}
+          @collect_data.merge!(local_var: local_var_hash)
+        end
       end
     end
 
@@ -77,7 +79,9 @@ module SourceRoute
         @tp.self.instance_variables.each do |key|
           instance_var_hash[key] = @tp.self.instance_variable_get(key)
         end
-        @collect_data.merge!(instance_var: instance_var_hash)
+        if instance_var_hash != {}
+          @collect_data.merge!(instance_var: instance_var_hash)
+        end
       end
     end
 
