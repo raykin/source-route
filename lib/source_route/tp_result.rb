@@ -3,8 +3,8 @@ module SourceRoute
   class TpResult
 
     DEFAULT_ATTRS = {
-      call: [:defined_class, :event, :method_id],
-      return: [:defined_class, :event, :method_id, :return_value]
+      call: [:defined_class, :method_id],
+      return: [:defined_class, :method_id, :return_value]
     }
 
     def initialize(wrapper)
@@ -12,11 +12,13 @@ module SourceRoute
 
       @output_config = @wrapper.conditions.result_config
 
-      # ToDo: Not support multiple events yet
-      @tp_event = @wrapper.conditions.event
-      if @output_config[:selected_attrs].nil? and [@wrapper.conditions.event].flatten.size == 1
-        @output_config[:selected_attrs] = DEFAULT_ATTRS[@tp_event] - [:event]
-      end
+      @tp_events = @wrapper.conditions.events
+    end
+
+    def output_attributes(event)
+      attrs = @output_config[:selected_attrs] || DEFAULT_ATTRS[event]
+      attrs.push(:event) if @tp_events.size > 1
+      attrs
     end
 
     def build(trace_point_instance)
@@ -27,7 +29,7 @@ module SourceRoute
       @collect_data
     end
 
-    # always run build before it # not a good design
+    # must run build before it # not a good design
     def output
 
       format = @output_config[:output_format].to_sym
@@ -54,7 +56,7 @@ module SourceRoute
     private
 
     def collect_tp_data
-      @collect_data = @output_config[:selected_attrs].inject({}) do |memo, key|
+      @collect_data = output_attributes(@tp.event).inject({}) do |memo, key|
         memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
         memo
       end

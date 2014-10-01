@@ -13,7 +13,7 @@ module SourceRoute
     # output_format can be console, html
     def reset
       @tp.disable if @tp
-      @conditions = OpenStruct.new(event: :call, negative: {}, positive: {},
+      @conditions = OpenStruct.new(events: :call, negative: {}, positive: {},
                                    result_config: { output_format: 'none',
                                      selected_attrs: nil,
                                      include_local_var: false,
@@ -23,10 +23,8 @@ module SourceRoute
       self
     end
 
-    # TODO: make event can be array
-    def event(v)
-      # @conditions.event = Array(v).map(&:to_sym) unless v.nil?
-      @conditions.event = v.to_sym unless v.nil?
+    def events(v)
+      @conditions.events = Array(v).map(&:to_sym) unless v.nil?
     end
 
     def set_result_config(value)
@@ -71,7 +69,7 @@ module SourceRoute
       # dont wanna init it in tp block, cause tp block could run thousands of time in one cycle trace
       tp_result = TpResult.new(self)
 
-      track = TracePoint.new conditions.event do |tp|
+      track = TracePoint.new *conditions.events do |tp|
         negative_break = conditions.negative.any? do |method_key, value|
           tp.send(method_key).nature_value =~ Regexp.new(value)
         end
@@ -82,8 +80,8 @@ module SourceRoute
         next if positive_break
 
         ret_data = tp_result.build(tp)
-        tp_result.output
         tp_attrs_results.push(ret_data)
+        tp_result.output
       end
       track.enable
       self.tp = track

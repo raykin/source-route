@@ -21,7 +21,6 @@ module SourceRoute
 
     def test_catch_call_event
       SourceRoute.enable do
-        event :call
         method_id /nonsense/
         output_format :test
       end
@@ -83,8 +82,16 @@ module SourceRoute
       refute @wrapper.tp.enabled?
     end
 
+    def test_trace_two_events
+      SourceRoute.enable 'nonsense' do
+        events [:call, :return]
+      end
+      SampleApp.new.nonsense
+      assert_equal 2, @wrapper.tp_attrs_results.size
+    end
+
     def test_show_local_variables
-      @source_route = SourceRoute.enable 'nonsense_with_params' do
+      SourceRoute.enable 'nonsense_with_params' do
         output_include_local_variables
       end
 
@@ -98,8 +105,8 @@ module SourceRoute
     end
 
     def test_track_local_var_when_event_is_return
-      @source_route = SourceRoute.enable 'nonsense_with_params' do
-        event :return
+      SourceRoute.enable 'nonsense_with_params' do
+        events :return
         output_include_local_variables
       end
 
