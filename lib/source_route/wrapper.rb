@@ -26,7 +26,7 @@ module SourceRoute
     def events(v)
       @conditions.events = Array(v).map(&:to_sym) unless v.nil?
     end
-
+    alias :event :events
     def set_result_config(value)
       unless value.is_a? Hash
         conditions.result_config = value

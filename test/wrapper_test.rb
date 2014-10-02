@@ -21,6 +21,7 @@ module SourceRoute
 
     def test_catch_call_event
       SourceRoute.enable do
+        event :call
         method_id /nonsense/
         output_format :test
       end
