@@ -41,8 +41,8 @@ module SourceRoute
                                                  end
     end
 
-    def selected_attrs(data)
-      conditions.result_config[:selected_attrs] = [data].flatten
+    def selected_attrs(*attr)
+      conditions.result_config[:selected_attrs] = Array(attr)
     end
 
     def output_include_local_variables

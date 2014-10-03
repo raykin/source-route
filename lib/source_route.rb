@@ -21,7 +21,7 @@ module SourceRoute
   end
 
   def disable
-    wrapper.reset
+    wrapper.tp.disable
   end
 
   def enable(match = nil, &block)
