@@ -39,7 +39,7 @@ module SourceRoute
       assert @wrapper.tp_attrs_results.size > 0
     end
 
-    def test_match_class_name_by_block_define
+    def test_match_class_name
       @source_route = SourceRoute.enable do
         defined_class 'SampleApp'
       end
@@ -67,12 +67,19 @@ module SourceRoute
       assert_equal 0, @wrapper.tp_attrs_results.size
     end
 
-    def test_source_route_with_block
-      SourceRoute.trace method_id: 'nonsense', output_format: :test do
+    def test_source_route_with_block_only
+      paths = []
+      SourceRoute.enable 'nonsense' do
         SampleApp.new.nonsense
+        output_format do |tp|
+          paths.push tp.path
+        end
       end
-      assert_equal 1, @wrapper.tp_attrs_results.size
-      refute @wrapper.tp.enabled?
+      SampleApp.new.nonsense
+
+      assert_equal 0, @wrapper.tp_attrs_results.size
+      assert_equal 1, paths.size
+      assert_includes paths.first, 'sample_app'
     end
 
     def test_trace_without_first_hash_option

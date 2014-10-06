@@ -13,7 +13,7 @@ module SourceRoute
     # output_format can be console, html
     def reset
       @tp.disable if @tp
-      @conditions = OpenStruct.new(events: :call, negative: {}, positive: {},
+      @conditions = OpenStruct.new(events: [:call], negative: {}, positive: {},
                                    result_config: { output_format: 'none',
                                      selected_attrs: nil,
                                      include_local_var: false,
@@ -27,6 +27,7 @@ module SourceRoute
       @conditions.events = Array(v).map(&:to_sym) unless v.nil?
     end
     alias :event :events
+
     def set_result_config(value)
       unless value.is_a? Hash
         conditions.result_config = value
@@ -34,7 +35,7 @@ module SourceRoute
     end
 
     def output_format(data = nil, &block)
-      conditions.result_config[:output_format] = if data.nil?
+      conditions.result_config[:output_format] = if block_given?
                                                    block
                                                  else
                                                    data
@@ -79,9 +80,13 @@ module SourceRoute
         end
         next if positive_break
 
-        ret_data = tp_result.build(tp)
-        tp_attrs_results.push(ret_data)
-        tp_result.output
+        if conditions[:result_config][:output_format].is_a? Proc
+          tp_result.output(tp)
+        else
+          ret_data = tp_result.build(tp)
+          tp_attrs_results.push(ret_data)
+        end
+
       end
       track.enable
       self.tp = track

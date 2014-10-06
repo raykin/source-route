@@ -29,10 +29,10 @@ module SourceRoute
       @collect_data
     end
 
-    # must run build before it # not a good design
-    def output
+    def output(tp_ins)
 
-      format = @output_config[:output_format].to_sym
+      format = @output_config[:output_format]
+      format = format.to_sym if format.respond_to? :to_sym
 
       case format
       when :none
@@ -44,12 +44,11 @@ module SourceRoute
         # I have to know when the application is end
       when :test
         # do nothing at now
-      when :Proc
-        # customize not defined yet
-        # format.call(tp)
+      when Proc
+        format.call(tp_ins)
       else
         klass = "SourceRoute::Formats::#{format.to_s.capitalize}"
-        ::SourceRoute.const_get(klass).render(self, trace_point_instance)
+        ::SourceRoute.const_get(klass).render(self, tp_ins)
       end
     end
 
