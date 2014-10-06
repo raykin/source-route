@@ -101,6 +101,7 @@ module SourceRoute
     def test_show_local_variables
       SourceRoute.enable 'nonsense_with_params' do
         output_include_local_variables
+        output_format :console
       end
 
       SampleApp.new.nonsense_with_params(88)

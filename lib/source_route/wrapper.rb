@@ -80,13 +80,12 @@ module SourceRoute
         end
         next if positive_break
 
-        if conditions[:result_config][:output_format].is_a? Proc
-          tp_result.output(tp)
-        else
+        unless conditions[:result_config][:output_format].is_a? Proc
           ret_data = tp_result.build(tp)
           tp_attrs_results.push(ret_data)
         end
 
+        tp_result.output(tp)
       end
       track.enable
       self.tp = track

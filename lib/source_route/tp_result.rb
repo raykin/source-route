@@ -37,7 +37,7 @@ module SourceRoute
       case format
       when :none
         # do nothing
-      when :console
+      when :console # need @collect_data
         console_put
       when :html
         # I cant solve the problem: to generate html at the end,
