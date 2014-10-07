@@ -22,13 +22,13 @@ Or install it yourself as:
 
 ## Usage
 
-In irb or pry terminal
+#### In irb or pry terminal
 
     SourceRoute.trace output_format: :console, event: :c_call do
       'abc'.upcase
     end
 
-In rails console
+#### In rails console
 
     SourceRoute.trace defined_class: 'ActiveRecord', output_format: html do
       User.new
@@ -39,7 +39,7 @@ It will generate a html file, open it and you can get the trace of User.new
 The intereting part is when you run the above command again(in same console),
 you will get a different trace file.
 
-In your ruby application
+#### In your ruby application
 
     SourceRoute.enable :wanted_method_name
     .... # here is your code
@@ -49,7 +49,7 @@ In your ruby application
 
 Same as the previous example, you will get a html file showing the code trace.
 
-In a short application, you may try this
+#### In a short application, you may try this
 
     SourceRoute.enable do
       defined_class :wanted_class_name
