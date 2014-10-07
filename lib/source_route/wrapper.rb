@@ -58,11 +58,11 @@ module SourceRoute
 
     TRACE_POINT_METHODS.each do |m|
       define_method m do |v|
-        @conditions.positive[m] = v
+        @conditions.positive[m] = v.to_s
       end
 
       define_method "#{m}_not" do |v|
-        @conditions.negative[m] = v
+        @conditions.negative[m] = v.to_s
       end
     end
 

@@ -41,7 +41,7 @@ module SourceRoute
 
     def test_match_class_name
       @source_route = SourceRoute.enable do
-        defined_class 'SampleApp'
+        defined_class :SampleApp
       end
 
       SampleApp.new.nonsense
