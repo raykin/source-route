@@ -49,7 +49,7 @@ you will get a different trace file.
 
 Same as the previous example, you will get a html file showing the code trace.
 
-#### In a short application, you may try this
+#### In a small application, you may try this
 
     SourceRoute.enable do
       defined_class :wanted_class_name
