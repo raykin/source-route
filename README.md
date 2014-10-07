@@ -35,21 +35,4 @@ Or install it yourself as:
 
 ### TODO
 
-Following code is a good sample that track file running sequence, how to change it into a good code design and merge into the gem
-
-```ruby
-
-    files = []
-    tp = TracePoint.new(:line) do |tp|
-      if tp.path =~ /bole_api/
-        unless files.include? tp.path
-          puts "#{tp.path}".inspect
-          files.push(tp.path)
-        end
-      end
-    end
-    tp.enable
-
-```
-
-It's better to add html output format, 'cause it can be kept.
+Add debug option to provider more verbose messages of what has happened
