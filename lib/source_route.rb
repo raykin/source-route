@@ -36,6 +36,7 @@ module SourceRoute
 
   # Not implemented. used in irb or pry.
   def trace(opt, &block)
+    opt[:output_format] ||= :silence
     wrapper.reset
     opt.each do |k, v|
       wrapper.send(k, v)

@@ -2,9 +2,21 @@ module SourceRoute
 
   class TpResult
 
+    # see event description in TracePoint API Doc
     DEFAULT_ATTRS = {
       call: [:defined_class, :method_id],
-      return: [:defined_class, :method_id, :return_value]
+      return: [:defined_class, :method_id, :return_value],
+      c_call: [:defined_class, :method_id],
+      line: [:path, :lineno],
+      # following are not tested yet
+      class: [:defined_class],
+      end: [:defined_class],
+      c_return: [:defined_class, :method_id, :return_value],
+      raise: [:raised_exception],
+      b_call: [:binding, :defined_class, :method_id],
+      b_return: [:binding, :defined_class, :method_id],
+      thread_begin: [:defined_class, :method_id],
+      thread_end: [:defined_class, :method_id]
     }
 
     def initialize(wrapper)
@@ -42,7 +54,7 @@ module SourceRoute
       when :html
         # I cant solve the problem: to generate html at the end,
         # I have to know when the application is end
-      when :test
+      when :test, :silence
         # do nothing at now
       when Proc
         format.call(tp_ins)

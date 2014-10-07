@@ -82,6 +82,13 @@ module SourceRoute
       assert_includes paths.first, 'sample_app'
     end
 
+    def test_trace_with_c_call
+      SourceRoute.trace event: :c_call do
+        'abc'.upcase
+      end
+      assert_equal 2, @wrapper.tp_attrs_results.size
+    end
+
     def test_trace_without_first_hash_option
       SourceRoute.trace output_format: :test do
         SampleApp.new.nonsense
