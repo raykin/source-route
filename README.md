@@ -30,7 +30,7 @@ Or install it yourself as:
 
 #### In rails console
 
-    SourceRoute.trace defined_class: 'ActiveRecord', output_format: html do
+    SourceRoute.trace defined_class: :ActiveRecord, output_format: :html do
       User.new
     end
 
