@@ -68,10 +68,11 @@ module SourceRoute
 
 
     def trace
-      # dont wanna init it in tp block, cause tp block could run thousands of time in one cycle trace
+      # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
       tp_result = TpResult.new(self)
 
       track = TracePoint.new *condition.events do |tp|
+        # todo: it's better to change the break check to condition methods to make more flexible
         negative_break = condition.negative.any? do |method_key, value|
           tp.send(method_key).nature_value =~ Regexp.new(value)
         end
