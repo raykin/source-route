@@ -23,7 +23,7 @@ module SourceRoute
       end
 
       def event(*v)
-        # why need self? without self, the events will not really changed, why?
+        # why need self? without self, the events will not really changed, why?. seems a bug in ruby
         self.events = v.map(&:to_sym) unless v == []
       end
 
