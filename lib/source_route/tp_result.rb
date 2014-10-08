@@ -22,9 +22,9 @@ module SourceRoute
     def initialize(wrapper)
       @wrapper = wrapper
 
-      @output_config = @wrapper.conditions.result_config
+      @output_config = @wrapper.condition.result_config
 
-      @tp_events = @wrapper.conditions.events
+      @tp_events = @wrapper.condition.events
     end
 
     def output_attributes(event)
@@ -74,7 +74,7 @@ module SourceRoute
     end
 
     def collect_local_var_data
-      if @wrapper.conditions.result_config[:include_local_var]
+      if @wrapper.condition.result_config[:include_local_var]
         local_var_hash = {}
 
         @tp.binding.eval('local_variables').each do |v|
@@ -87,7 +87,7 @@ module SourceRoute
     end
 
     def collect_instance_var_data
-      if @wrapper.conditions.result_config[:include_instance_var]
+      if @wrapper.condition.result_config[:include_instance_var]
         instance_var_hash = {}
         @tp.self.instance_variables.each do |key|
           instance_var_hash[key] = @tp.self.instance_variable_get(key)

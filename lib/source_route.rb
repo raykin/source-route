@@ -27,9 +27,9 @@ module SourceRoute
   def enable(match = nil, &block)
     wrapper.reset
 
-    wrapper.method_id(match) if match # TODO in future future: should add as wrapper.method_id_or(match)
+    wrapper.condition.method_id(match) if match # TODO in future future: should add as wrapper.method_id_or(match)
 
-    wrapper.instance_eval(&block) if block_given?
+    wrapper.condition.instance_eval(&block) if block_given?
 
     wrapper.trace
   end
@@ -39,7 +39,7 @@ module SourceRoute
     opt[:output_format] ||= :silence
     wrapper.reset
     opt.each do |k, v|
-      wrapper.send(k, v)
+      wrapper.condition.send(k, v)
     end
     wrapper.trace
     yield

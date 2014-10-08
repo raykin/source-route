@@ -86,6 +86,7 @@ module SourceRoute
       SourceRoute.trace event: :c_call do
         'abc'.upcase
       end
+
       assert_equal 2, @wrapper.tp_attrs_results.size
     end
 
@@ -99,7 +100,7 @@ module SourceRoute
 
     def test_trace_two_events
       SourceRoute.enable 'nonsense' do
-        events [:call, :return]
+        event :call, :return
       end
       SampleApp.new.nonsense
       assert_equal 2, @wrapper.tp_attrs_results.size
@@ -122,7 +123,7 @@ module SourceRoute
 
     def test_track_local_var_when_event_is_return
       SourceRoute.enable 'nonsense_with_params' do
-        events :return
+        event :return
         output_include_local_variables
       end
 
