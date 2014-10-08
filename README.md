@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-#### In irb or pry terminal
+#### In irb or pry
 
     SourceRoute.trace output_format: :console, event: :c_call do
       'abc'.upcase
