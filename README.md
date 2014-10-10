@@ -80,3 +80,5 @@ see more usage in examples.
 Add debug option to provider more verbose messages of what has happened
 
 Support SourceRoute.enable :wanted_method_or_class, at now only SourceRoute.enable :wanted_method works
+
+When we record both call end return event, it's better to combine them togother into one, so we can get call order from call event and also get return value from return event
