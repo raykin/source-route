@@ -14,7 +14,7 @@ module SourceRoute
       c_return: [:defined_class, :method_id, :return_value],
       raise: [:raised_exception],
       b_call: [:binding, :defined_class, :method_id],
-      b_return: [:binding, :defined_class, :method_id],
+      b_return: [:binding, :defined_class, :method_id, :return_value],
       thread_begin: [:defined_class, :method_id],
       thread_end: [:defined_class, :method_id]
     }
