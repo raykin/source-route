@@ -18,7 +18,8 @@ html
       end
 
     .data-collect
-      #trace-data data-trace="#{local_trace_data.to_json}"
+      / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
+      #trace-data data-trace="#{JSON.dump(local_trace_data)}"
 
     .container(ng-controller="MainCtrl")
       .top-header
@@ -36,8 +37,13 @@ html
 
               .header(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
-                span #
-                span<>(ng-bind="trace.method_id")
+                span
+                  | .
+                span(ng-bind="trace.method_id")
+
+                span<>(ng-if="trace.return_value")
+                  | =>
+                span<>(ng-if="trace.return_value" ng-bind="trace.return_value")
 
               .details(ng-if="showMoreDetail")
                 .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green")
