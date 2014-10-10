@@ -11,7 +11,7 @@ module SourceRoute
         slim_template = Slim::Template.new(template_path)
 
         html_output_str = slim_template.render(results)
-        File.open("#{Time.now.strftime('%M%S-%H-%m-%d')}-source-route.html", 'w') do |f|
+        File.open("#{Time.now.strftime('%S%M-%H-%m')}-source-route.html", 'w') do |f|
           f << html_output_str
         end
       end
