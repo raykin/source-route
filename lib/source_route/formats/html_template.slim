@@ -10,15 +10,15 @@ html
     / workaround for following case:
     / pry(main)> ActiveRecord::Inheritance::ClassMethods.to_json => {} # Dont know why
     ruby:
-      trace_data = @tp_attrs_results.map do |tp_result|
+      local_trace_data = @tp_attrs_results.map do |tp_result|
         if tp_result.has_key?(:defined_class)
-          tp_result[:defined_class] = tp_result[:defined_class].nature_value
+          tp_result[:defined_class] = tp_result[:defined_class].to_s
         end
         tp_result
       end
 
     .data-collect
-      #trace-data data-trace="#{trace_data.to_json}"
+      #trace-data data-trace="#{local_trace_data.to_json}"
 
     .container(ng-controller="MainCtrl")
       .top-header
@@ -33,10 +33,12 @@ html
                 span(ng-bind="klass")
           .center-info.col-sm-6
             .well.well-lg(ng-repeat="trace in traces | filter:{defined_class: selectedKlass}")
-              div(ng-click="showMoreDetail = !showMoreDetail")
+
+              .header(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
                 span #
-                span(ng-bind="trace.method_id")
+                span<>(ng-bind="trace.method_id")
+
               .details(ng-if="showMoreDetail")
                 .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green")
                   span Local Var

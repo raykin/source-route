@@ -36,7 +36,7 @@ module SourceRoute
       end
 
       def selected_attrs(*attr)
-        result_config[:selected_attrs] = Array(attr)
+        result_config[:selected_attrs] = attr
       end
 
       def output_include_local_variables
@@ -74,11 +74,12 @@ module SourceRoute
       track = TracePoint.new *condition.events do |tp|
         # todo: it's better to change the break check to condition methods to make more flexible
         negative_break = condition.negative.any? do |method_key, value|
-          tp.send(method_key).nature_value =~ Regexp.new(value)
+          tp.send(method_key).to_s =~ Regexp.new(value)
         end
         next if negative_break
+
         positive_break = condition.positive.any? do |method_key, value|
-          tp.send(method_key).nature_value !~ Regexp.new(value)
+          tp.send(method_key).to_s !~ Regexp.new(value)
         end
         next if positive_break
 

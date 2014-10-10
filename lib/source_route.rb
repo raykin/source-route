@@ -7,7 +7,7 @@ require 'awesome_print'
 require "source_route/version"
 require "source_route/wrapper"
 require "source_route/tp_result"
-require "source_route/nature_value"
+# require "source_route/customize_to_json"
 
 module SourceRoute
   extend self
@@ -48,7 +48,8 @@ module SourceRoute
   end
 
   def build_html_output
-    SourceRoute::Formats::Html.render(wrapper)
+    SourceRoute.disable
+    SourceRoute::Formats::Html.slim_render(wrapper)
   end
 
   # Not implement yet
