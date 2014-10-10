@@ -56,6 +56,8 @@ module SourceRoute
         # I have to know when the application is end
       when :test, :silence
         # do nothing at now
+      when :stack_overflow
+        console_stack_overflow
       when Proc
         format.call(tp_ins)
       else
@@ -108,6 +110,9 @@ module SourceRoute
       ap ret
     end
 
+    def console_stack_overflow
+      ap "#{@collect_data[:defined_class].inspect}##{@collect_data[:method_id]}"
+    end
   end # END TpResult
 
 end
