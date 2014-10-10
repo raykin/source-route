@@ -20,11 +20,16 @@ module SourceRoute
     }
 
     def initialize(wrapper)
+      @logger = Logger.new(STDOUT)
       @wrapper = wrapper
 
       @output_config = @wrapper.condition.result_config
 
       @tp_events = @wrapper.condition.events
+      if @tp_events.length > 1 and @output_config[:selected_attrs]
+        @logger.warn 'selected_attrs was ignored, cause watched event was more than one '
+        @output_config[:selected_attrs] = nil
+      end
     end
 
     def output_attributes(event)
