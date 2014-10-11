@@ -35,8 +35,8 @@ module SourceRoute
                                         end
       end
 
-      def selected_attrs(*attr)
-        result_config[:selected_attrs] = attr
+      def show_additional_attrs(*attr)
+        result_config[:show_additional_attrs] = attr
       end
 
       def output_include_local_variables
@@ -58,7 +58,7 @@ module SourceRoute
       @tp.disable if @tp
       @condition = Condition.new([:call], {}, {},
                                  { output_format: 'none',
-                                   selected_attrs: nil,
+                                   show_additional_attrs: [],
                                    include_local_var: false,
                                    include_instance_var: false
                                  })

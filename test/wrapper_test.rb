@@ -30,6 +30,15 @@ module SourceRoute
       assert @wrapper.tp
     end
 
+    def test_show_addtional_attrs
+      SourceRoute.enable 'nonsense' do
+        show_additional_attrs :path
+      end
+      SampleApp.new.nonsense
+
+      assert_includes @wrapper.tp_attrs_results.first[:path], 'test'
+    end
+
     def test_catch_class_name_by_first_parameter
       skip
       # not supported yet

@@ -20,22 +20,17 @@ module SourceRoute
     }
 
     def initialize(wrapper)
-      @logger = Logger.new(STDOUT)
       @wrapper = wrapper
 
       @output_config = @wrapper.condition.result_config
 
       @tp_events = @wrapper.condition.events
-      if @tp_events.length > 1 and @output_config[:selected_attrs]
-        @logger.warn 'selected_attrs was ignored, cause watched event was more than one '
-        @output_config[:selected_attrs] = nil
-      end
     end
 
     def output_attributes(event)
-      attrs = @output_config[:selected_attrs] || DEFAULT_ATTRS[event]
+      attrs = DEFAULT_ATTRS[event] + @output_config[:show_additional_attrs]
       attrs.push(:event) if @tp_events.size > 1
-      attrs
+      attrs.uniq
     end
 
     def build(trace_point_instance)
