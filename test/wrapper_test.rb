@@ -32,7 +32,7 @@ module SourceRoute
 
     def test_show_addtional_attrs
       SourceRoute.enable 'nonsense' do
-        show_additional_attrs :path
+        result_config.show_additional_attrs = :path
       end
       SampleApp.new.nonsense
 
@@ -117,7 +117,7 @@ module SourceRoute
 
     def test_show_local_variables
       SourceRoute.enable 'nonsense_with_params' do
-        output_include_local_variables
+        result_config.include_local_var = true
         output_format :console
       end
 
@@ -133,7 +133,7 @@ module SourceRoute
     def test_track_local_var_when_event_is_return
       SourceRoute.enable 'nonsense_with_params' do
         event :return
-        output_include_local_variables
+        result_config.include_local_var = true
       end
 
       SampleApp.new.nonsense_with_params(88)
@@ -146,7 +146,7 @@ module SourceRoute
 
     def test_show_instance_vars
       @source_route = SourceRoute.enable 'nonsense' do
-        output_include_instance_variables
+        result_config.include_instance_var = true
       end
 
       SampleApp.new('ins sure').nonsense_with_instance_var
@@ -161,8 +161,8 @@ module SourceRoute
     def test_html_format_output_only
       @source_route = SourceRoute.enable do
         defined_class 'SampleApp'
-        output_include_instance_variables
-        output_include_local_variables
+        result_config.include_instance_var = true
+        result_config.include_local_var = true
       end
 
       SampleApp.new.init_cool_app

@@ -6,7 +6,6 @@ module SourceRoute
     TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
 
     attr_accessor :condition, :tp, :tp_attrs_results
-    attr_accessor :output_include_local_variables, :output_include_instance_variables
 
     Condition = Struct.new(:events, :negative, :positive, :result_config)
 
@@ -28,23 +27,7 @@ module SourceRoute
       end
 
       def output_format(data = nil, &block)
-        result_config[:output_format] = if block_given?
-                                          block
-                                        else
-                                          data
-                                        end
-      end
-
-      def show_additional_attrs(*attr)
-        result_config[:show_additional_attrs] = attr
-      end
-
-      def output_include_local_variables
-        result_config[:include_local_var] = true
-      end
-
-      def output_include_instance_variables
-        result_config[:include_instance_var] = true
+        result_config.format = block_given? ? block : data
       end
 
     end
@@ -53,19 +36,13 @@ module SourceRoute
       reset
     end
 
-    # output_format can be console, html
     def reset
       @tp.disable if @tp
       @condition = Condition.new([:call], {}, {},
-                                 { output_format: 'none',
-                                   show_additional_attrs: [],
-                                   include_local_var: false,
-                                   include_instance_var: false
-                                 })
+                                 TpResult::Config.new('silence', [], false, false))
       @tp_attrs_results = []
       self
     end
-
 
     def trace
       # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
@@ -83,7 +60,7 @@ module SourceRoute
         end
         next if positive_break
 
-        unless condition[:result_config][:output_format].is_a? Proc
+        unless condition.result_config.format.is_a? Proc
           ret_data = tp_result.build(tp)
           tp_attrs_results.push(ret_data)
         end

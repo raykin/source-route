@@ -2,6 +2,8 @@ module SourceRoute
 
   class TpResult
 
+    Config = Struct.new(:format, :show_additional_attrs, :include_local_var, :include_instance_var, :filename)
+
     # see event description in TracePoint API Doc
     DEFAULT_ATTRS = {
       call: [:defined_class, :method_id],
@@ -22,13 +24,13 @@ module SourceRoute
     def initialize(wrapper)
       @wrapper = wrapper
 
-      @output_config = @wrapper.condition.result_config
+      @config = @wrapper.condition.result_config
 
       @tp_events = @wrapper.condition.events
     end
 
     def output_attributes(event)
-      attrs = DEFAULT_ATTRS[event] + @output_config[:show_additional_attrs]
+      attrs = DEFAULT_ATTRS[event] + Array(@config.show_additional_attrs)
       attrs.push(:event) if @tp_events.size > 1
       attrs.uniq
     end
@@ -43,7 +45,7 @@ module SourceRoute
 
     def output(tp_ins)
 
-      format = @output_config[:output_format]
+      format = @config.format
       format = format.to_sym if format.respond_to? :to_sym
 
       case format
