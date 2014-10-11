@@ -10,8 +10,10 @@ module SourceRoute
         template_path = File.expand_path "../html_template.slim", __FILE__
         slim_template = Slim::Template.new(template_path)
 
+        filename = results.condition.result_config[:filename] ||
+          "#{Time.now.strftime('%H%M')}-source-route.html"
         html_output_str = slim_template.render(results)
-        File.open("#{Time.now.strftime('%S%M-%H-%m')}-source-route.html", 'w') do |f|
+        File.open(filename, 'w') do |f|
           f << html_output_str
         end
       end
