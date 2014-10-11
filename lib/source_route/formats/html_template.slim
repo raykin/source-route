@@ -19,13 +19,15 @@ html
 
     .data-collect
       / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
-      #trace-data data-trace="#{JSON.dump(local_trace_data)}"
+      #trace-data(data-trace="#{JSON.dump(local_trace_data)}" data-tp-events="#{JSON.dump(@condition.events)}")
 
     .container(ng-controller="MainCtrl")
       .top-header
-        h4
-          | Event:
-          =< @condition.events
+
+        .btn-group
+          button(ng-click="traceFilter.event = undefined") ALL
+          button.btn-link(ng-bind="event" ng-click="traceFilter.event = event" ng-repeat="event in tpEvents")
+
       .trace-flow
         .row
           .left-info.col-sm-4
@@ -33,7 +35,7 @@ html
               button.btn.btn-default(ng-click="selectKlass(klass)")
                 span(ng-bind="klass")
           .center-info.col-sm-6
-            .well.well-lg(ng-repeat="trace in traces | filter:{defined_class: selectedKlass}")
+            .well.well-lg(ng-repeat="trace in traces | filter:traceFilter")
 
               .header(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
@@ -68,7 +70,11 @@ html
     javascript:
       sourceRoute = angular.module('SourceRoute', [])
       sourceRoute.controller('MainCtrl', function($scope) {
+        $scope.traceFilter = {}
         $scope.traces = angular.element("#trace-data").data('trace')
+
+        $scope.tpEvents = angular.element("#trace-data").data('tp-events')
+
         // it is possible to prevent dirty check on definedClasses after it was generated
         $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
         var all_counter = 'ALL ' + $scope.traces.length
@@ -76,9 +82,9 @@ html
 
         $scope.selectKlass = function(klass) {
           if (klass == all_counter) {
-            $scope.selectedKlass = undefined
+            $scope.traceFilter.defined_class = undefined
           } else {
-            $scope.selectedKlass = klass
+            $scope.traceFilter.defined_class = klass
           }
         }
 
