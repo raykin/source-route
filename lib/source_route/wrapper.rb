@@ -7,7 +7,7 @@ module SourceRoute
 
     attr_accessor :condition, :tp, :tp_attrs_results
 
-    Condition = Struct.new(:events, :negative, :positive, :result_config)
+    Condition = Struct.new(:events, :negatives, :positive, :result_config)
 
     class Condition
 
@@ -17,7 +17,7 @@ module SourceRoute
         end
 
         define_method "#{m}_not" do |v|
-          negative[m] = v.to_s
+          negatives[m] = v.to_s
         end
       end
 
@@ -30,6 +30,26 @@ module SourceRoute
         result_config.format = block_given? ? block : data
       end
 
+      # true means tp block current tp
+      def filter_check(tp)
+        return true if negatives_check(tp)
+        return true if positive_check(tp)
+      end
+
+      def negatives_check(tp)
+        negatives.any? do |method_key, value|
+          tp.send(method_key).to_s =~ Regexp.new(value)
+        end
+      end
+
+      def positive_check(tp)
+        positive.any? do |method_key, value|
+          tp.send(method_key).to_s !~ Regexp.new(value)
+        end
+      end
+
+      def possible_check
+      end
     end
 
     def initialize
@@ -49,16 +69,8 @@ module SourceRoute
       tp_result = TpResult.new(self)
 
       track = TracePoint.new *condition.events do |tp|
-        # todo: it's better to change the break check to condition methods to make more flexible
-        negative_break = condition.negative.any? do |method_key, value|
-          tp.send(method_key).to_s =~ Regexp.new(value)
-        end
-        next if negative_break
 
-        positive_break = condition.positive.any? do |method_key, value|
-          tp.send(method_key).to_s !~ Regexp.new(value)
-        end
-        next if positive_break
+        next if condition.filter_check(tp)
 
         unless condition.result_config.format.is_a? Proc
           ret_data = tp_result.build(tp)
