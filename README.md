@@ -77,8 +77,10 @@ see more usage in examples.
 
 ### TODO
 
-Add debug option to provider more verbose messages of what has happened
+Support SourceRoute.enable :wanted_method_or_class, at now only SourceRoute.enable :wanted_method works. Or options is import cause we may wanna check one class and one method, or two class in one trace.
 
-Support SourceRoute.enable :wanted_method_or_class, at now only SourceRoute.enable :wanted_method works
+Reorganize the call and return in html template. maybe make some additional work to insert return data of call when return event is open.
+
+Add debug option to provider more verbose messages of what has happened
 
 When we record both call end return event, it's better to combine them togother into one, so we can get call order from call event and also get return value from return event
