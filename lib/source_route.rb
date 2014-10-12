@@ -7,7 +7,7 @@ require 'awesome_print'
 require "source_route/version"
 require "source_route/wrapper"
 require "source_route/tp_result"
-# require "source_route/customize_to_json"
+require "source_route/tp_filter"
 
 module SourceRoute
   extend self
@@ -27,7 +27,10 @@ module SourceRoute
   def enable(match = nil, &block)
     wrapper.reset
 
-    wrapper.condition.method_id(match) if match # TODO in future future: should add as wrapper.method_id_or(match)
+    if match
+      wrapper.condition.method_id(match)
+      wrapper.condition.defined_class(match)
+    end
 
     wrapper.condition.instance_eval(&block) if block_given?
 

@@ -2,7 +2,8 @@ module SourceRoute
 
   class TpResult
 
-    Config = Struct.new(:format, :show_additional_attrs, :include_local_var, :include_instance_var, :filename)
+    Config = Struct.new(:format, :show_additional_attrs,
+                        :include_local_var, :include_instance_var, :filename)
 
     # see event description in TracePoint API Doc
     DEFAULT_ATTRS = {

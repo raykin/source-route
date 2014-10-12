@@ -12,17 +12,17 @@ module SourceRoute
     class Condition
 
       TRACE_POINT_METHODS.each do |m|
-        define_method m do |v|
-          positive[m] = v.to_s
+        define_method m do |*v|
+          positive[m] = v.map(&:to_s).join('|')
         end
 
         define_method "#{m}_not" do |v|
-          negatives[m] = v.to_s
+          negatives[m] = v.map(&:to_s).join('|')
         end
       end
 
       def event(*v)
-        # why need self? without self, the events will not really changed, why?. seems a bug in ruby
+        # why need self? without self, the events will not really changed, why?. seems a bug in Struct
         self.events = v.map(&:to_sym) unless v == []
       end
 
@@ -30,26 +30,6 @@ module SourceRoute
         result_config.format = block_given? ? block : data
       end
 
-      # true means tp block current tp
-      def filter_check(tp)
-        return true if negatives_check(tp)
-        return true if positive_check(tp)
-      end
-
-      def negatives_check(tp)
-        negatives.any? do |method_key, value|
-          tp.send(method_key).to_s =~ Regexp.new(value)
-        end
-      end
-
-      def positive_check(tp)
-        positive.any? do |method_key, value|
-          tp.send(method_key).to_s !~ Regexp.new(value)
-        end
-      end
-
-      def possible_check
-      end
     end
 
     def initialize
@@ -67,10 +47,11 @@ module SourceRoute
     def trace
       # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
       tp_result = TpResult.new(self)
+      tp_filter = TpFilter.new(condition)
 
       track = TracePoint.new *condition.events do |tp|
 
-        next if condition.filter_check(tp)
+        next if tp_filter.block_it?(tp)
 
         unless condition.result_config.format.is_a? Proc
           ret_data = tp_result.build(tp)
