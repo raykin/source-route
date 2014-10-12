@@ -5,8 +5,7 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-SourceRoute.enable do
-  defined_class 'WantedClass'
+SourceRoute.enable 'WantedClass' do
   # output_format :console # optional
 end
 
