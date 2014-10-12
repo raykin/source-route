@@ -77,7 +77,7 @@ see more usage in examples.
 
 ### TODO
 
-Support SourceRoute.enable :wanted_method_or_class, at now only SourceRoute.enable :wanted_method works. Or options is import cause we may wanna check one class and one method, or two class in one trace.
+No need filter event on html when event is single. see html output file in test.
 
 Reorganize the call and return in html template. maybe make some additional work to insert return data of call when return event is open.
 
