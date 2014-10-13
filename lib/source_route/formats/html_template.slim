@@ -22,21 +22,25 @@ html
       #trace-data(data-trace="#{JSON.dump(local_trace_data)}" data-tp-events="#{JSON.dump(@condition.events)}")
 
     .container(ng-controller="MainCtrl")
-      .top-header
+      .top-header(style="margin-bottom: 2em")
 
-        h4(ng-if="tpEvents.length == 1")
-          | Event:
-          span<>(ng-bind="tpEvents[0]")
+        div(ng-if="tpEvents.length == 1")
+          button.btn.btn-default(ng-click="resetTraceFilter()")
+            span ALL Event :
+            span<(ng-bind="tpEvents[0]")
 
         .btn-group(ng-if="tpEvents.length > 1")
-          button(ng-click="traceFilter.event = undefined") ALL
+          button(ng-click="traceFilter = {}") ALL
           button.btn-link(ng-bind="event" ng-click="traceFilter.event = event" ng-repeat="event in tpEvents")
+        .pull-right
+          span Current Trace Count
+          span<(ng-bind="currentCounter()")
 
       .trace-flow
         .row
           .left-info.col-sm-4
             .well.well-sm(ng-repeat="klass in definedClasses")
-              button.btn.btn-default(ng-click="selectKlass(klass)")
+              button.btn.btn-default(ng-click="traceFilter.defined_class = klass")
                 span(ng-bind="klass")
           .center-info.col-sm-6
             .well.well-lg(ng-repeat="trace in traces | filter:traceFilter")
@@ -73,23 +77,18 @@ html
 
     javascript:
       sourceRoute = angular.module('SourceRoute', [])
-      sourceRoute.controller('MainCtrl', function($scope) {
+      sourceRoute.controller('MainCtrl', function($scope, $filter) {
         $scope.traceFilter = {}
         $scope.traces = angular.element("#trace-data").data('trace')
-
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
 
-        // it is possible to prevent dirty check on definedClasses after it was generated
         $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
-        var all_counter = 'ALL ' + $scope.traces.length
-        $scope.definedClasses.unshift(all_counter)
 
-        $scope.selectKlass = function(klass) {
-          if (klass == all_counter) {
-            $scope.traceFilter.defined_class = undefined
-          } else {
-            $scope.traceFilter.defined_class = klass
-          }
+        $scope.resetTraceFilter = function() {
+          $scope.traceFilter = {}
+        }
+        $scope.currentCounter = function() {
+          return $filter('filter')($scope.traces, $scope.traceFilter).length
         }
 
       })
