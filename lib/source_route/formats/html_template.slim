@@ -24,7 +24,11 @@ html
     .container(ng-controller="MainCtrl")
       .top-header
 
-        .btn-group
+        h4(ng-if="tpEvents.length == 1")
+          | Event:
+          span<>(ng-bind="tpEvents[0]")
+
+        .btn-group(ng-if="tpEvents.length > 1")
           button(ng-click="traceFilter.event = undefined") ALL
           button.btn-link(ng-bind="event" ng-click="traceFilter.event = event" ng-repeat="event in tpEvents")
 

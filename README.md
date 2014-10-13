@@ -77,8 +77,6 @@ see more usage in examples.
 
 ### TODO
 
-No need filter event on html when event is single. see html output file in test.
-
 Reorganize the call and return in html template. maybe make some additional work to insert return data of call when return event is open.
 
 Add debug option to provider more verbose messages of what has happened
