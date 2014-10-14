@@ -171,4 +171,22 @@ class SourceRouteTest < Minitest::Test
     end
   end
 
+  def test_html_format_output_with_two_events_and_filename
+    @source_route = SourceRoute.enable do
+      defined_class 'SampleApp'
+      event :call, :return
+      result_config.include_instance_var = true
+      result_config.include_local_var = true
+      result_config.filename = 'call_and_return_in_sample_app.html'
+    end
+
+    SampleApp.new.init_cool_app
+
+    if ENV['ignore_html_generation'] == 'true'
+      # do nothing. it was set in Rakefile, so rake test will not generate html file
+    else
+      SourceRoute.build_html_output
+    end
+  end
+
 end
