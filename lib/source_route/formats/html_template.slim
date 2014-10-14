@@ -22,7 +22,11 @@ html
       #trace-data(data-trace="#{JSON.dump(local_trace_data)}" data-tp-events="#{JSON.dump(@condition.events)}")
 
     .container(ng-controller="MainCtrl")
-      .top-header(style="margin-bottom: 2em")
+      .top-header(style="margin-bottom: 2em; margin-top: 2em")
+
+        .pull-right
+          span Current Trace Count
+          span.badge<(ng-bind="currentCounter()")
 
         div(ng-if="tpEvents.length == 1")
           button.btn.btn-default(ng-click="resetTraceFilter()")
@@ -30,11 +34,8 @@ html
             span<(ng-bind="tpEvents[0]")
 
         .btn-group(ng-if="tpEvents.length > 1")
-          button(ng-click="traceFilter = {}") ALL
-          button.btn-link(ng-bind="event" ng-click="traceFilter.event = event" ng-repeat="event in tpEvents")
-        .pull-right
-          span Current Trace Count
-          span<(ng-bind="currentCounter()")
+          button.btn.btn-default(ng-click="resetTraceFilter()") ALL
+          button.btn.btn-primary(ng-bind="event" ng-click="traceFilter.event = event" ng-repeat="event in tpEvents")
 
       .trace-flow
         .row
