@@ -7,11 +7,9 @@ html
     script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
 
   body(ng-app="SourceRoute")
-    / workaround for following case:
-    / pry(main)> ActiveRecord::Inheritance::ClassMethods.to_json => {} # Dont know why
     ruby:
       local_trace_data = @tp_attrs_results.map do |tp_result|
-        if tp_result.has_key?(:defined_class)
+        if tp_result.key?(:defined_class)
           tp_result[:defined_class] = tp_result[:defined_class].to_s
         end
         tp_result
@@ -44,7 +42,7 @@ html
               button.btn.btn-default(ng-click="traceFilter.defined_class = klass")
                 span(ng-bind="klass")
           .center-info.col-sm-6
-            .well.well-lg(ng-repeat="trace in traces | filter:traceFilter")
+            .well.well-lg(ng-repeat="trace in traces | filter:traceFilter:true")
 
               .header(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
@@ -89,7 +87,7 @@ html
           $scope.traceFilter = {}
         }
         $scope.currentCounter = function() {
-          return $filter('filter')($scope.traces, $scope.traceFilter).length
+          return $filter('filter')($scope.traces, $scope.traceFilter, true).length
         }
 
       })
