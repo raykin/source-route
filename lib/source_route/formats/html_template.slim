@@ -38,8 +38,8 @@ html
       .trace-flow
         .row
           .left-info.col-sm-4
-            .well.well-sm(ng-repeat="klass in definedClasses")
-              button.btn.btn-default(ng-click="traceFilter.defined_class = klass")
+            .btn-group-vertical
+              button.btn.btn-default(ng-repeat="klass in definedClasses" ng-click="traceFilter.defined_class = klass")
                 span(ng-bind="klass")
           .center-info.col-sm-6
             .well.well-lg(ng-repeat="trace in traces | filter:traceFilter:true")
