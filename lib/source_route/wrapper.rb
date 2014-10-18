@@ -7,7 +7,11 @@ module SourceRoute
 
     attr_accessor :condition, :tp, :tp_attrs_results
 
-    Condition = Struct.new(:events, :negatives, :positive, :result_config)
+    Condition = Struct.new(:events, :negatives, :positive, :result_config) do
+      def initialize(e=[:call], n={}, p={}, r=TpResult::Config.new)
+        super(e, n, p, r)
+      end
+    end
 
     class Condition
 
@@ -38,8 +42,7 @@ module SourceRoute
 
     def reset
       @tp.disable if @tp
-      @condition = Condition.new([:call], {}, {},
-                                 TpResult::Config.new('silence', [], false, false))
+      @condition = Condition.new
       @tp_attrs_results = []
       self
     end
