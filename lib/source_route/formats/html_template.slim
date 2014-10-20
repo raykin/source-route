@@ -39,10 +39,11 @@ html
         .row
           .left-info.col-sm-4
             .btn-group-vertical
-              button.btn.btn-default(ng-repeat="klass in definedClasses" ng-click="traceFilter.defined_class = klass")
+              button.btn.btn-default(ng-repeat="klass in definedClasses"
+                ng-click="traceFilter.defined_class = klass" style="height: 60px")
                 span(ng-bind="klass")
-          .center-info.col-sm-6
-            .well.well-lg(ng-repeat="trace in traces | filter:traceFilter:true")
+          .traces.center-info.col-sm-6(ng-class="{{traceFilter.event}}")
+            .trace.well.well-lg(ng-repeat="trace in traces | filter:traceFilter:true")
 
               .header(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
@@ -52,6 +53,7 @@ html
 
                 span<>(ng-if="trace.return_value")
                   | =>
+                br
                 span<>(ng-if="trace.return_value" ng-bind="trace.return_value")
 
               .details(ng-if="showMoreDetail")
