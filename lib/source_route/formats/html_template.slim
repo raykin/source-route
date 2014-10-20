@@ -11,7 +11,7 @@ html
       local_trace_data = @tp_attrs_results.map do |tp_result|
         if tp_result.key?(:defined_class)
           tp_result[:defined_class] = tp_result[:defined_class].inspect
-          tp_result[:return_value] = tp_result[:return_value].inspect
+          tp_result[:return_value] = tp_result[:return_value].inspect if tp_result.key?(:return_value)
         end
         tp_result
       end
