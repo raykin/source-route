@@ -162,7 +162,7 @@ class SourceRouteTest < Minitest::Test
       result_config.import_return_to_call = true
     end
     SampleApp.new.init_cool_app
-    SourceRoute.build_html_output
+    @wrapper.import_return_value_to_call_results
     assert @wrapper.call_tp_results[0].key?(:return_value), 'call results should contain return_value'
   end
 
