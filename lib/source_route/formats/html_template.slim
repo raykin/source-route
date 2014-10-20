@@ -10,7 +10,8 @@ html
     ruby:
       local_trace_data = @tp_attrs_results.map do |tp_result|
         if tp_result.key?(:defined_class)
-          tp_result[:defined_class] = tp_result[:defined_class].to_s
+          tp_result[:defined_class] = tp_result[:defined_class].inspect
+          tp_result[:return_value] = tp_result[:return_value].inspect
         end
         tp_result
       end

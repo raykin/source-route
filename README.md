@@ -78,5 +78,3 @@ see more usage in examples.
 ### TODO
 
 Add debug option to provider more verbose messages of what has happened
-
-When we record both call end return event, it's better to combine them togother into one, so we can get call order from call event and also get return value from return event
