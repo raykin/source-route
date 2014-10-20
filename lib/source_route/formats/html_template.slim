@@ -51,11 +51,12 @@ html
                 span
                   | .
                 span(ng-bind="trace.method_id")
+                / workaround for return_value is 'false' and return_value always to be string when existed
 
-                span<>(ng-if="trace.return_value")
-                  | =>
-                br
-                span<>(ng-if="trace.return_value" ng-bind="trace.return_value")
+                div(ng-if="!angular.isUndefined(trace.return_value)")
+                  span
+                    | =>
+                  span<(ng-bind="trace.return_value")
 
               .details(ng-if="showMoreDetail")
                 .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green")
@@ -64,6 +65,7 @@ html
                     span<>(ng-bind="key")
                     span<>
                       | =>
+                    / to do: could inspect fix it?
                     span<>(ng-bind="value || 'null'")
                 .ins-vars.well.well-sm(ng-if="trace.instance_var" style="color: blue")
                   span Instance Var
