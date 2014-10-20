@@ -154,23 +154,19 @@ class SourceRouteTest < Minitest::Test
     assert_equal 'ins sure', ret_value[:instance_var][:@sample]
   end
 
-  # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true
-  def test_html_format_output_only
-    @source_route = SourceRoute.enable do
-      defined_class 'SampleApp'
+  def test_import_return_to_call
+    @source_route = SourceRoute.enable 'SampleApp' do
+      event :call, :return
       result_config.include_instance_var = true
       result_config.include_local_var = true
+      result_config.import_return_to_call = true
     end
-
     SampleApp.new.init_cool_app
-
-    if ENV['ignore_html_generation'] == 'true'
-      # do nothing. it was set in Rakefile, so rake test will not generate html file
-    else
-      SourceRoute.build_html_output
-    end
+    SourceRoute.build_html_output
+    assert @wrapper.call_tp_results[0].key?(:return_value), 'call results should contain return_value'
   end
 
+  # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true
   def test_html_format_output_with_two_events_and_filename
     @source_route = SourceRoute.enable do
       defined_class 'SampleApp'
@@ -178,14 +174,17 @@ class SourceRouteTest < Minitest::Test
       result_config.include_instance_var = true
       result_config.include_local_var = true
       result_config.filename = 'call_and_return_in_sample_app.html'
+      result_config.import_return_to_call = true
     end
 
     SampleApp.new.init_cool_app
 
     if ENV['ignore_html_generation'] == 'true'
-      # do nothing. it was set in Rakefile, so rake test will not generate html file
+      # do nothing. cause it was set to false in Rakefile.
+      # So Run rake test will not generate html file, run ruby -Itest test/source_route.rb will generate output file
     else
       SourceRoute.build_html_output
+      puts @wrapper.tp_attrs_results.inspect
     end
   end
 

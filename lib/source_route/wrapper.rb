@@ -34,6 +34,9 @@ module SourceRoute
         result_config.format = block_given? ? block : data
       end
 
+      def has_call_and_return_event
+        events.include? :return and events.include? :call
+      end
     end
 
     def initialize
@@ -68,6 +71,21 @@ module SourceRoute
       track
     end
 
+    def import_return_value_to_call_results
+      call_tp_results.each do |ctp|
+        ctp[:return_value] = return_tp_results.detect do |rtp|
+          rtp[:defined_class] == ctp[:defined_class] and rtp[:method_id] == ctp[:method_id]
+        end[:return_value]
+      end
+    end
+
+    def call_tp_results
+      tp_attrs_results.select { |tpr| tpr[:event] == :call }
+    end
+
+    def return_tp_results
+      tp_attrs_results.select { |tpr| tpr[:event] == :return }
+    end
   end # Wrapper
 
 end

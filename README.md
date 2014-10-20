@@ -77,8 +77,6 @@ see more usage in examples.
 
 ### TODO
 
-Reorganize the call and return in html template. maybe make some additional work to insert return data of call when return event is open.
-
 Add debug option to provider more verbose messages of what has happened
 
 When we record both call end return event, it's better to combine them togother into one, so we can get call order from call event and also get return value from return event

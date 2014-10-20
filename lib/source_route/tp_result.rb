@@ -3,9 +3,9 @@ module SourceRoute
   class TpResult
 
     Config = Struct.new(:format, :show_additional_attrs,
-                        :include_local_var, :include_instance_var, :filename) do
-      def initialize(f="silence", s=[], ilr=false, iiv=false, filename=nil)
-        super(f, s, ilr, iiv, filename)
+                        :include_local_var, :include_instance_var, :filename, :import_return_to_call) do
+      def initialize(f="silence", s=[], ilr=false, iiv=false)
+        super(f, s, ilr, iiv)
       end
     end
 
@@ -120,6 +120,7 @@ module SourceRoute
     def console_stack_overflow
       ap "#{@collect_data[:defined_class].inspect}##{@collect_data[:method_id]}"
     end
+
   end # END TpResult
 
 end
