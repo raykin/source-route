@@ -6,7 +6,7 @@ html
     script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
     script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
 
-  body(ng-app="SourceRoute")
+  body(ng-app="SourceRoute" ng-controller="MainCtrl")
     ruby:
       local_trace_data = @tp_attrs_results.map do |tp_result|
         if tp_result.key?(:defined_class)
@@ -20,22 +20,24 @@ html
       / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
       #trace-data(data-trace="#{JSON.dump(local_trace_data)}" data-tp-events="#{JSON.dump(@condition.events)}")
 
-    .container(ng-controller="MainCtrl")
-      .top-header(style="margin-bottom: 2em; margin-top: 2em")
 
-        .pull-right
-          span Current Trace Count
-          span.badge<(ng-bind="currentCounter()")
+    nav.navbar.navbar-default.navbar-static-top
+      .container
+        .container-fluid
+          .navbar-header
+            a.navbar-brand(href="#" ng-click="resetTraceFilter()") ALL
+          ul.nav.navbar-nav
+            li(ng-repeat="event in tpEvents" ng-class="{active: event == traceFilter.event}")
+              a(href="#" ng-click="traceFilter.event = event" ng-bind="event")
+          ul.nav.navbar-nav.navbar-right
+            li
+              a(disabled)
+                span Current Trace Count
+                span.badge<(ng-bind="currentCounter()")
 
-        div(ng-if="tpEvents.length == 1")
-          button.btn.btn-default(ng-click="resetTraceFilter()")
-            span ALL Event :
-            span<(ng-bind="tpEvents[0]")
+    .clearfix
 
-        .btn-group(ng-if="tpEvents.length > 1")
-          button.btn.btn-default(ng-click="resetTraceFilter()") ALL
-          button.btn.btn-primary(ng-bind="event" ng-click="traceFilter.event = event" ng-repeat="event in tpEvents")
-
+    .container
       .trace-flow
         .row
           .left-info.col-sm-4
@@ -52,7 +54,6 @@ html
                   | .
                 span(ng-bind="trace.method_id")
                 / workaround for return_value is 'false' and return_value always to be string when existed
-
                 div(ng-if="!angular.isUndefined(trace.return_value)")
                   span
                     | =>
@@ -82,9 +83,15 @@ html
     javascript:
       sourceRoute = angular.module('SourceRoute', [])
       sourceRoute.controller('MainCtrl', function($scope, $filter) {
-        $scope.traceFilter = {}
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
+
+        $scope.traceFilter = {event: $scope.tpEvents[0]}
+        if ($scope.tpEvents.length == 1 && angular.isUndefined($scope.traces[0].event)) {
+          _.each($scope.traces, function(trace) {
+            trace.event = $scope.tpEvents[0]
+          })
+        }
 
         $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
 

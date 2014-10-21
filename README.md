@@ -77,6 +77,4 @@ see more usage in examples.
 
 ### TODO
 
-Add Bootstrap Header. So the event can be highlight easily.
-
 Add debug option to provider more verbose messages of what has happened
