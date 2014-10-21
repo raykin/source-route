@@ -184,7 +184,6 @@ class SourceRouteTest < Minitest::Test
       # So Run rake test will not generate html file, run ruby -Itest test/source_route.rb will generate output file
     else
       SourceRoute.build_html_output
-      puts @wrapper.tp_attrs_results.inspect
     end
   end
 
