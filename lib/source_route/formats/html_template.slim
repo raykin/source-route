@@ -25,10 +25,10 @@ html
       .container
         .container-fluid
           .navbar-header
-            a.navbar-brand(href="#" ng-click="resetTraceFilter()") ALL
+            a.navbar-brand(href="#" ng-click="::resetTraceFilter()") ALL
           ul.nav.navbar-nav
             li(ng-repeat="event in tpEvents" ng-class="{active: event == traceFilter.event}")
-              a(href="#" ng-click="traceFilter.event = event" ng-bind="event")
+              a(href="#" ng-click="traceFilter.event = event" ng-bind="::event")
           ul.nav.navbar-nav.navbar-right
             li
               a(disabled)
@@ -42,7 +42,7 @@ html
         .row
           .left-info.col-sm-4
             .btn-group-vertical
-              button.btn.btn-default(ng-repeat="klass in definedClasses"
+              button.btn.btn-default(ng-repeat="klass in ::definedClasses"
                 ng-click="traceFilter.defined_class = klass" style="height: 60px")
                 span(ng-bind="klass")
           .traces.center-info.col-sm-6(ng-class="{{traceFilter.event}}")
@@ -78,7 +78,7 @@ html
 
           .right-info.col-sm-2
 
-    script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"
+    script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"
 
     javascript:
       sourceRoute = angular.module('SourceRoute', [])
