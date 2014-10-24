@@ -155,7 +155,7 @@ class SourceRouteTest < Minitest::Test
   end
 
   def test_import_return_to_call
-    @source_route = SourceRoute.enable 'SampleApp' do
+    SourceRoute.enable 'SampleApp' do
       event :call, :return
       result_config.include_instance_var = true
       result_config.include_local_var = true
@@ -164,6 +164,21 @@ class SourceRouteTest < Minitest::Test
     SampleApp.new.init_cool_app
     @wrapper.import_return_value_to_call_results
     assert @wrapper.call_tp_results[0].key?(:return_value), 'call results should contain return_value'
+  end
+
+  def test_order_call_sequence
+    SourceRoute.enable 'SampleApp' do
+      event :call, :return
+    end
+    SampleApp.new.nonsense_with_instance_var
+    @wrapper.order_call_results
+    @wrapper.order_call_results
+
+    nonsense_call_tp = @wrapper.call_tp_results.find { |tp| tp[:method_id] == :nonsense }
+    nonsense_with_instance_var_call_tp = @wrapper.call_tp_results.find { |tp| tp[:method_id] == :nonsense_with_instance_var }
+
+    assert_equal [-1, nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_id]
+    assert_equal 2, nonsense_call_tp[:parent_length]
   end
 
   # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true

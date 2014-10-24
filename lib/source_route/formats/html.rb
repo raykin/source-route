@@ -14,6 +14,7 @@ module SourceRoute
 
         if result_config.import_return_to_call and wrapper.condition.has_call_and_return_event
           wrapper.import_return_value_to_call_results
+          wrapper.order_call_results
         end
         html_output_str = slim_template.render(wrapper)
         File.open(filename, 'w') do |f|

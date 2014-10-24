@@ -86,6 +86,33 @@ module SourceRoute
     def return_tp_results
       tp_attrs_results.select { |tpr| tpr[:event] == :return }
     end
+
+    # terrible to maintain
+    # how refactor it?
+    def order_call_results
+      tp_attrs_results.each_with_index do |tpr, index|
+        tpr[:order_id] = index
+        tpr[:parent_id] = [-1]
+      end
+
+      call_tp_results.each do |tpr|
+        return_tpr = return_tp_results.find { |rtpr| rtpr[:defined_class] == tpr[:defined_class] and rtpr[:method_id] == tpr[:method_id]}
+
+        start_index = tpr[:order_id]
+        end_index = return_tpr[:order_id]
+        unless end_index == start_index + 1
+          tp_attrs_results[(start_index+1 ... end_index)].
+            select { |tpr| tpr[:event] == :call }.each do |tpr|
+            tpr[:parent_id].push start_index
+          end
+        end
+
+      end # end do
+      tp_attrs_results.each do |tpr|
+        tpr[:parent_length] = tpr[:parent_id].length
+      end
+
+    end
   end # Wrapper
 
 end

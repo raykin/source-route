@@ -3,7 +3,8 @@ module SourceRoute
   class TpResult
 
     Config = Struct.new(:format, :show_additional_attrs,
-                        :include_local_var, :include_instance_var, :filename, :import_return_to_call) do
+                        :include_local_var, :include_instance_var,
+                        :filename, :import_return_to_call) do
       def initialize(f="silence", s=[], ilr=false, iiv=false)
         super(f, s, ilr, iiv)
       end

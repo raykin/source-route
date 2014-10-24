@@ -6,7 +6,12 @@ html
     script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
     script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
 
+    css:
+      .call-level-1 {}
+      .call-level-2 { margin-left: 40px }
+      .call-level-3 { margin-left: 80px }
   body(ng-app="SourceRoute" ng-controller="MainCtrl")
+
     ruby:
       local_trace_data = @tp_attrs_results.map do |tp_result|
         if tp_result.key?(:defined_class)
@@ -45,14 +50,14 @@ html
               button.btn.btn-default(ng-repeat="klass in ::definedClasses"
                 ng-click="traceFilter.defined_class = klass" style="height: 60px")
                 span(ng-bind="klass")
-          .traces.center-info.col-sm-6(ng-class="{{traceFilter.event}}")
-            .trace.well.well-lg(ng-repeat="trace in traces | filter:traceFilter:true")
-
+          .traces.center-info.col-sm-8(ng-class="{{traceFilter.event}}")
+            .trace.well.well-lg.call-level.call-level(ng-repeat="trace in traces | filter:traceFilter:true"
+              ng-class="callLevelClass(trace)")
               .header(ng-click="showMoreDetail = !showMoreDetail")
                 span(ng-bind="trace.defined_class")
                 span
                   | .
-                span(ng-bind="trace.method_id")
+                mark.method-value(ng-bind="trace.method_id")
                 / workaround for return_value is 'false' and return_value always to be string when existed
                 div(ng-if="isIncludeReturnValue")
                   span
@@ -66,7 +71,7 @@ html
                     span<>(ng-bind="key")
                     span<>
                       | =>
-                    / to do: could inspect fix it?
+                    / ? could inspect repaire it ?
                     span<>(ng-bind="value || 'null'")
                 .ins-vars.well.well-sm(ng-if="trace.instance_var" style="color: blue")
                   span Instance Var
@@ -101,6 +106,14 @@ html
         }
 
         $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
+
+        $scope.callLevelClass = function(trace) {
+          if (trace.parent_length > 3) {
+            return 'call-level-3'
+          } else {
+            return 'call-level-' + trace.parent_length
+          }
+        }
 
         $scope.resetTraceFilter = function() {
           $scope.traceFilter = {}
