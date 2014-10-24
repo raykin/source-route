@@ -75,6 +75,11 @@ html
                     span<>
                       | =>
                     span<>(ng-bind="value || 'null'")
+                .path-value.well.well-sm(ng-if="trace.path")
+                  span Path
+                  div
+                    span<>(ng-bind="trace.path")
+                    span<>(ng-bind="trace.lineno")
 
           .right-info.col-sm-2
 
