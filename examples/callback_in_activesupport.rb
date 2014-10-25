@@ -1,6 +1,5 @@
 require 'active_support/callbacks'
 
-$:.unshift("~/studio/source_route/lib")
 require 'source_route'
 
 SourceRoute.enable do
