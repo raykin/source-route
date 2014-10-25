@@ -35,14 +35,14 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense
 
-    assert_includes @wrapper.tp_attrs_results.first[:path], 'test'
+    assert_includes @wrapper.tp_result_chain.first[:path], 'test'
   end
 
   def test_match_class_name_by_first_parameter
     @source_route = SourceRoute.enable 'SampleApp'
     SampleApp.new.nonsense
 
-    assert @wrapper.tp_attrs_results.size > 0
+    assert @wrapper.tp_result_chain.size > 0
   end
 
   def test_match_class_name
@@ -51,26 +51,26 @@ class SourceRouteTest < Minitest::Test
     end
 
     SampleApp.new.nonsense
-    assert @wrapper.tp_attrs_results.size > 0
+    assert @wrapper.tp_result_chain.size > 0
   end
 
   def test_source_route_with_one_parameter
     @source_route = SourceRoute.enable 'nonsense'
     SampleApp.new.nonsense
 
-    ret_value = @wrapper.tp_attrs_results.last
+    ret_value = @wrapper.tp_result_chain.last
     assert_equal SampleApp, ret_value[:defined_class]
   end
 
   def test_wrapper_reset
     SourceRoute.enable 'nonsense'
     SampleApp.new.nonsense
-    assert_equal 1, @wrapper.tp_attrs_results.size
+    assert_equal 1, @wrapper.tp_result_chain.size
 
     SourceRoute.reset
     SampleApp.new.nonsense
 
-    assert_equal 0, @wrapper.tp_attrs_results.size
+    assert_equal 0, @wrapper.tp_result_chain.size
   end
 
   def test_source_route_with_block_only
@@ -83,7 +83,7 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense
 
-    assert_equal 0, @wrapper.tp_attrs_results.size
+    assert_equal 0, @wrapper.tp_result_chain.size
     assert_equal 1, paths.size
     assert_includes paths.first, 'sample_app'
   end
@@ -93,14 +93,14 @@ class SourceRouteTest < Minitest::Test
       'abc'.upcase
     end
 
-    assert_equal 2, @wrapper.tp_attrs_results.size
+    assert_equal 2, @wrapper.tp_result_chain.size
   end
 
   def test_trace_without_first_hash_option
     SourceRoute.trace output_format: :test do
       SampleApp.new.nonsense
     end
-    assert @wrapper.tp_attrs_results.size > 0
+    assert @wrapper.tp_result_chain.size > 0
     refute @wrapper.tp.enabled?
   end
 
@@ -109,7 +109,7 @@ class SourceRouteTest < Minitest::Test
       event :call, :return
     end
     SampleApp.new.nonsense
-    assert_equal 2, @wrapper.tp_attrs_results.size
+    assert_equal 2, @wrapper.tp_result_chain.size
   end
 
   def test_show_local_variables
@@ -119,9 +119,9 @@ class SourceRouteTest < Minitest::Test
     end
 
     SampleApp.new.nonsense_with_params(88)
-    assert_equal 1, @wrapper.tp_attrs_results.size
+    assert_equal 1, @wrapper.tp_result_chain.size
 
-    ret_value = @wrapper.tp_attrs_results.last
+    ret_value = @wrapper.tp_result_chain.last
 
     assert_equal 88, ret_value[:local_var][:param1]
     assert_equal nil, ret_value[:local_var][:param2]
@@ -134,9 +134,9 @@ class SourceRouteTest < Minitest::Test
     end
 
     SampleApp.new.nonsense_with_params(88)
-    assert_equal 1, @wrapper.tp_attrs_results.size
+    assert_equal 1, @wrapper.tp_result_chain.size
 
-    ret_value_for_return_event = @wrapper.tp_attrs_results.last
+    ret_value_for_return_event = @wrapper.tp_result_chain.last
     assert_equal 88, ret_value_for_return_event[:local_var][:param1]
     assert_equal 5, ret_value_for_return_event[:local_var][:param2]
   end
@@ -148,8 +148,8 @@ class SourceRouteTest < Minitest::Test
 
     SampleApp.new('ins sure').nonsense_with_instance_var
 
-    assert_equal 2, @wrapper.tp_attrs_results.size
-    ret_value = @wrapper.tp_attrs_results.pop
+    assert_equal 2, @wrapper.tp_result_chain.size
+    ret_value = @wrapper.tp_result_chain.pop
 
     assert_equal 'ins sure', ret_value[:instance_var][:@sample]
   end
@@ -162,8 +162,8 @@ class SourceRouteTest < Minitest::Test
       result_config.import_return_to_call = true
     end
     SampleApp.new.init_cool_app
-    @wrapper.import_return_value_to_call_results
-    assert @wrapper.call_tp_results[0].key?(:return_value), 'call results should contain return_value'
+    @wrapper.import_return_value_to_call_chain
+    assert @wrapper.call_chain[0].key?(:return_value), 'call results should contain return_value'
   end
 
   def test_order_call_sequence
@@ -171,13 +171,14 @@ class SourceRouteTest < Minitest::Test
       event :call, :return
     end
     SampleApp.new.nonsense_with_instance_var
-    @wrapper.order_call_results
-    @wrapper.order_call_results
+    @wrapper.order_call_chain
+    @wrapper.order_call_chain
+    call_results = @wrapper.call_chain
 
-    nonsense_call_tp = @wrapper.call_tp_results.find { |tp| tp[:method_id] == :nonsense }
-    nonsense_with_instance_var_call_tp = @wrapper.call_tp_results.find { |tp| tp[:method_id] == :nonsense_with_instance_var }
+    nonsense_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense }
+    nonsense_with_instance_var_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense_with_instance_var }
 
-    assert_equal [-1, nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_id]
+    assert_equal [-1, nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_ids]
     assert_equal 2, nonsense_call_tp[:parent_length]
   end
 

@@ -5,7 +5,11 @@ module SourceRoute
 
     TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
 
-    attr_accessor :condition, :tp, :tp_attrs_results
+    attr_accessor :condition, :tp
+    attr_reader :tp_result_chain
+
+    extend Forwardable
+    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :order_call_chain, :call_chain, :return_chain
 
     Condition = Struct.new(:events, :negatives, :positive, :result_config) do
       def initialize(e=[:call], n={}, p={}, r=GenerateResult::Config.new)
@@ -46,7 +50,7 @@ module SourceRoute
     def reset
       @tp.disable if @tp
       @condition = Condition.new
-      @tp_attrs_results = []
+      @tp_result_chain = TpResultChain.new
       self
     end
 
@@ -61,7 +65,7 @@ module SourceRoute
 
         unless condition.result_config.format.is_a? Proc
           ret_data = tp_result.build(tp)
-          tp_attrs_results.push(ret_data)
+          @tp_result_chain.push(ret_data)
         end
 
         tp_result.output(tp)
@@ -71,48 +75,6 @@ module SourceRoute
       track
     end
 
-    def import_return_value_to_call_results
-      call_tp_results.each do |ctp|
-        ctp[:return_value] = return_tp_results.detect do |rtp|
-          rtp[:defined_class] == ctp[:defined_class] and rtp[:method_id] == ctp[:method_id]
-        end[:return_value]
-      end
-    end
-
-    def call_tp_results
-      tp_attrs_results.select { |tpr| tpr[:event] == :call }
-    end
-
-    def return_tp_results
-      tp_attrs_results.select { |tpr| tpr[:event] == :return }
-    end
-
-    # terrible to maintain
-    # how refactor it?
-    def order_call_results
-      tp_attrs_results.each_with_index do |tpr, index|
-        tpr[:order_id] = index
-        tpr[:parent_id] = [-1]
-      end
-
-      call_tp_results.each do |tpr|
-        return_tpr = return_tp_results.find { |rtpr| rtpr[:defined_class] == tpr[:defined_class] and rtpr[:method_id] == tpr[:method_id]}
-
-        start_index = tpr[:order_id]
-        end_index = return_tpr[:order_id]
-        unless end_index == start_index + 1
-          tp_attrs_results[(start_index+1 ... end_index)].
-            select { |tpr| tpr[:event] == :call }.each do |tpr|
-            tpr[:parent_id].push start_index
-          end
-        end
-
-      end # end do
-      tp_attrs_results.each do |tpr|
-        tpr[:parent_length] = tpr[:parent_id].length
-      end
-
-    end
-  end # Wrapper
+  end # END Wrapper
 
 end

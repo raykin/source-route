@@ -13,8 +13,8 @@ module SourceRoute
         filename = result_config[:filename] || "#{Time.now.strftime('%H%M')}-source-route.html"
 
         if result_config.import_return_to_call and wrapper.condition.has_call_and_return_event
-          wrapper.import_return_value_to_call_results
-          wrapper.order_call_results
+          wrapper.import_return_value_to_call_chain
+          wrapper.order_call_chain
         end
         html_output_str = slim_template.render(wrapper)
         File.open(filename, 'w') do |f|
