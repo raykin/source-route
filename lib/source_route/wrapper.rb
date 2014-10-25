@@ -8,7 +8,7 @@ module SourceRoute
     attr_accessor :condition, :tp, :tp_attrs_results
 
     Condition = Struct.new(:events, :negatives, :positive, :result_config) do
-      def initialize(e=[:call], n={}, p={}, r=TpResult::Config.new)
+      def initialize(e=[:call], n={}, p={}, r=GenerateResult::Config.new)
         super(e, n, p, r)
       end
     end
@@ -52,7 +52,7 @@ module SourceRoute
 
     def trace
       # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
-      tp_result = TpResult.new(self)
+      tp_result = GenerateResult.new(self)
       tp_filter = TpFilter.new(condition)
 
       track = TracePoint.new *condition.events do |tp|

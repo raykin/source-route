@@ -6,7 +6,7 @@ require 'awesome_print'
 
 require "source_route/version"
 require "source_route/wrapper"
-require "source_route/tp_result"
+require "source_route/generate_result"
 require "source_route/tp_filter"
 
 module SourceRoute

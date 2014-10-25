@@ -1,6 +1,6 @@
 module SourceRoute
 
-  class TpResult
+  class GenerateResult
 
     Config = Struct.new(:format, :show_additional_attrs,
                         :include_local_var, :include_instance_var,
@@ -122,6 +122,6 @@ module SourceRoute
       ap "#{@collect_data[:defined_class].inspect}##{@collect_data[:method_id]}"
     end
 
-  end # END TpResult
+  end # END GenerateResult
 
 end

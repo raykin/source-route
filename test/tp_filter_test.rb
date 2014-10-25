@@ -14,7 +14,7 @@ module SourceRoute
       @warden_tp = FakeTp.new(:auth, Warden, 6)
       @user_tp = FakeTp.new(:new, User, 8)
       @tps = [@devise_tp, @warden_tp, @user_tp]
-      @result_config = TpResult::Config.new('silence', [], false, false)
+      @result_config = GenerateResult::Config.new('silence', [], false, false)
     end
 
     def test_filter_method_not_auth
