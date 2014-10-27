@@ -60,7 +60,7 @@ html
                   | .
                 mark.method-value(ng-bind="trace.method_id")
                 / workaround for return_value is 'false' and return_value always to be string when existed
-                div(ng-if="isIncludeReturnValue")
+                div(ng-if="trace.hasOwnProperty('return_value')")
                   span
                     | =>
                   span<(ng-bind="trace.return_value")
@@ -96,8 +96,6 @@ html
       sourceRoute.controller('MainCtrl', function($scope, $filter) {
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
-
-        $scope.isIncludeReturnValue = !angular.isUndefined($scope.traces[0].return_value)
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
         if ($scope.tpEvents.length == 1 && angular.isUndefined($scope.traces[0].event)) {
