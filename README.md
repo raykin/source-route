@@ -60,6 +60,7 @@ Same as the previous example, you will get a html file showing the code trace.
 It will output the trace when you run the application.
 
 see more usage in examples.
+see full usage in examples/callback_in_activesupport.rb
 
 ## Test
 
