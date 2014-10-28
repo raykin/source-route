@@ -24,7 +24,7 @@ module SourceRoute
           positive[m] = v.map(&:to_s).join('|')
         end
 
-        define_method "#{m}_not" do |v|
+        define_method "#{m}_not" do |*v|
           negatives[m] = v.map(&:to_s).join('|')
         end
       end

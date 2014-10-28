@@ -45,8 +45,16 @@ class SourceRouteTest < Minitest::Test
     assert @wrapper.tp_result_chain.size > 0
   end
 
+  def test_not_match
+    SourceRoute.enable do
+      method_id_not 'nonsense'
+    end
+    SampleApp.new.nonsense
+    refute_includes @wrapper.tp_result_chain.map(&:values).flatten, 'nonsense'
+  end
+
   def test_match_class_name
-    @source_route = SourceRoute.enable do
+    SourceRoute.enable do
       defined_class :SampleApp
     end
 
