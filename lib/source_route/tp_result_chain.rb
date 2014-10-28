@@ -2,7 +2,7 @@ module SourceRoute
 
   class TpResultChain
     extend Forwardable
-    def_delegators :@chain, :each, :index, :first, :last, :size, :push, :values_at, :pop
+    def_delegators :@chain, :each, :index, :first, :last, :size, :push, :values_at, :pop, :[]
 
     include Enumerable
 
