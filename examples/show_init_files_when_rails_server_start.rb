@@ -16,7 +16,7 @@ SourceRoute.enable do
   end
 end
 
-# The above source route block defines similar trace point feature as following
+# The above source route block defines trace point feature as following
     # files = []
     # tp = TracePoint.new(:line) do |tp|
     #   if tp.path =~ /your_rails_application_root_dir_name/
