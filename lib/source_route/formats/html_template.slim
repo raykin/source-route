@@ -50,7 +50,7 @@ html
             .btn-group-vertical
               button.btn.btn-default(ng-repeat="klass in ::definedClasses"
                 ng-click="traceFilter.defined_class = klass" style="height: 60px")
-                span(ng-bind="klass.substring(0, 40)" popover="{{klass}}" popover-trigger="mouseenter" popover-placement="right")
+                span(ng-bind="klass.substring(0, 40)" popover="{{klass}}" popover-trigger="mouseenter" popover-placement="bottom")
           .traces.center-info.col-sm-8(ng-class="{{traceFilter.event}}")
             .trace.well.well-lg.call-level.call-level(ng-repeat="trace in traces | filter:traceFilter:true"
               ng-class="callLevelClass(trace)")
