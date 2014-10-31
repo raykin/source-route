@@ -62,6 +62,19 @@ It will output the trace when you run the application.
 see more usage in examples.
 see full usage in examples/callback_in_activesupport.rb
 
+## Why
+
+I always wanna upgrade my ruby(rails) skills. But everytime when I look for workaround from stack overflow I feel frustration.
+
+To get solution or workaround from google or stack overflow is suitable when I'm a ruby starter or deadline is urgent. But it's not really helpful for my skills.
+
+The way how I solve problem define my skills border and depth. So if I slove problems by search google and stack overflow with workarounds, I mostly just increase my experiences on ruby(rails). But if I solve problems directly, in most case, I can say my skill border extends.
+
+That's why I create this gem. To solve problems directly, I need to know what happened in call or return traces.
+Fortunately ruby 2.0 introduce a new feature TracePoint to easily trace inner event. But it's not easily to frequently used as daily tools. This gem tries to make tracing more readable and easily in our work.
+
+Finally, I expect my working style can change from searching workaround from internet to reading code trace(then more easily check source) directly. I hope it can help you too.
+
 ## Test
 
     $ bundle install
@@ -77,6 +90,8 @@ see full usage in examples/callback_in_activesupport.rb
 
 
 ### TODO
+
+User.single_class can return pretty long string, so it need truncate.
 
 Hide defined class filter. Add vertical timeline.
 (see http://tympanus.net/codrops/2013/05/02/vertical-timeline/
