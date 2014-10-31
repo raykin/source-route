@@ -50,7 +50,7 @@ html
             .btn-group-vertical
               button.btn.btn-default(ng-repeat="klass in ::definedClasses"
                 ng-click="traceFilter.defined_class = klass" style="height: 60px")
-                span(ng-bind="klass")
+                span(ng-bind="klass.substring(0, 40)" popover="{{klass}}" popover-trigger="mouseenter" popover-placement="right")
           .traces.center-info.col-sm-8(ng-class="{{traceFilter.event}}")
             .trace.well.well-lg.call-level.call-level(ng-repeat="trace in traces | filter:traceFilter:true"
               ng-class="callLevelClass(trace)")
@@ -90,9 +90,10 @@ html
           .right-info.col-sm-2
 
     script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"
+    script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"
 
     javascript:
-      sourceRoute = angular.module('SourceRoute', [])
+      sourceRoute = angular.module('SourceRoute', ['ui.bootstrap'])
       sourceRoute.controller('MainCtrl', function($scope, $filter) {
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
