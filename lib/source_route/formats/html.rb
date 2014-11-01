@@ -8,7 +8,7 @@ module SourceRoute
       def self.slim_render(wrapper)
         result_config = wrapper.condition.result_config
         template_path = File.expand_path "../html_template.slim", __FILE__
-        slim_template = Slim::Template.new(template_path)
+        slim_template = Slim::Template.new(template_path, pretty: true)
 
         filename = result_config[:filename] || "#{Time.now.strftime('%H%M')}-source-route.html"
 

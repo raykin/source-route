@@ -13,20 +13,6 @@ html
       .call-level-4 { margin-left: 150px }
   body(ng-app="SourceRoute" ng-controller="MainCtrl")
 
-    ruby:
-      local_trace_data = @tp_result_chain.map do |tp_result|
-        if tp_result.key?(:defined_class)
-          tp_result[:defined_class] = tp_result[:defined_class].to_s
-          tp_result[:return_value] = tp_result[:return_value].inspect if tp_result.key?(:return_value)
-        end
-        tp_result
-      end
-
-    .data-collect
-      / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
-      #trace-data(data-trace="#{JSON.dump(local_trace_data)}" data-tp-events="#{JSON.dump(@condition.events)}")
-
-
     nav.navbar.navbar-default.navbar-static-top
       .container
         .container-fluid
@@ -123,3 +109,16 @@ html
         }
 
       })
+
+    ruby:
+      local_trace_data = @tp_result_chain.map do |tp_result|
+        if tp_result.key?(:defined_class)
+          tp_result[:defined_class] = tp_result[:defined_class].to_s
+          tp_result[:return_value] = tp_result[:return_value].inspect if tp_result.key?(:return_value)
+        end
+        tp_result
+      end
+
+    .data-collect
+      / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
+      #trace-data(data-trace="#{JSON.dump(local_trace_data)}" data-tp-events="#{JSON.dump(@condition.events)}")
