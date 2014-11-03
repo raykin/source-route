@@ -52,21 +52,21 @@ html
                   span<(ng-bind="trace.return_value")
 
               .details(ng-if="showMoreDetail")
-                .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green")
+                .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green; margin-bottom: 0")
                   span Local Var
                   .local-values(ng-repeat="(key, value) in trace.local_var")
                     span<>(ng-bind="key")
                     span<>
                       | =>
                     / ? could inspect repaire it ?
-                    span<>(ng-bind="value || 'null'")
-                .ins-vars.well.well-sm(ng-if="trace.instance_var" style="color: blue")
+                    span<>(ng-bind="value | json")
+                .ins-vars.well.well-sm(ng-if="trace.instance_var" style="color: blue; margin-bottom: 0")
                   span Instance Var
                   .ins-values(ng-repeat="(key, value) in trace.instance_var")
                     span<>(ng-bind="key")
                     span<>
                       | =>
-                    span<>(ng-bind="value || 'null'")
+                    span<>(ng-bind="value | json")
                 .path-value.well.well-sm(ng-if="trace.path")
                   span Path
                   div
