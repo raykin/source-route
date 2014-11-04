@@ -91,8 +91,6 @@ Finally, I expect my working style can change from searching workaround from int
 
 ### TODO
 
-Display object(hash in ruby) on page properly. can find the instance_val is not show correctly in test.
-
 Hide defined class filter. Add vertical timeline.
 (see http://tympanus.net/codrops/2013/05/02/vertical-timeline/
 http://stackoverflow.com/questions/20896240/responsive-timeline-ui-with-bootstrap3)
