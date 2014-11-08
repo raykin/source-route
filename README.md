@@ -91,6 +91,8 @@ Finally, I expect my working style can change from searching workaround from int
 
 ### TODO
 
+Apply https://github.com/a5hik/ng-sortable
+
 Hide defined class filter. Add vertical timeline.
 (see http://tympanus.net/codrops/2013/05/02/vertical-timeline/
 http://stackoverflow.com/questions/20896240/responsive-timeline-ui-with-bootstrap3)
