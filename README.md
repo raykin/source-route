@@ -91,6 +91,8 @@ Finally, I expect my working style can change from searching workaround from int
 
 ### TODO
 
+Open Method directly from browser
+
 Apply https://github.com/a5hik/ng-sortable
 
 Hide defined class filter. Add vertical timeline.
