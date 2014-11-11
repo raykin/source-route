@@ -30,7 +30,6 @@ module SourceRoute
       end
 
       def event(*v)
-        # why need self? without self, the events will not really changed, why?. seems a bug in Struct
         self.events = v.map(&:to_sym) unless v == []
       end
 
@@ -40,6 +39,13 @@ module SourceRoute
 
       def has_call_and_return_event
         events.include? :return and events.include? :call
+      end
+
+      def full_feature
+        self.events = [:call, :return]
+        result_config.import_return_to_call = true
+        result_config.include_instance_var = true
+        result_config.include_local_var = true
       end
     end
 
