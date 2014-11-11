@@ -49,7 +49,7 @@ html
                 div(ng-if="trace.hasOwnProperty('return_value')")
                   span
                     | =>
-                  span<(ng-bind="trace.return_value")
+                  span<(ng-bind="trace.return_value.substring(0, 100)")
 
               .details(ng-if="showMoreDetail")
                 .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green; margin-bottom: 0")
