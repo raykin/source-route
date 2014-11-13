@@ -91,8 +91,6 @@ Finally, I expect my working style can change from searching workaround from int
 
 ### TODO
 
-Call Method should only include params. Include local_var in call event can lead to confused
-
 Open Method directly from browser
 
 Apply https://github.com/a5hik/ng-sortable

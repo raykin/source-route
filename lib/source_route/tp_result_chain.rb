@@ -20,9 +20,14 @@ module SourceRoute
 
     def import_return_value_to_call_chain
       call_chain.each do |ctp|
-        ctp[:return_value] = return_chain.detect do |rtp|
-          rtp[:defined_class] == ctp[:defined_class] and rtp[:method_id] == ctp[:method_id]
-        end[:return_value]
+        matched_return_tp = return_chain.detect do |rtp|
+          rtp[:defined_class] == ctp[:defined_class] and rtp[:method_id] == ctp[:method_id] and
+            rtp[:tp_self] == ctp[:tp_self]
+
+        end
+        ctp[:return_value] = matched_return_tp[:return_value]
+        ctp[:local_var] = matched_return_tp[:local_var]
+        ctp[:instance_var] = matched_return_tp[:instance_var]
       end
     end
 

@@ -3,7 +3,7 @@ module SourceRoute
   class GenerateResult
 
     Config = Struct.new(:format, :show_additional_attrs,
-                        :include_local_var, :include_instance_var,
+                        :include_local_var, :include_instance_var, :include_tp_self,
                         :filename, :import_return_to_call) do
       def initialize(f="silence", s=[], ilr=false, iiv=false)
         super(f, s, ilr, iiv)
@@ -44,8 +44,9 @@ module SourceRoute
     def build(trace_point_instance)
       @tp = trace_point_instance
       collect_tp_data
-      collect_local_var_data
-      collect_instance_var_data
+      @collect_data[:tp_self] = @tp.self if @config[:include_tp_self]
+      collect_local_var_data if @config[:include_local_var]
+      collect_instance_var_data if @config[:include_instance_var]
       @collect_data
     end
 
@@ -84,27 +85,23 @@ module SourceRoute
     end
 
     def collect_local_var_data
-      if @wrapper.condition.result_config[:include_local_var]
-        local_var_hash = {}
+      local_var_hash = {}
 
-        @tp.binding.eval('local_variables').each do |v|
-          local_var_hash[v] = @tp.binding.local_variable_get v
-        end
-        if local_var_hash != {}
-          @collect_data.merge!(local_var: local_var_hash)
-        end
+      @tp.binding.eval('local_variables').each do |v|
+        local_var_hash[v] = @tp.binding.local_variable_get v
+      end
+      if local_var_hash != {}
+        @collect_data.merge!(local_var: local_var_hash)
       end
     end
 
     def collect_instance_var_data
-      if @wrapper.condition.result_config[:include_instance_var]
-        instance_var_hash = {}
-        @tp.self.instance_variables.each do |key|
-          instance_var_hash[key] = @tp.self.instance_variable_get(key)
-        end
-        if instance_var_hash != {}
-          @collect_data.merge!(instance_var: instance_var_hash)
-        end
+      instance_var_hash = {}
+      @tp.self.instance_variables.each do |key|
+        instance_var_hash[key] = @tp.self.instance_variable_get(key)
+      end
+      if instance_var_hash != {}
+        @collect_data.merge!(instance_var: instance_var_hash)
       end
     end
 

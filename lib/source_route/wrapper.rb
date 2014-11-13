@@ -46,6 +46,7 @@ module SourceRoute
         result_config.import_return_to_call = true
         result_config.include_instance_var = true
         result_config.include_local_var = true
+        result_config.include_tp_self = true
       end
     end
 
