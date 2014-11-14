@@ -41,7 +41,9 @@ module SourceRoute
         events.include? :return and events.include? :call
       end
 
-      def full_feature
+      def full_feature(value=true)
+        return unless value
+
         self.events = [:call, :return]
         result_config.import_return_to_call = true
         result_config.include_instance_var = true

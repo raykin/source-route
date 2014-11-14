@@ -32,12 +32,12 @@ html
     .container
       .trace-flow
         .row
-          .left-info.col-sm-4
+          .left-info.col-sm-4(ng-if="false")
             .btn-group-vertical
               button.btn.btn-default(ng-repeat="klass in ::definedClasses"
                 ng-click="traceFilter.defined_class = klass" style="height: 60px")
                 span(ng-bind="klass.substring(0, 40)" popover="{{klass}}" popover-trigger="mouseenter" popover-placement="bottom")
-          .traces.center-info.col-sm-8(ng-class="{{traceFilter.event}}")
+          .traces.center-info.col-sm-12(ng-class="{{traceFilter.event}}")
             .trace.well.well-lg.call-level.call-level(ng-repeat="trace in traces | filter:traceFilter:true"
               ng-class="callLevelClass(trace)")
               .header(ng-click="showMoreDetail = !showMoreDetail")
@@ -49,7 +49,7 @@ html
                 div(ng-if="trace.hasOwnProperty('return_value')")
                   span
                     | =>
-                  span<(ng-bind="trace.return_value.substring(0, 100)")
+                  span<(ng-bind="trace.return_value.substring(0, 150)")
 
               .details(ng-if="showMoreDetail")
                 .local-vars.well.well-sm(ng-if="trace.local_var" style="color: green; margin-bottom: 0")

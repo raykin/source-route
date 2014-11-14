@@ -46,6 +46,7 @@ module SourceRoute
     opt.each do |k, v|
       wrapper.condition.send(k, v)
     end
+
     wrapper.trace
     yield
     wrapper.tp.disable

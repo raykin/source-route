@@ -104,6 +104,15 @@ class SourceRouteTest < Minitest::Test
     assert_equal 2, @wrapper.tp_result_chain.size
   end
 
+  def test_trace_with_full_feature
+    SourceRoute.trace method_id: 'nonsense', full_feature: true do
+      SampleApp.new.nonsense
+    end
+    assert @wrapper.condition.result_config.include_tp_self
+    first_result = @wrapper.tp_result_chain.first
+    assert first_result[:tp_self]
+  end
+
   def test_trace_without_first_hash_option
     SourceRoute.trace output_format: :test do
       SampleApp.new.nonsense

@@ -3,10 +3,9 @@ require 'active_support/callbacks'
 require 'source_route'
 
 SourceRoute.enable do
-  event :call, :return
   defined_class 'ActiveSupport::Callbacks', 'PersonRecord'
   method_id :base_save, :saving_message, :callback
-  result_config.import_return_to_call = true
+  full_feature
 end
 
 class Record
