@@ -67,6 +67,10 @@ html
                     span<>
                       | =>
                     span<>(ng-bind="value | json")
+                .self-obj.well.well-sm(ng-if="trace.tp_self" style="color: red; margin-bottom: 0")
+                  span Self
+                  div
+                    span(ng-bind="trace.tp_self | json")
                 .path-value.well.well-sm(ng-if="trace.path")
                   span Path
                   div
