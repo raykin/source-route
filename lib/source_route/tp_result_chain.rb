@@ -21,13 +21,11 @@ module SourceRoute
     def import_return_value_to_call_chain
       call_chain.each do |ctp|
         matched_return_tp = return_chain.detect do |rtp|
-          rtp[:defined_class] == ctp[:defined_class] and rtp[:method_id] == ctp[:method_id] and
-            rtp[:tp_self] == ctp[:tp_self]
-
+          rtp[:tp_self] == ctp[:tp_self] and rtp[:method_id] == ctp[:method_id] and rtp[:defined_class] == ctp[:defined_class]
         end
         ctp[:return_value] = matched_return_tp[:return_value]
-        ctp[:local_var] = matched_return_tp[:local_var]
-        ctp[:instance_var] = matched_return_tp[:instance_var]
+        ctp[:local_var] = matched_return_tp[:local_var] if matched_return_tp.key? :local_var
+        ctp[:instance_var] = matched_return_tp[:instance_var] if matched_return_tp.key? :instance_var
       end
     end
 
@@ -52,7 +50,7 @@ module SourceRoute
     private
     def init_order_id_and_parent_ids
       each_with_index do |tpr, index|
-        tpr[:order_id], tpr[:parent_ids] = index, [-1]
+        tpr[:order_id], tpr[:parent_ids] = index, []
       end
     end
 

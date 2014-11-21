@@ -6,7 +6,7 @@ module SourceRoute
     TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
 
     attr_accessor :condition, :tp
-    attr_reader :tp_result_chain
+    attr_reader :tp_result_chain, :tp_self_caches
 
     extend Forwardable
     def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :order_call_chain, :call_chain, :return_chain
@@ -46,9 +46,10 @@ module SourceRoute
 
         self.events = [:call, :return]
         result_config.import_return_to_call = true
+        result_config.include_tp_self = true
+
         result_config.include_instance_var = true
         result_config.include_local_var = true
-        result_config.include_tp_self = true
       end
     end
 
@@ -60,6 +61,7 @@ module SourceRoute
       @tp.disable if @tp
       @condition = Condition.new
       @tp_result_chain = TpResultChain.new
+      @tp_self_caches = []
       self
     end
 
@@ -81,9 +83,37 @@ module SourceRoute
       end
       track.enable
       self.tp = track
-      track
     end
 
+    def stringify_tp_self_caches
+      tp_self_caches.clone.map(&:inspect)
+    end
+
+    def stringify_tp_result_chain
+      deep_cloned = tp_result_chain.map do |tp_result|
+        tp_result.clone
+      end
+      deep_cloned.map do |tr|
+        # why they use different way to convert to string
+        # to_s of an ActiveRecord instance return "#<Video:0x007f0a0eeda7c8>"
+        # inspect of an ActiveRecord instance return "#<Video id: 5, .... >"
+        tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
+        tr[:return_value] = tr[:return_value].inspect if tr.key?(:return_value)
+        tr
+      end
+    end
+
+    def jsonify_events
+      JSON.dump(@condition.events.map(&:to_s))
+    end
+
+    def jsonify_tp_result_chain
+      JSON.dump(stringify_tp_result_chain)
+    end
+
+    def jsonify_tp_self_caches
+      JSON.dump(stringify_tp_self_caches)
+    end
   end # END Wrapper
 
 end
