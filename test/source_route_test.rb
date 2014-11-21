@@ -110,7 +110,25 @@ class SourceRouteTest < Minitest::Test
     end
     assert @wrapper.condition.result_config.include_tp_self
     first_result = @wrapper.tp_result_chain.first
-    assert first_result[:tp_self]
+    assert_equal first_result[:tp_self], 0
+  end
+
+  def test_trace_include_tp_self
+    SourceRoute.trace method_id: 'nonsense', full_feature: true do
+      SampleApp.new.nonsense
+    end
+    assert_equal 1, @wrapper.tp_self_caches.size
+    assert @wrapper.stringify_tp_self_caches.first.is_a? String
+    assert @wrapper.tp_self_caches.first.is_a? SampleApp
+  end
+
+  def test_stringify_tp_result_chain
+    SourceRoute.trace method_id: 'nonsense', full_feature: true do
+      SampleApp.new.nonsense
+    end
+    origin_tp_result_chain = @wrapper.tp_result_chain
+    assert @wrapper.stringify_tp_result_chain.first[:defined_class].is_a? String
+    assert_equal origin_tp_result_chain, @wrapper.tp_result_chain
   end
 
   def test_trace_without_first_hash_option
@@ -195,8 +213,8 @@ class SourceRouteTest < Minitest::Test
     nonsense_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense }
     nonsense_with_instance_var_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense_with_instance_var }
 
-    assert_equal [-1, nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_ids]
-    assert_equal 2, nonsense_call_tp[:parent_length]
+    assert_equal [nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_ids]
+    assert_equal 1, nonsense_call_tp[:parent_length]
   end
 
   # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true

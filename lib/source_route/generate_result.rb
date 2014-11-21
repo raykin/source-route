@@ -44,7 +44,7 @@ module SourceRoute
     def build(trace_point_instance)
       @tp = trace_point_instance
       collect_tp_data
-      @collect_data[:tp_self] = @tp.self if @config[:include_tp_self]
+      collect_tp_self if @config[:include_tp_self]
       collect_local_var_data if @config[:include_local_var]
       collect_instance_var_data if @config[:include_instance_var]
       @collect_data
@@ -77,6 +77,13 @@ module SourceRoute
 
     private
 
+    def collect_tp_self
+      unless @wrapper.tp_self_caches.include? @tp.self
+        @wrapper.tp_self_caches.push @tp.self
+      end
+      @collect_data[:tp_self] = @wrapper.tp_self_caches.index(@tp.self)
+    end
+
     def collect_tp_data
       @collect_data = output_attributes(@tp.event).inject({}) do |memo, key|
         memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
@@ -87,6 +94,7 @@ module SourceRoute
     def collect_local_var_data
       local_var_hash = {}
 
+      # Warn: @tp.binding.eval('local_variables') =! @tp.binding.send('local_variables')
       @tp.binding.eval('local_variables').each do |v|
         local_var_hash[v] = @tp.binding.local_variable_get v
       end
