@@ -44,8 +44,9 @@ you will get a different trace file.
     SourceRoute.enable :wanted_method_name
     .... # here is your code
     ....
-    # may be code this in another file
-    SourceRoute.build_html_output
+    ....
+    # add it after your tracked code, it will output the trace into a html file
+    SourceRoute.output_html
 
 Same as the previous example, you will get a html file showing the code trace.
 

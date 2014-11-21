@@ -10,6 +10,7 @@ require "source_route/wrapper"
 require "source_route/generate_result"
 require "source_route/tp_result_chain"
 require "source_route/tp_filter"
+require 'source_route/json_overrides/activerecord_associations_association'
 
 module SourceRoute
   extend self
@@ -56,6 +57,10 @@ module SourceRoute
   def build_html_output
     SourceRoute.disable
     SourceRoute::Formats::Html.slim_render(wrapper)
+  end
+
+  def output_html
+    build_html_output
   end
 
   # Not implement yet
