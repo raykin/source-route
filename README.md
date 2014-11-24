@@ -94,7 +94,7 @@ Finally, I expect my working style can change from searching workaround from int
 
 Add debug option to provider more verbose messages of what has happened
 
-Open Method directly from browser
+Open File directly from browser(chrome) by plugin?
 
 Apply https://github.com/a5hik/ng-sortable
 
