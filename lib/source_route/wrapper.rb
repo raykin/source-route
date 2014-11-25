@@ -48,8 +48,9 @@ module SourceRoute
         result_config.import_return_to_call = true
         result_config.include_tp_self = true
 
-        result_config.include_instance_var = true
-        result_config.include_local_var = true
+        # JSON serialize trigger many problems when handle complicated object
+        # result_config.include_instance_var = true
+        # result_config.include_local_var = true
       end
     end
 
@@ -58,7 +59,7 @@ module SourceRoute
     end
 
     def reset
-      @tp.disable if @tp
+      @tp.disable if defined? @tp
       @condition = Condition.new
       @tp_result_chain = TpResultChain.new
       @tp_self_caches = []
@@ -94,11 +95,10 @@ module SourceRoute
         tp_result.clone
       end
       deep_cloned.map do |tr|
-        # why they use different way to convert to string
-        # to_s of an ActiveRecord instance return "#<Video:0x007f0a0eeda7c8>"
-        # inspect of an ActiveRecord instance return "#<Video id: 5, .... >"
+        # to_s is safer than inspect
+        # ex: inspect on ActiveRecord_Relation may crash
         tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
-        tr[:return_value] = tr[:return_value].inspect if tr.key?(:return_value)
+        tr[:return_value] = tr[:return_value].to_s if tr.key?(:return_value)
         tr
       end
     end

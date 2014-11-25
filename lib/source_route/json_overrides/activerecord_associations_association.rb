@@ -16,4 +16,5 @@ if defined? ActiveRecord
       JSON.dump(to_s)
     end
   end
+
 end
