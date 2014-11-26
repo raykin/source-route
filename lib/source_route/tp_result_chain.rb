@@ -29,7 +29,7 @@ module SourceRoute
       end
     end
 
-    def order_call_chain
+    def treeize_call_chain
       init_order_id_and_parent_ids
       call_chain.each do |tpr|
         return_tpr = return_chain.find do |rtpr|
@@ -45,6 +45,10 @@ module SourceRoute
       end
 
       cal_parent_length
+    end
+
+    def parent_length_list
+      call_chain.map { |tp| tp[:parent_length] }.uniq.sort
     end
 
     private

@@ -14,8 +14,9 @@ module SourceRoute
 
         if result_config.import_return_to_call and wrapper.condition.has_call_and_return_event
           wrapper.import_return_value_to_call_chain
-          wrapper.order_call_chain
+          wrapper.treeize_call_chain
         end
+        # TODO: any exception triggered in render method will be absorb totally, how to fix it?
         html_output_str = slim_template.render(wrapper)
         File.open(filename, 'w') do |f|
           f << html_output_str

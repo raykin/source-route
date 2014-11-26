@@ -11,6 +11,7 @@ html
       .call-level-1 { margin-left: 50px }
       .call-level-2 { margin-left: 100px }
       .call-level-3 { margin-left: 150px }
+      .call-level-4 { margin-left: 200px }
   body(ng-app="SourceRoute" ng-controller="MainCtrl")
 
     nav.navbar.navbar-default.navbar-static-top
@@ -30,6 +31,14 @@ html
     .clearfix
 
     .container
+      .level-header(ng-if="parentLengthList" style="padding-bottom: 10px")
+        .btn-group>
+          button.btn.btn-default>(ng-click="traceFilter.parent_length = length" ng-repeat="length in parentLengthList")
+            span> Level
+            span(ng-bind="::length")
+        span
+          button.btn.btn-primary(ng-click="traceFilter.parent_length = undefined") Clear
+
       .trace-flow
         .row
           .left-info.col-sm-4(ng-if="false")
@@ -88,6 +97,7 @@ html
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpSelfList = angular.element("#trace-data").data('tp-self-caches')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
+        $scope.parentLengthList = angular.element("#trace-data").data('tp-parent-length-list')
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
         if ($scope.tpEvents.length == 1 && angular.isUndefined($scope.traces[0].event)) {
@@ -119,4 +129,5 @@ html
       / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
       #trace-data(data-trace="#{jsonify_tp_result_chain}"
         data-tp-events="#{jsonify_events}"
-        data-tp-self-caches="#{jsonify_tp_self_caches}")
+        data-tp-self-caches="#{jsonify_tp_self_caches}"
+        data-tp-parent-length-list="#{JSON.dump(parent_length_list)}")
