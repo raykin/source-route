@@ -9,7 +9,7 @@ module SourceRoute
     attr_reader :tp_result_chain, :tp_self_caches
 
     extend Forwardable
-    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :order_call_chain, :call_chain, :return_chain
+    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain, :call_chain, :return_chain, :parent_length_list
 
     Condition = Struct.new(:events, :negatives, :positive, :result_config) do
       def initialize(e=[:call], n={}, p={}, r=GenerateResult::Config.new)
@@ -86,6 +86,8 @@ module SourceRoute
       self.tp = track
     end
 
+
+    # TODO: move this into chain self
     def stringify_tp_self_caches
       tp_self_caches.clone.map(&:inspect)
     end
@@ -98,7 +100,13 @@ module SourceRoute
         # to_s is safer than inspect
         # ex: inspect on ActiveRecord_Relation may crash
         tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
-        tr[:return_value] = tr[:return_value].to_s if tr.key?(:return_value)
+        if tr.key?(:return_value)
+          if tr[:return_value].nil? or tr[:return_value] == ''
+            tr[:return_value] = tr[:return_value].inspect
+          else
+            tr[:return_value] = tr[:return_value].to_s
+          end
+        end
         tr
       end
     end
