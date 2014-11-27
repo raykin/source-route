@@ -77,11 +77,13 @@ module SourceRoute
 
     private
 
+    # include? will evaluate @tp.self, if @tp.self is AR::Relation, it could cause problems
+    # So that's why I use object_id as replace
     def collect_tp_self
-      unless @wrapper.tp_self_caches.include? @tp.self
+      unless @wrapper.tp_self_caches.map(&:object_id).include? @tp.self.object_id
         @wrapper.tp_self_caches.push @tp.self
       end
-      @collect_data[:tp_self] = @wrapper.tp_self_caches.index(@tp.self)
+      @collect_data[:tp_self] = @wrapper.tp_self_caches.map(&:object_id).index(@tp.self.object_id)
     end
 
     def collect_tp_data
