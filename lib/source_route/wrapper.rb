@@ -48,6 +48,7 @@ module SourceRoute
         result_config.import_return_to_call = true
         result_config.include_tp_self = true
 
+        result_config.show_additional_attrs = [:path, :lineno]
         # JSON serialize trigger many problems when handle complicated object
         # result_config.include_instance_var = true
         # result_config.include_local_var = true
@@ -86,10 +87,9 @@ module SourceRoute
       self.tp = track
     end
 
-
     # TODO: move this into chain self
     def stringify_tp_self_caches
-      tp_self_caches.clone.map(&:inspect)
+      tp_self_caches.clone.map(&:to_s)
     end
 
     def stringify_tp_result_chain
