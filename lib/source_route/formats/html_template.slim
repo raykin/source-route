@@ -12,6 +12,9 @@ html
       .call-level-2 { margin-left: 100px }
       .call-level-3 { margin-left: 150px }
       .call-level-4 { margin-left: 200px }
+      .call-level-5 { margin-left: 250px }
+      .call-level-6 { margin-left: 300px }
+      .call-level-7 { margin-left: 300px }
   body(ng-app="SourceRoute" ng-controller="MainCtrl")
 
     nav.navbar.navbar-default.navbar-static-top
@@ -109,8 +112,8 @@ html
         $scope.definedClasses = _.uniq(_.map($scope.traces, 'defined_class'))
 
         $scope.callLevelClass = function(trace) {
-          if (trace.parent_length > 4) {
-            return 'call-level-4'
+          if (trace.parent_length > 7) {
+            return 'call-level-7'
           } else {
             return 'call-level-' + trace.parent_length
           }
