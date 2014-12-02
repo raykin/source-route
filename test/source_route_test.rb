@@ -225,6 +225,9 @@ class SourceRouteTest < Minitest::Test
       event :call, :return
       result_config.include_instance_var = true
       result_config.include_local_var = true
+      result_config.show_additional_attrs = [:path, :lineno]
+      result_config.include_tp_self = true
+
       result_config.filename = 'call_and_return_in_sample_app.html'
       result_config.import_return_to_call = true
     end

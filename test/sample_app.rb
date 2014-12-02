@@ -26,7 +26,7 @@ class SampleApp
     def initialize
       @cool = ['test', 'data']
       # todo: cant display on html easily
-      @cool_hash = {first: :run, second: :halt, third: :stop}
+      @cool_hash = {first: :run, second: :halt, third: {new: true, updated: false}}
       cool_in_init = 'init data in cool app'
 
     end

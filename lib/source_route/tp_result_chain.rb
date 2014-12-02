@@ -23,9 +23,11 @@ module SourceRoute
         matched_return_tp = return_chain.detect do |rtp|
           rtp[:tp_self] == ctp[:tp_self] and rtp[:method_id] == ctp[:method_id] and rtp[:defined_class] == ctp[:defined_class]
         end
-        ctp[:return_value] = matched_return_tp[:return_value]
-        ctp[:local_var] = matched_return_tp[:local_var] if matched_return_tp.key? :local_var
-        ctp[:instance_var] = matched_return_tp[:instance_var] if matched_return_tp.key? :instance_var
+        unless matched_return_tp.nil?
+          ctp[:return_value] = matched_return_tp[:return_value]
+          ctp[:local_var] = matched_return_tp[:local_var] if matched_return_tp.key? :local_var
+          ctp[:instance_var] = matched_return_tp[:instance_var] if matched_return_tp.key? :instance_var
+        end
       end
     end
 
@@ -35,11 +37,12 @@ module SourceRoute
         return_tpr = return_chain.find do |rtpr|
           rtpr[:defined_class] == tpr[:defined_class] and rtpr[:method_id] == tpr[:method_id]
         end
-
-        start_index, end_index = tpr[:order_id], return_tpr[:order_id]
-        unless end_index == start_index + 1
-          values_at(start_index+1 ... end_index).select { |tpr| tpr[:event] == :call }.each do |tpr|
-            tpr[:parent_ids].push start_index
+        unless return_tpr.nil?
+          start_index, end_index = tpr[:order_id], return_tpr[:order_id]
+          unless end_index == start_index + 1
+            values_at(start_index+1 ... end_index).select { |tpr| tpr[:event] == :call }.each do |tpr|
+              tpr[:parent_ids].push start_index
+            end
           end
         end
       end
