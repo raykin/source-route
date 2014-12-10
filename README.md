@@ -92,8 +92,8 @@ Finally, I expect my working style can change from searching workaround from int
 
 ### TODO
 
+Animation when child was click.
+
 Add debug option to provide more verbose messages of what has happened
 
 Open File directly from browser(chrome) by plugin?
-
-Apply https://github.com/a5hik/ng-sortable
