@@ -53,9 +53,12 @@ html
                 ng-click="traceFilter.defined_class = klass" style="height: 60px")
                 span(ng-bind="klass.substring(0, 40)" popover="{{klass}}" popover-trigger="mouseenter" popover-placement="bottom")
           .traces.center-info.col-sm-12(ng-class="{{traceFilter.event}}")
-            .trace.well(ng-repeat="trace in traces | filter:traceFilter:true"
-              ng-class="callLevelClass(trace)")
-              .header(ng-click="showMoreDetail = !showMoreDetail")
+            .trace.well(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn"
+              ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
+              .header(ng-init="showMoreDetail = false")
+                .btn-group.pull-right
+                  button.btn.btn-info.btn-sm(ng-show="::hasChild()" ng-click="toggleChild()") Child
+                  button.btn.btn-info.btn-sm(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail") Details
                 span(ng-bind="trace.defined_class")
                 span
                   | .
@@ -90,6 +93,18 @@ html
         $scope.tpSelfList = angular.element("#trace-data").data('tp-self-caches')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
         $scope.parentLengthList = angular.element("#trace-data").data('tp-parent-length-list')
+        $scope.childParentFilter = { parent_id: [] }
+
+        $scope.childParentFilterFn = function(trace) {
+          if ($scope.childParentFilter.parent_id.length == 0) {
+            return true;
+          } else {
+            var shared_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.parent_id);
+            if (shared_parents.length == 0) {
+              return true;
+            }
+          }
+        }
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
         if ($scope.tpEvents.length == 1 && angular.isUndefined($scope.traces[0].event)) {
@@ -121,6 +136,11 @@ html
             trace.hasOwnProperty('tp_self');
         }
 
+        $scope.containsDetail = function(trace) {
+          return $scope.containsOtherAttrs(trace) || trace.hasOwnProperty('local_var') ||
+            trace.hasOwnProperty('instance_var')
+        }
+
         $scope.combinedAttrs = function(trace) {
           var attrs = {}
           if (trace.hasOwnProperty('lineno') && trace.hasOwnProperty('path')) {
@@ -134,6 +154,32 @@ html
           return attrs;
         }
 
+      })
+
+      sourceRoute.controller('TpTraceCtrl', function($scope) {
+        $scope.toggleChild = function() {
+          if ($scope.trace.childOpened) {
+            $scope.hideChild();
+          } else {
+            $scope.showChild();
+          }
+        }
+
+        $scope.showChild = function() {
+          $scope.trace.childOpened = true;
+          $scope.childParentFilter.parent_id.push($scope.trace.order_id);
+        }
+
+        $scope.hideChild = function() {
+          $scope.trace.childOpened = false;
+          _.pull($scope.childParentFilter.parent_id, $scope.trace.order_id);
+        }
+
+        $scope.hasChild = function() {
+          return _.find($scope.traces, function(trace) {
+            return _.contains(trace.parent_ids, $scope.trace.order_id)
+          });
+        }
       })
 
     .data-collect
