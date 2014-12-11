@@ -92,6 +92,8 @@ Finally, I expect my working style can change from searching workaround from int
 
 ### TODO
 
+Dynamic indent when new child level comes.
+
 Animation when child was click.
 
 Add debug option to provide more verbose messages of what has happened
