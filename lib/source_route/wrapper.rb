@@ -50,8 +50,12 @@ module SourceRoute
 
         result_config.show_additional_attrs = [:path, :lineno]
         # JSON serialize trigger many problems when handle complicated object
-        # result_config.include_instance_var = true
-        # result_config.include_local_var = true
+
+        # a Back Door to open more data. but be care it could trigger weird crash when Jsonify these vars
+        if value == 10
+          result_config.include_instance_var = true
+          result_config.include_local_var = true
+        end
       end
     end
 

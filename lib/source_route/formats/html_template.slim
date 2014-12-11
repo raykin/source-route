@@ -4,6 +4,7 @@ html
     title Source Route Result
     link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"
     link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/styles/github.min.css"
+    link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
     script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js"
     script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
     script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"
@@ -39,11 +40,10 @@ html
     .container
       .level-header(ng-if="parentLengthList" style="padding-bottom: 10px")
         .btn-group>
-          button.btn.btn-default>(ng-click="traceFilter.parent_length = length" ng-repeat="length in parentLengthList")
-            span> Level
-            span(ng-bind="::length")
+          button.btn.btn-default>(ng-click="outlineTrace()")
+            span> OutLine
         span
-          button.btn.btn-primary(ng-click="traceFilter.parent_length = undefined") Clear
+          button.btn.btn-primary(ng-click="removeOutlineTrace()") Clear
 
       .trace-flow
         .row
@@ -57,7 +57,12 @@ html
               ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
               .header(ng-init="showMoreDetail = false")
                 .btn-group.pull-right
-                  button.btn.btn-info.btn-sm(ng-show="::hasChild()" ng-click="toggleChild()") Child
+                  button.btn.btn-info.btn-sm(ng-if="::hasChild()" ng-click="toggleChild()")
+                    span(ng-hide="trace.childClosed")
+                      i.fa.fa-angle-down
+                    span(ng-show="trace.childClosed")
+                      i.fa.fa-angle-right
+                    span Child
                   button.btn.btn-info.btn-sm(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail") Details
                 span(ng-bind="trace.defined_class")
                 span
@@ -104,6 +109,17 @@ html
               return true;
             }
           }
+        }
+
+        $scope.removeOutlineTrace = function() {
+          _.each($scope.traces, function(trace) { trace.childClosed = false; });
+          $scope.childParentFilter.parent_id = [];
+        }
+
+        $scope.outlineTrace = function() {
+          $scope.childParentFilter.parent_id = [];
+          _.chain($scope.traces).filter({parent_length: 0})
+            .each(function(trace) { trace.childClosed = true; $scope.childParentFilter.parent_id.push(trace.order_id) })
         }
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
@@ -158,21 +174,21 @@ html
 
       sourceRoute.controller('TpTraceCtrl', function($scope) {
         $scope.toggleChild = function() {
-          if ($scope.trace.childOpened) {
-            $scope.hideChild();
-          } else {
+          if ($scope.trace.childClosed) {
             $scope.showChild();
+          } else {
+            $scope.hideChild();
           }
         }
 
         $scope.showChild = function() {
-          $scope.trace.childOpened = true;
-          $scope.childParentFilter.parent_id.push($scope.trace.order_id);
+          $scope.trace.childClosed = false;
+          _.pull($scope.childParentFilter.parent_id, $scope.trace.order_id);
         }
 
         $scope.hideChild = function() {
-          $scope.trace.childOpened = false;
-          _.pull($scope.childParentFilter.parent_id, $scope.trace.order_id);
+          $scope.trace.childClosed = true;
+          $scope.childParentFilter.parent_id.push($scope.trace.order_id);
         }
 
         $scope.hasChild = function() {
