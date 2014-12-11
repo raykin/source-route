@@ -96,6 +96,8 @@ Dynamic indent when new child level comes.
 
 Animation when child was click.
 
+Show loading when click clear. (when $apply() take more than 1 seconds to run)
+
 Add debug option to provide more verbose messages of what has happened
 
 Open File directly from browser(chrome) by plugin?
