@@ -38,7 +38,7 @@ html
     .clearfix
 
     .container
-      .level-header(ng-if="parentLengthList" style="padding-bottom: 10px")
+      .level-header(ng-if="::traces[0].hasOwnProperty('parent_ids')" style="padding-bottom: 10px")
         .btn-group>
           button.btn.btn-default>(ng-click="outlineTrace()")
             span> OutLine
@@ -97,14 +97,13 @@ html
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpSelfList = angular.element("#trace-data").data('tp-self-caches')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
-        $scope.parentLengthList = angular.element("#trace-data").data('tp-parent-length-list')
-        $scope.childParentFilter = { parent_id: [] }
+        $scope.childParentFilter = { hide_parent_ids: [] }
 
         $scope.childParentFilterFn = function(trace) {
-          if ($scope.childParentFilter.parent_id.length == 0) {
+          if ($scope.childParentFilter.hide_parent_ids.length == 0) {
             return true;
           } else {
-            var shared_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.parent_id);
+            var shared_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.hide_parent_ids);
             if (shared_parents.length == 0) {
               return true;
             }
@@ -113,13 +112,13 @@ html
 
         $scope.removeOutlineTrace = function() {
           _.each($scope.traces, function(trace) { trace.childClosed = false; });
-          $scope.childParentFilter.parent_id = [];
+          $scope.childParentFilter.hide_parent_ids = [];
         }
 
         $scope.outlineTrace = function() {
-          $scope.childParentFilter.parent_id = [];
+          $scope.childParentFilter.hide_parent_ids = [];
           _.chain($scope.traces).filter({parent_length: 0})
-            .each(function(trace) { trace.childClosed = true; $scope.childParentFilter.parent_id.push(trace.order_id) })
+            .each(function(trace) { trace.childClosed = true; $scope.childParentFilter.hide_parent_ids.push(trace.order_id) })
         }
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
@@ -183,12 +182,12 @@ html
 
         $scope.showChild = function() {
           $scope.trace.childClosed = false;
-          _.pull($scope.childParentFilter.parent_id, $scope.trace.order_id);
+          _.pull($scope.childParentFilter.hide_parent_ids, $scope.trace.order_id);
         }
 
         $scope.hideChild = function() {
           $scope.trace.childClosed = true;
-          $scope.childParentFilter.parent_id.push($scope.trace.order_id);
+          $scope.childParentFilter.hide_parent_ids.push($scope.trace.order_id);
         }
 
         $scope.hasChild = function() {
@@ -202,5 +201,4 @@ html
       / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
       #trace-data(data-trace="#{jsonify_tp_result_chain}"
         data-tp-events="#{jsonify_events}"
-        data-tp-self-caches="#{jsonify_tp_self_caches}"
-        data-tp-parent-length-list="#{JSON.dump(parent_length_list)}")
+        data-tp-self-caches="#{jsonify_tp_self_caches}")
