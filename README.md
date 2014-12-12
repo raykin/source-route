@@ -41,7 +41,10 @@ you will get a different trace file.
 
 #### In your ruby application
 
-    SourceRoute.enable :wanted_method_name
+    SourceRoute.enable do
+      method_id :wanted_method_name
+      full_feature
+    end
     .... # here is your code
     ....
     ....
