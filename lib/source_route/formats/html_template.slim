@@ -72,7 +72,7 @@ html
                 div(ng-if="trace.hasOwnProperty('return_value')")
                   span
                     | =>
-                  span<(ng-bind="trace.return_value.substring(0, 200) | json")
+                  span<(ng-bind="trace.return_value.substring(0, 200)")
 
               .details(ng-if="showMoreDetail")
                 .attrs.well.well-sm(ng-if="containsOtherAttrs(trace)")
