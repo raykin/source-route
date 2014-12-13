@@ -68,7 +68,7 @@ see full usage in examples/callback_in_activesupport.rb
 
 ## Why
 
-I always wanna upgrade my ruby(rails) skills. But everytime when I look for workaround from stack overflow I feel frustration.
+I always wanna upgrade my ruby(rails) skills. But everytime when I looking for workaround from stack overflow I feel frustration.
 
 To get solution or workaround from google or stack overflow is suitable when I'm a ruby starter or deadline is urgent. But it's not really helpful for my skills.
 
