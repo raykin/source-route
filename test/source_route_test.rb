@@ -118,7 +118,6 @@ class SourceRouteTest < Minitest::Test
       SampleApp.new.nonsense
     end
     assert_equal 1, @wrapper.tp_self_caches.size
-    assert @wrapper.stringify_tp_self_caches.first.is_a? String
     assert @wrapper.tp_self_caches.first.is_a? SampleApp
   end
 
@@ -127,7 +126,7 @@ class SourceRouteTest < Minitest::Test
       SampleApp.new.nonsense
     end
     origin_tp_result_chain = @wrapper.tp_result_chain
-    assert @wrapper.stringify_tp_result_chain.first[:defined_class].is_a? String
+    assert @wrapper.tp_result_chain.stringify.first[:defined_class].is_a? String
     assert_equal origin_tp_result_chain, @wrapper.tp_result_chain
   end
 

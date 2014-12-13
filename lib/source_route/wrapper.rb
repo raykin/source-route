@@ -91,40 +91,16 @@ module SourceRoute
       self.tp = track
     end
 
-    # TODO: move this into chain self
-    def stringify_tp_self_caches
-      tp_self_caches.clone.map(&:to_s)
-    end
-
-    def stringify_tp_result_chain
-      deep_cloned = tp_result_chain.map do |tp_result|
-        tp_result.clone
-      end
-      deep_cloned.map do |tr|
-        # to_s is safer than inspect
-        # ex: inspect on ActiveRecord_Relation may crash
-        tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
-        if tr.key?(:return_value)
-          if tr[:return_value].nil? or tr[:return_value] == ''
-            tr[:return_value] = tr[:return_value].inspect
-          else
-            tr[:return_value] = tr[:return_value].to_s
-          end
-        end
-        tr
-      end
-    end
-
     def jsonify_events
       JSON.dump(@condition.events.map(&:to_s))
     end
 
     def jsonify_tp_result_chain
-      JSON.dump(stringify_tp_result_chain)
+      JSON.dump(tp_result_chain.stringify)
     end
 
     def jsonify_tp_self_caches
-      JSON.dump(stringify_tp_self_caches)
+      JSON.dump(tp_self_caches.clone.map(&:to_s))
     end
   end # END Wrapper
 

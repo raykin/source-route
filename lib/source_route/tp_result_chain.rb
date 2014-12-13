@@ -1,6 +1,8 @@
 module SourceRoute
 
   class TpResultChain
+    attr_reader :chain
+
     extend Forwardable
     def_delegators :@chain, :each, :index, :first, :last, :size, :push, :values_at, :pop, :[]
 
@@ -52,6 +54,26 @@ module SourceRoute
 
     def parent_length_list
       call_chain.map { |tp| tp[:parent_length] }.uniq.sort
+    end
+
+    def deep_cloned
+      chain.map { |r| r.clone }
+    end
+
+    def stringify
+      deep_cloned.map do |tr|
+        # to_s is safer than inspect
+        # ex: inspect on ActiveRecord_Relation may crash
+        tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
+        if tr.key?(:return_value)
+          if tr[:return_value].nil? or tr[:return_value] == ''
+            tr[:return_value] = tr[:return_value].inspect
+          else
+            tr[:return_value] = tr[:return_value].to_s
+          end
+        end
+        tr
+      end
     end
 
     private
