@@ -22,10 +22,13 @@ module SourceRoute
 
     def import_return_value_to_call_chain
       call_chain.each do |ctp|
-        matched_return_tp = return_chain.detect do |rtp|
+        matched_return_tp = return_chain.
+          reject { |c| c[:matched] }.  # matched return tp should not checked again
+          detect do |rtp|
           rtp[:tp_self] == ctp[:tp_self] and rtp[:method_id] == ctp[:method_id] and rtp[:defined_class] == ctp[:defined_class]
         end
         unless matched_return_tp.nil?
+          matched_return_tp[:matched] = true
           ctp[:return_value] = matched_return_tp[:return_value]
           ctp[:local_var] = matched_return_tp[:local_var] if matched_return_tp.key? :local_var
           ctp[:instance_var] = matched_return_tp[:instance_var] if matched_return_tp.key? :instance_var
