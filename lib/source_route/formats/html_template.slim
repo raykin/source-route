@@ -105,13 +105,13 @@ html
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpSelfList = angular.element("#trace-data").data('tp-self-caches')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
-        $scope.childParentFilter = { hide_parent_ids: [] }
+        $scope.childParentFilter = { hide_trace_ids: [] }
 
         $scope.childParentFilterFn = function(trace) {
-          if ($scope.childParentFilter.hide_parent_ids.length == 0) {
+          if ($scope.childParentFilter.hide_trace_ids.length == 0) {
             return true;
           } else {
-            var shared_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.hide_parent_ids);
+            var shared_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.hide_trace_ids);
             if (shared_parents.length == 0) {
               return true;
             }
@@ -120,13 +120,13 @@ html
 
         $scope.removeOutlineTrace = function() {
           _.each($scope.traces, function(trace) { trace.childClosed = false; });
-          $scope.childParentFilter.hide_parent_ids = [];
+          $scope.childParentFilter.hide_trace_ids = [];
         }
 
         $scope.outlineTrace = function() {
-          $scope.childParentFilter.hide_parent_ids = [];
+          $scope.childParentFilter.hide_trace_ids = [];
           _.chain($scope.traces).filter({parent_length: 0})
-            .each(function(trace) { trace.childClosed = true; $scope.childParentFilter.hide_parent_ids.push(trace.order_id) })
+            .each(function(trace) { trace.childClosed = true; $scope.childParentFilter.hide_trace_ids.push(trace.order_id) })
         }
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
@@ -177,6 +177,7 @@ html
           return attrs;
         }
 
+        $scope.outlineTrace();
       })
 
       sourceRoute.controller('TpTraceCtrl', function($scope) {
@@ -190,12 +191,12 @@ html
 
         $scope.showChild = function() {
           $scope.trace.childClosed = false;
-          _.pull($scope.childParentFilter.hide_parent_ids, $scope.trace.order_id);
+          _.pull($scope.childParentFilter.hide_trace_ids, $scope.trace.order_id);
         }
 
         $scope.hideChild = function() {
           $scope.trace.childClosed = true;
-          $scope.childParentFilter.hide_parent_ids.push($scope.trace.order_id);
+          $scope.childParentFilter.hide_trace_ids.push($scope.trace.order_id);
         }
 
         $scope.hasChild = function() {
