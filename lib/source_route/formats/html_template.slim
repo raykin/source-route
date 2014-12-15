@@ -72,7 +72,7 @@ html
                 div(ng-if="trace.hasOwnProperty('return_value')")
                   span
                     | =>
-                  span<(ng-bind="trace.return_value.substring(0, 200)")
+                  span<(ng-bind="::trimString(trace.return_value, 200)")
 
               .details(ng-if="showMoreDetail")
                 .attrs.well.well-sm(ng-if="containsOtherAttrs(trace)")
@@ -84,6 +84,9 @@ html
                 .ins-vars.well.well-sm(ng-if="trace.instance_var")
                   span Instance Var
                   .ins-values(hljs source="::trace.instance_var | json")
+                .return-value
+                  span Return Value
+                  .value(hljs source="::trace.return_value | json")
 
           .right-info.col-sm-2
 
@@ -94,6 +97,11 @@ html
     javascript:
       sourceRoute = angular.module('SourceRoute', ['ui.bootstrap', 'hljs'])
       sourceRoute.controller('MainCtrl', function($scope, $filter) {
+
+        $scope.trimString = function(str, length) {
+          return str.length > length ? str.substring(0, length - 3) + '...' : str;
+        }
+
         $scope.traces = angular.element("#trace-data").data('trace')
         $scope.tpSelfList = angular.element("#trace-data").data('tp-self-caches')
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
