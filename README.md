@@ -103,4 +103,4 @@ Show loading when click clear. (when $apply() take more than 1 seconds to run)
 
 Add debug option to provide more verbose messages of what has happened
 
-Open File directly from browser(chrome) by plugin?
+Open File directly from browser(chrome) by plugin? Maybe check out how better error implement this
