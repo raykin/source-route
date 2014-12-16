@@ -69,7 +69,7 @@ module SourceRoute
         # ex: inspect on ActiveRecord_Relation may crash
         tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
         if tr.key?(:return_value)
-          if tr[:return_value].nil? or tr[:return_value] == ''
+          if tr[:return_value].nil? or tr[:return_value] == '' or tr[:return_value].is_a? Symbol
             tr[:return_value] = tr[:return_value].inspect
           else
             tr[:return_value] = tr[:return_value].to_s
