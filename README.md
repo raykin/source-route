@@ -97,10 +97,13 @@ Finally, I expect my working style can change from searching workaround from int
 
 Dynamic indent when new child level comes.
 
+Is it possible to easily open only direct child
 Animation when child was click.
 
 Show loading when click clear. (when $apply() take more than 1 seconds to run)
 
 Add debug option to provide more verbose messages of what has happened
+
+if instance val contains symbol as value, the json output will be string. It could be confused others.
 
 Open File directly from browser(chrome) by plugin? Maybe check out how better error implement this
