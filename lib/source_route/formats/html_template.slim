@@ -108,14 +108,15 @@ html
         $scope.childParentFilter = { hide_trace_ids: [] }
 
         $scope.childParentFilterFn = function(trace) {
-          if ($scope.childParentFilter.hide_trace_ids.length == 0) {
+          if (trace.parent_ids.length == 0) {
             return true;
           } else {
-            var shared_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.hide_trace_ids);
-            if (shared_parents.length == 0) {
-              return true;
+            var shared_hide_parents = _.intersection(trace.parent_ids, $scope.childParentFilter.hide_trace_ids);
+            if (shared_hide_parents.length > 0 ) {
+              return false;
             }
           }
+          return true;
         }
 
         $scope.removeOutlineTrace = function() {
