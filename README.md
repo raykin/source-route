@@ -66,6 +66,8 @@ It will output the trace when you run the application.
 see more usage in examples.
 see full usage in examples/study_callback.rb
 
+[![Study Callback Example](/master/examples/study_callback.png?raw=true)]
+
 ## Why
 
 I always wanna upgrade my ruby(rails) skills. But everytime when I looking for workaround from stack overflow I feel frustration.
