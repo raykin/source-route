@@ -66,7 +66,7 @@ It will output the trace when you run the application.
 see more usage in examples.
 see full usage in examples/study_callback.rb
 
-[![Study Callback Example](/master/examples/study_callback.png?raw=true)]
+![Study Callback Example](https://cloud.githubusercontent.com/assets/490502/5468821/decbb8fe-860e-11e4-9b74-7aef7f8679fd.png)
 
 ## Why
 
