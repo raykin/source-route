@@ -108,18 +108,17 @@ class SourceRouteTest < Minitest::Test
     SourceRoute.trace method_id: 'nonsense', full_feature: true do
       SampleApp.new.nonsense
     end
-    assert @wrapper.condition.result_config.include_tp_self
     first_result = @wrapper.tp_result_chain.first
     assert_equal first_result[:tp_self], 0
   end
 
-  def test_trace_include_tp_self
-    SourceRoute.trace method_id: 'nonsense', full_feature: true do
-      SampleApp.new.nonsense
-    end
-    assert_equal 1, @wrapper.tp_self_caches.size
-    assert @wrapper.tp_self_caches.first.is_a? SampleApp
-  end
+  # def test_trace_include_tp_self
+  #   SourceRoute.trace method_id: 'nonsense', full_feature: true do
+  #     SampleApp.new.nonsense
+  #   end
+  #   assert_equal 1, @wrapper.tp_self_caches.size
+  #   assert @wrapper.tp_self_caches.first.is_a? SampleApp
+  # end
 
   def test_stringify_tp_result_chain
     SourceRoute.trace method_id: 'nonsense', full_feature: true do
@@ -225,7 +224,6 @@ class SourceRouteTest < Minitest::Test
       result_config.include_instance_var = true
       result_config.include_local_var = true
       result_config.show_additional_attrs = [:path, :lineno]
-      result_config.include_tp_self = true
 
       result_config.filename = 'call_and_return_in_sample_app.html'
       result_config.import_return_to_call = true

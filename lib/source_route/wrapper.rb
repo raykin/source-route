@@ -46,7 +46,6 @@ module SourceRoute
 
         self.events = [:call, :return]
         result_config.import_return_to_call = true
-        result_config.include_tp_self = true
 
         result_config.show_additional_attrs = [:path, :lineno]
         # JSON serialize trigger many problems when handle complicated object

@@ -3,7 +3,7 @@ module SourceRoute
   class GenerateResult
 
     Config = Struct.new(:format, :show_additional_attrs,
-                        :include_local_var, :include_instance_var, :include_tp_self,
+                        :include_local_var, :include_instance_var,
                         :filename, :import_return_to_call) do
       def initialize(f="silence", s=[], ilr=false, iiv=false)
         super(f, s, ilr, iiv)
@@ -44,7 +44,7 @@ module SourceRoute
     def build(trace_point_instance)
       @tp = trace_point_instance
       collect_tp_data
-      collect_tp_self if @config[:include_tp_self]
+      collect_tp_self # NEED more check. Does TracePoint support self for all events?
       collect_local_var_data if @config[:include_local_var]
       collect_instance_var_data if @config[:include_instance_var]
       @collect_data

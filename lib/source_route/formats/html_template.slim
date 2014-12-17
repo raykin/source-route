@@ -64,7 +64,7 @@ html
                       i.fa.fa-angle-right
                     span Child
                   button.btn.btn-info.btn-sm(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail") Details
-                span(ng-bind="trace.defined_class")
+                span(ng-bind="::tpSelfList[trace.tp_self]")
                 span
                   | .
                 mark.method-value(ng-bind="trace.method_id")
@@ -74,7 +74,7 @@ html
                     | =>
                   span<(ng-bind="::trimString(trace.return_value, 200)")
 
-              .details(ng-if="showMoreDetail")
+              .details(ng-if="showMoreDetail" style="margin-top: 10px")
                 .attrs.well.well-sm(ng-if="containsOtherAttrs(trace)")
                   span Attrs
                   div(hljs source="::combinedAttrs(trace) | json")
@@ -84,7 +84,7 @@ html
                 .ins-vars.well.well-sm(ng-if="trace.instance_var")
                   span Instance Var
                   .ins-values(hljs source="::trace.instance_var | json")
-                .return-value
+                .return-value(ng-if="trace.hasOwnProperty('return_value')")
                   span Return Value
                   .value(hljs source="::trace.return_value | json")
 
@@ -108,6 +108,9 @@ html
         $scope.childParentFilter = { hide_trace_ids: [] }
 
         $scope.childParentFilterFn = function(trace) {
+          if (!trace.hasOwnProperty('parent_ids')) {
+            return true;
+          }
           if (trace.parent_ids.length == 0) {
             return true;
           } else {
@@ -157,7 +160,7 @@ html
 
         $scope.containsOtherAttrs = function(trace) {
           return trace.hasOwnProperty('path') || trace.hasOwnProperty('lineno') ||
-            trace.hasOwnProperty('tp_self');
+            trace.hasOwnProperty('defined_class');
         }
 
         $scope.containsDetail = function(trace) {
@@ -168,12 +171,12 @@ html
         $scope.combinedAttrs = function(trace) {
           var attrs = {}
           if (trace.hasOwnProperty('lineno') && trace.hasOwnProperty('path')) {
-            attrs.path = trace.path + ":" + trace.lineno;
+            attrs.method_defined_on = trace.path + ":" + trace.lineno;
           } else if (trace.hasOwnProperty('path')) {
-            attrs.path = trace.path;
+            attrs.method_defined_on = trace.path;
           }
-          if (trace.hasOwnProperty('tp_self')) {
-            attrs.self = $scope.tpSelfList[trace.tp_self];
+          if (trace.hasOwnProperty('defined_class')) {
+            attrs.method_defined_in = trace.defined_class;
           }
           return attrs;
         }
