@@ -72,14 +72,14 @@ see full usage in examples/study_callback.rb
 
 I always wanna upgrade my ruby(rails) skills. But everytime when I looking for workaround from stack overflow I feel frustration.
 
-To get solution or workaround from google or stack overflow is suitable when I'm a ruby starter or deadline is urgent. But it's not really helpful for my skills.
+To get solution or workaround from google or stack overflow is suitable when I'm a ruby starter or task is urgent. But it's not really helpful to levelup my skills.
 
-The way how I solve problem define my skills border and depth. So if I slove problems by search google and stack overflow with workarounds, I mostly just increase my experiences on ruby(rails). But if I solve problems directly, in most case, I can say my skill border extends.
+The way how I solve problem define my skills' border and depth. So if I slove problems by search google and stack overflow with workarounds, I mostly just increase my experiences on ruby(rails). But if I solve problems directly, in most case, I can say my skill border extends.
 
 That's why I create this gem. To solve problems directly, I need to know what happened in call or return traces.
 Fortunately ruby 2.0 introduce a new feature TracePoint to easily trace inner event. But it's not easily to be used as daily tool. This gem tries to make tracing more readable and easily in our daily work.
 
-Finally, I expect my working style can change from searching workaround from internet to reading code trace(then more easily check source) directly. I hope it can help you too.
+Finally, I expect my working style can changes from searching workaround from internet to reading code trace(then more easily check source) directly. I hope it can help you too.
 
 ## Test
 
