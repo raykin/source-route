@@ -205,7 +205,6 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense_with_instance_var
     @wrapper.treeize_call_chain
-    @wrapper.treeize_call_chain
     call_results = @wrapper.call_chain
 
     nonsense_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense }
