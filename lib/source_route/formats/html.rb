@@ -10,7 +10,7 @@ module SourceRoute
         template_path = File.expand_path "../html_template.slim", __FILE__
         slim_template = Slim::Template.new(template_path, pretty: true)
 
-        filename = result_config[:filename] || "#{Time.now.strftime('%H%M')}-source-route.html"
+        filename = result_config[:filename] || "#{Time.now.strftime('%H')}-source-route.html"
 
         if result_config.import_return_to_call and wrapper.condition.has_call_and_return_event
           wrapper.import_return_value_to_call_chain
