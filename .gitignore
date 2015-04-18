@@ -21,3 +21,5 @@ tmp
 *.a
 mkmf.log
 .ruby-version
+
+call_and_return_in_sample_app.html
