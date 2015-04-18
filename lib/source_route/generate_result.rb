@@ -77,6 +77,14 @@ module SourceRoute
 
     private
 
+    def collect_tp_data
+      tp_data = output_attributes(@tp.event).inject({}) do |memo, key|
+        memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
+        memo
+      end
+      @collect_data = TpResult.new(tp_data)
+    end
+
     # include? will evaluate @tp.self, if @tp.self is AR::Relation, it could cause problems
     # So that's why I use object_id as replace
     def collect_tp_self
@@ -86,19 +94,12 @@ module SourceRoute
       @collect_data[:tp_self] = @wrapper.tp_self_caches.map(&:__id__).index(@tp.self.__id__)
     end
 
-    def collect_tp_data
-      @collect_data = output_attributes(@tp.event).inject({}) do |memo, key|
-        memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
-        memo
-      end
-    end
-
     def collect_local_var_data
       local_var_hash = {}
 
       # Warn: @tp.binding.eval('local_variables') =! @tp.binding.send('local_variables')
       @tp.binding.eval('local_variables').each do |v|
-        local_var_hash[v] = @tp.binding.local_variable_get v
+        local_var_hash[v] = @tp.binding.local_variable_get(v).source_route_display
       end
       if local_var_hash != {}
         @collect_data.merge!(local_var: local_var_hash)
@@ -108,7 +109,7 @@ module SourceRoute
     def collect_instance_var_data
       instance_var_hash = {}
       @tp.self.instance_variables.each do |key|
-        instance_var_hash[key] = @tp.self.instance_variable_get(key)
+        instance_var_hash[key] = @tp.self.instance_variable_get(key).source_route_display
       end
       if instance_var_hash != {}
         @collect_data.merge!(instance_var: instance_var_hash)

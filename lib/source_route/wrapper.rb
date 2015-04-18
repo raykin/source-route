@@ -72,7 +72,7 @@ module SourceRoute
 
     def trace
       # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
-      tp_result = GenerateResult.new(self)
+      build_result = GenerateResult.new(self)
       tp_filter = TpFilter.new(condition)
 
       track = TracePoint.new *condition.events do |tp|
@@ -80,26 +80,28 @@ module SourceRoute
         next if tp_filter.block_it?(tp)
 
         unless condition.result_config.format.is_a? Proc
-          ret_data = tp_result.build(tp)
+          ret_data = build_result.build(tp)
           @tp_result_chain.push(ret_data)
         end
 
-        tp_result.output(tp)
+        build_result.output(tp)
       end
       track.enable
       self.tp = track
     end
 
     def jsonify_events
-      JSON.dump(@condition.events.map(&:to_s))
+      Oj.dump(@condition.events.map(&:to_s))
     end
 
     def jsonify_tp_result_chain
-      JSON.dump(tp_result_chain.stringify)
+      # puts tp_result_chain.stringify
+      json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
+      '[ ' + json_array.join(',') + ' ]'
     end
 
     def jsonify_tp_self_caches
-      JSON.dump(tp_self_caches.clone.map(&:to_s))
+      Oj.dump(tp_self_caches.clone.map(&:to_s))
     end
   end # END Wrapper
 

@@ -1,5 +1,5 @@
 module SourceRoute
-
+  # delegate to Array
   class TpResultChain
     attr_reader :chain
 
@@ -13,25 +13,19 @@ module SourceRoute
     end
 
     def call_chain
-      select { |tpr| tpr[:event] == :call }
+      select(&:call_event?)
     end
 
     def return_chain
-      select { |tpr| tpr[:event] == :return }
+      select(&:return_event?)
     end
 
     def import_return_value_to_call_chain
       call_chain.each do |ctp|
-        matched_return_tp = return_chain.
-          reject { |c| c[:matched] }.  # matched return tp should not checked again
-          detect do |rtp|
-          rtp[:tp_self] == ctp[:tp_self] and rtp[:method_id] == ctp[:method_id] and rtp[:defined_class] == ctp[:defined_class]
-        end
+        matched_return_tp = return_chain.reject(&:matched?).detect {|rtp| rtp == ctp}
+
         unless matched_return_tp.nil?
-          matched_return_tp[:matched] = true
-          ctp[:return_value] = matched_return_tp[:return_value]
-          ctp[:local_var] = matched_return_tp[:local_var] if matched_return_tp.key? :local_var
-          ctp[:instance_var] = matched_return_tp[:instance_var] if matched_return_tp.key? :instance_var
+          matched_return_tp.return_assign_call(ctp)
         end
       end
     end
@@ -68,9 +62,11 @@ module SourceRoute
       deep_cloned.map do |tr|
         # to_s is safer than inspect
         # ex: inspect on ActiveRecord_Relation may crash
-        tr[:defined_class] = tr[:defined_class].to_s if tr.key?(:defined_class)
-        if tr.key?(:return_value)
-          if tr[:return_value].nil? or tr[:return_value] == '' or tr[:return_value].is_a? Symbol
+        tr[:defined_class] = tr[:defined_class].to_s if tr.has_key?(:defined_class)
+        if tr.has_key?(:return_value)
+          if tr[:return_value].nil? or tr[:return_value].is_a? Symbol or
+            # ActiveRecord::ConnectionAdapters::Column override method ==
+              (tr[:return_value].is_a? String and tr[:return_value] == '')
             tr[:return_value] = tr[:return_value].inspect
           else
             tr[:return_value] = tr[:return_value].to_s

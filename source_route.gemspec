@@ -20,6 +20,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'awesome_print'
   spec.add_dependency 'slim'
+  spec.add_dependency 'multi_json'
+  spec.add_dependency 'oj'
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"

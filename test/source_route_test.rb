@@ -47,6 +47,7 @@ class SourceRouteTest < Minitest::Test
 
   def test_not_match
     SourceRoute.enable do
+      defined_class 'SampleApp' # without it, a dead loop will occur
       method_id_not 'nonsense'
     end
     SampleApp.new.nonsense
@@ -157,7 +158,7 @@ class SourceRouteTest < Minitest::Test
     ret_value = @wrapper.tp_result_chain.last
 
     assert_equal 88, ret_value[:local_var][:param1]
-    assert_equal nil, ret_value[:local_var][:param2]
+    assert_equal 'nil', ret_value[:local_var][:param2]
   end
 
   def test_track_local_var_when_event_is_return
@@ -196,7 +197,7 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.init_cool_app
     @wrapper.import_return_value_to_call_chain
-    assert @wrapper.call_chain[0].key?(:return_value), 'call results should contain return_value'
+    assert @wrapper.call_chain[0].has_key?(:return_value), 'call results should contain return_value'
   end
 
   def test_order_call_sequence
