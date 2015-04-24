@@ -21,7 +21,7 @@ module SourceRoute
 
       TRACE_POINT_METHODS.each do |m|
         define_method m do |*v|
-          positive[m] = v.map(&:to_s).join('|')
+          positive[m] = v.flatten.map(&:to_s).join('|')
         end
 
         define_method "#{m}_not" do |*v|
@@ -55,6 +55,14 @@ module SourceRoute
           result_config.include_instance_var = true
           result_config.include_local_var = true
         end
+      end
+
+      def debug(value=false)
+        @debug = value
+      end
+
+      def is_debug?
+        @debug
       end
     end
 

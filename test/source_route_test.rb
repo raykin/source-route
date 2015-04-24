@@ -54,13 +54,14 @@ class SourceRouteTest < Minitest::Test
     refute_includes @wrapper.tp_result_chain.map(&:values).flatten, 'nonsense'
   end
 
-  def test_match_class_name
+  def test_match_multiple_class_name
     SourceRoute.enable do
-      defined_class :SampleApp
+      defined_class [:SampleApp, :String]
     end
 
     SampleApp.new.nonsense
     assert @wrapper.tp_result_chain.size > 0
+    assert_equal SampleApp, @wrapper.tp_result_chain.last.core[:defined_class]
   end
 
   def test_source_route_with_one_parameter
@@ -98,9 +99,7 @@ class SourceRouteTest < Minitest::Test
   end
 
   def test_trace_with_c_call
-    SourceRoute.trace event: :c_call do
-      'abc'.upcase
-    end
+    SourceRoute.trace(event: :c_call) { 'abc'.upcase }
 
     assert_equal 2, @wrapper.tp_result_chain.size
   end
