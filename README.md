@@ -24,15 +24,11 @@ Or install it yourself as:
 
 #### In irb or pry
 
-    SourceRoute.trace output_format: :console, event: :c_call do
-      'abc'.upcase
-    end
+    SourceRoute.trace(output_format: :console, event: :c_call) { 'abc'.upcase }
 
 #### In rails console
 
-    SourceRoute.trace defined_class: :ActiveRecord, output_format: :html do
-      User.new
-    end
+    SourceRoute.trace(defined_class: :ActiveRecord, output_format: :html) { User.new }
 
 It will generate a html file, open it and you can get the trace of User.new
 
