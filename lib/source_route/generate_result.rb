@@ -83,6 +83,7 @@ module SourceRoute
         memo
       end
       @collect_data = TpResult.new(tp_data)
+      puts @collect_data.inspect if @wrapper.condition.is_debug?
     end
 
     # include? will evaluate @tp.self, if @tp.self is AR::Relation, it could cause problems
