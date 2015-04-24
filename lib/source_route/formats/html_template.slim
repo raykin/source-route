@@ -46,7 +46,7 @@ html
           button.btn.btn-default>(ng-click="outlineTrace()")
             span> OutLine
         span
-          button.btn.btn-primary(ng-click="removeOutlineTrace()") Expand ALL
+          button.btn.btn-primary(ng-click="expandAllTrace()") Expand ALL
 
       .trace-flow
         .row
@@ -58,7 +58,7 @@ html
           .traces.center-info.col-sm-12(ng-class="{{traceFilter.event}}")
             .trace.well(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn"
               ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
-              pulse-spinner(ng-show="togglingChild")
+
               .header(ng-init="showMoreDetail = false")
                 .btn-group.pull-right
                   button.btn.btn-info.btn-sm(ng-if="::hasChild()" ng-click="toggleChild()")
@@ -73,6 +73,7 @@ html
                   | .
                 mark.method-value(ng-bind="trace.method_id")
                 / workaround for return_value is 'false' and return_value always to be string when existed
+                pulse-spinner(ng-show="togglingChild")
                 div(ng-if="trace.hasOwnProperty('return_value')")
                   span
                     | =>
@@ -127,7 +128,7 @@ html
           return true;
         }
 
-        $scope.removeOutlineTrace = function() {
+        $scope.expandAllTrace = function() {
           _.each($scope.traces, function(trace) { trace.childClosed = false; });
           $scope.childParentFilter.hide_trace_ids = [];
         }
