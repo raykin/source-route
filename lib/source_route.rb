@@ -15,6 +15,23 @@ require "source_route/tp_result_chain"
 require "source_route/tp_filter"
 require 'source_route/json_overrides/activerecord_associations_association'
 
+begin
+  if Rails
+    ActiveSupport.on_load(:after_initialize, yield: true) do
+      # make it respond to to_s. IN rails source, almost all of its methods are removed, including to_s.
+      module ActiveSupport
+        class OptionMerger
+          def to_s
+            "<#ActiveSupport #{__id__}>"
+          end
+        end
+      end # END ActiveSupport
+    end
+  end
+rescue NameError
+  nil
+end
+
 module SourceRoute
   extend self
 
