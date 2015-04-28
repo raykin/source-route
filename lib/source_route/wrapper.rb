@@ -109,7 +109,8 @@ module SourceRoute
     end
 
     def jsonify_tp_self_caches
-      Oj.dump(tp_self_caches.clone.map(&:to_s))
+      Oj.dump(tp_self_caches.clone
+                .map(&:to_s))
     end
   end # END Wrapper
 
