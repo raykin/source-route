@@ -137,6 +137,7 @@ html
           $scope.childParentFilter.hide_trace_ids = [];
           _.chain($scope.traces).filter({parent_length: 0})
             .each(function(trace) { trace.childClosed = true; $scope.childParentFilter.hide_trace_ids.push(trace.order_id) })
+          _.each($scope.traces, function(trace) { trace.showMoreDetail = false })
         }
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
