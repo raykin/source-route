@@ -28,4 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'pry-byebug'
+  spec.add_development_dependency 'guard'
+  spec.add_development_dependency 'guard-shell'
+  spec.add_development_dependency 'guard-livereload'
 end
