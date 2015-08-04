@@ -97,9 +97,9 @@ module SourceRoute
 
     def collect_local_var_data
       local_var_hash = {}
-
       # Warn: @tp.binding.eval('local_variables') =! @tp.binding.send('local_variables')
       @tp.binding.eval('local_variables').each do |v|
+        # I need rememeber why i need source_route_display
         local_var_hash[v] = @tp.binding.local_variable_get(v).source_route_display
       end
       if local_var_hash != {}

@@ -93,6 +93,8 @@ Finally, I expect my working style can changes from searching workaround from in
 
 ### TODO
 
+Cleanup assets. Remove useless.
+
 Dynamic indent when new child level comes.
 
 Is it possible to easily open only direct child
