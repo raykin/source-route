@@ -2,7 +2,6 @@ doctype html
 html
   head
     title Source Route Result
-    link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
     link rel="stylesheet" href="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.css"
     link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.0.7/semantic.min.css"
     link rel="stylesheet" href="https://cdn.rawgit.com/mohsen1/json-formatter/master/dist/json-formatter.css"
@@ -34,11 +33,11 @@ html
         .item
           .ui.buttons
             button.ui.labeled.icon.button.olive(ng-click="outlineTrace()")
-              i.fa.fa-angle-double-right.left.icon
+              i.angle.double.right.icon
               span OutLine
             .or
             button.ui.right.labeled.icon.button.green(ng-click="expandAllTrace()")
-              i.fa.fa-angle-double-down.right.icon
+              i.angle.double.down.icon
               span Expand
         .right.menu
           .item
@@ -63,11 +62,11 @@ html
             .description
               .ui.vertical.buttons.basic
                 button.ui.labeled.icon.button(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
-                  i.icon.fa.fa-info
+                  i.info.icon
                   span Details
                 button.ui.labeled.icon.button(ng-if="::hasChild()" ng-click="toggleChild()" ng-class="{loading: togglingchild}")
-                  i.icon.fa.fa-angle-down(ng-hide="trace.childClosed")
-                  i.icon.fa.fa-angle-right(ng-show="trace.childClosed")
+                  i.icon.angle.down(ng-hide="trace.childClosed")
+                  i.icon.angle.right(ng-show="trace.childClosed")
                   span Child
                 pulse-spinner(ng-show="togglingChild")
 
