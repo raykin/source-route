@@ -51,8 +51,7 @@ html
             .ui.segment.left.floated.padded
               .header
                 span(ng-bind="::tpSelfList[trace.tp_self]")
-              .meta
-                .ui.grey.empty.circular.label
+                i.circle.icon.grey(style="font-size: 0.3em")
                 span.method-value(ng-bind="::trace.method_id")
               / workaround for return_value is 'false' and return_value always to be string when existed
               .meta(ng-if="trace.hasOwnProperty('return_value')")
@@ -157,8 +156,7 @@ html
         }
 
         $scope.containsOtherAttrs = function(trace) {
-          return trace.hasOwnProperty('path') || trace.hasOwnProperty('lineno') ||
-            trace.hasOwnProperty('defined_class');
+          return trace.hasOwnProperty('path') || trace.hasOwnProperty('lineno')
         }
 
         $scope.containsDetail = function(trace) {
