@@ -3,12 +3,11 @@ html
   head
     title Source Route Result
     link rel="stylesheet" href="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.css"
-    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.0.7/semantic.min.css"
     link rel="stylesheet" href="https://cdn.rawgit.com/mohsen1/json-formatter/master/dist/json-formatter.css"
+    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.0.7/semantic.min.css"
 
+    script async=true src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.js"
     script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
-    script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js"
-    script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.js"
     script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"
     script async=true src="http://oss.maxcdn.com/semantic-ui/2.0.7/semantic.min.js"
 
@@ -85,15 +84,12 @@ html
                     .ui.grey.right.ribbon.label Return Value
                     json-formatter(json="::trace.return_value")
 
-
-    script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"
-    script src="http://pc035860.github.io/angular-highlightjs/angular-highlightjs.min.js"
     script src="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.js"
     script src="https://cdn.rawgit.com/mohsen1/json-formatter/master/dist/json-formatter.js"
-    script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-sanitize.js"
+    // script async src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-sanitize.js"
 
     javascript:
-      sourceRoute = angular.module('SourceRoute', ['ngSanitize', 'jsonFormatter', 'hljs', 'angular-spinkit'])
+      sourceRoute = angular.module('SourceRoute', ['jsonFormatter', 'angular-spinkit'])
       sourceRoute.controller('MainCtrl', function($scope, $filter) {
 
         // setup different color on menu item may not be a good solution
