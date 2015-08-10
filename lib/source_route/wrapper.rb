@@ -13,6 +13,7 @@ module SourceRoute
 
     Condition = Struct.new(:events, :negatives, :positive, :result_config) do
       def initialize(e=[:call], n={}, p={}, r=GenerateResult::Config.new)
+        @debug = false
         super(e, n, p, r)
       end
     end
