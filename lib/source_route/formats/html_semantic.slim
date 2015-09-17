@@ -20,6 +20,7 @@ html
       .item.trace.call-level-5 { padding-left: 250px }
       .item.trace.call-level-6 { padding-left: 300px }
       .item.trace.call-level-7 { padding-left: 300px }
+      // level more than 7 seems not reasonable
 
   body(ng-app="SourceRoute" ng-controller="MainCtrl" ng-cloak)
 
@@ -31,11 +32,11 @@ html
           a(href="#" ng-click="traceFilter.event = event" ng-bind="::event")
         .item
           .ui.buttons
-            button.ui.labeled.icon.button.olive(ng-click="outlineTrace()")
+            button.ui.labeled.icon.button.olive(ng-click="outlineTrace()" ng-class="{loading: outlineTraceLoading}")
               i.angle.double.right.icon
               span OutLine
             .or
-            button.ui.right.labeled.icon.button.green(ng-click="expandAllTrace()")
+            button.ui.right.labeled.icon.button.green(ng-click="expandAllTrace()" ng-class="{loading: expandAllTraceLoading}")
               i.angle.double.down.icon
               span Expand
         .right.menu
@@ -62,14 +63,17 @@ html
                 button.ui.labeled.icon.button(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
                   i.info.icon
                   span Details
-                button.ui.labeled.icon.button(ng-if="::hasChild()" ng-click="toggleChild()" ng-class="{loading: togglingchild}")
+                button.ui.labeled.icon.button(ng-if="::hasChild()" ng-click="toggleChild()" ng-class="{loading: togglingChild}")
                   i.icon.angle.down(ng-hide="trace.childClosed")
                   i.icon.angle.right(ng-show="trace.childClosed")
                   span Child
                 pulse-spinner(ng-show="togglingChild")
 
               .details.right.floated(ng-if="showMoreDetail")
-                .ui.segments
+                .ui.segments(style="border-color: blue")
+                  .ui.segment(ng-if="::trace.hasOwnProperty('return_value')")
+                    .ui.grey.right.ribbon.label Return Value
+                    json-formatter(json="::trace.return_value")
                   .ui.segment(ng-if="::containsOtherAttrs(trace)")
                     .ui.orange.right.ribbon.label Trace Attrs
                     json-formatter(open="1" json="::plusTraceAttrs[trace.order_id]")
@@ -79,9 +83,6 @@ html
                   .ui.segment(ng-if="::trace.instance_var")
                     .ui.blue.right.ribbon.label Instance Var
                     json-formatter(open="1" json="::trace.instance_var")
-                  .ui.segment(ng-if="::trace.hasOwnProperty('return_value')")
-                    .ui.grey.right.ribbon.label Return Value
-                    json-formatter(json="::trace.return_value")
 
     script src="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.js"
     script src="https://cdn.rawgit.com/mohsen1/json-formatter/master/dist/json-formatter.js"
@@ -89,7 +90,7 @@ html
 
     javascript:
       sourceRoute = angular.module('SourceRoute', ['jsonFormatter', 'angular-spinkit'])
-      sourceRoute.controller('MainCtrl', function($scope, $filter) {
+      sourceRoute.controller('MainCtrl', function($scope, $filter, $timeout) {
 
         // setup different color on menu item may not be a good solution
         // $scope.menuColorList = ['yellow', 'olive', 'green', 'teal', 'violet', 'purple', 'brown']
@@ -118,16 +119,23 @@ html
         }
 
         $scope.expandAllTrace = function() {
-          _.each($scope.traces, function(trace) { trace.childClosed = false; });
-          $scope.childParentFilter.hide_trace_ids = [];
+          $scope.expandAllTraceLoading = true
+          $timeout(function() {
+            _.each($scope.traces, function(trace) { trace.childClosed = false; });
+            $scope.childParentFilter.hide_trace_ids = [];
+            $scope.expandAllTraceLoading = false
+            $scope.expandAllTraceLoading = false
+          }, 100)
         }
 
         $scope.outlineTrace = function() {
+          $scope.outlineTraceLoading = true
           $scope.childParentFilter.hide_trace_ids = [];
           _.chain($scope.traces).filter({parent_length: 0, event: $scope.traceFilter.event})
             .each(function(trace) {
               trace.childClosed = true; $scope.childParentFilter.hide_trace_ids.push(trace.order_id) }
             ).value()
+          $scope.outlineTraceLoading = false
         }
 
         $scope.traceFilter = {event: $scope.tpEvents[0]}
