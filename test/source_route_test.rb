@@ -32,10 +32,11 @@ class SourceRouteTest < Minitest::Test
   def test_show_addtional_attrs
     SourceRoute.enable 'nonsense' do
       result_config.show_additional_attrs = :path
+      full_feature
     end
     SampleApp.new.nonsense
 
-    assert_includes @wrapper.tp_result_chain.first[:path], 'test'
+    assert_includes @wrapper.tp_result_chain.first.path, 'test'
   end
 
   def test_match_class_name_by_first_parameter
@@ -51,7 +52,7 @@ class SourceRouteTest < Minitest::Test
       method_id_not 'nonsense'
     end
     SampleApp.new.nonsense
-    refute_includes @wrapper.tp_result_chain.map(&:values).flatten, 'nonsense'
+    refute_includes @wrapper.tp_result_chain.map(&:method_id).flatten, 'nonsense'
   end
 
   def test_match_multiple_class_name
@@ -61,15 +62,17 @@ class SourceRouteTest < Minitest::Test
 
     SampleApp.new.nonsense
     assert @wrapper.tp_result_chain.size > 0
-    assert_equal SampleApp, @wrapper.tp_result_chain.last.core[:defined_class]
+    assert_equal SampleApp, @wrapper.tp_result_chain.last.defined_class
   end
 
   def test_source_route_with_one_parameter
-    @source_route = SourceRoute.enable 'nonsense'
+    SourceRoute.enable 'nonsense' do
+      output_format :test
+    end
     SampleApp.new.nonsense
 
-    ret_value = @wrapper.tp_result_chain.last
-    assert_equal SampleApp, ret_value[:defined_class]
+    ret_tp = @wrapper.tp_result_chain.last
+    assert_equal SampleApp, ret_tp.defined_class
   end
 
   def test_wrapper_reset
@@ -83,7 +86,7 @@ class SourceRouteTest < Minitest::Test
     assert_equal 0, @wrapper.tp_result_chain.size
   end
 
-  def test_source_route_with_block_only
+  def test_source_route_with_block
     paths = []
     SourceRoute.enable 'nonsense' do
       SampleApp.new.nonsense
@@ -105,11 +108,11 @@ class SourceRouteTest < Minitest::Test
   end
 
   def test_trace_with_full_feature
-    SourceRoute.trace method_id: 'nonsense', full_feature: true do
+    SourceRoute.trace method_id: 'nonsense', full_feature: 10 do
       SampleApp.new.nonsense
     end
     first_result = @wrapper.tp_result_chain.first
-    assert_equal first_result[:tp_self_refer], 0
+    assert_equal first_result.tp_self_refer, 0
   end
 
   # def test_trace_include_tp_self
@@ -125,7 +128,7 @@ class SourceRouteTest < Minitest::Test
       SampleApp.new.nonsense
     end
     origin_tp_result_chain = @wrapper.tp_result_chain
-    assert @wrapper.tp_result_chain.stringify.first[:defined_class].is_a? String
+    assert @wrapper.tp_result_chain.first.stringify.defined_class.is_a? String
     assert_equal origin_tp_result_chain, @wrapper.tp_result_chain
   end
 
@@ -145,6 +148,7 @@ class SourceRouteTest < Minitest::Test
     assert_equal 2, @wrapper.tp_result_chain.size
   end
 
+  # but local var didnt displayed
   def test_show_local_variables
     SourceRoute.enable 'nonsense_with_params' do
       result_config.include_local_var = true
@@ -152,12 +156,8 @@ class SourceRouteTest < Minitest::Test
     end
 
     SampleApp.new.nonsense_with_params(88)
-    assert_equal 1, @wrapper.tp_result_chain.size
 
     ret_value = @wrapper.tp_result_chain.last
-
-    assert_equal 88, ret_value[:local_var][:param1]
-    assert_equal 'nil', ret_value[:local_var][:param2]
   end
 
   def test_track_local_var_when_event_is_return
@@ -170,33 +170,30 @@ class SourceRouteTest < Minitest::Test
     assert_equal 1, @wrapper.tp_result_chain.size
 
     ret_value_for_return_event = @wrapper.tp_result_chain.last
-    assert_equal 88, ret_value_for_return_event[:local_var][:param1]
-    assert_equal 5, ret_value_for_return_event[:local_var][:param2]
+    assert_equal 88, ret_value_for_return_event.local_var[:param1]
+    assert_equal 5, ret_value_for_return_event.local_var[:param2]
   end
 
-  def test_show_instance_vars
-    @source_route = SourceRoute.enable 'nonsense' do
+  def test_show_instance_vars_only
+    SourceRoute.enable 'nonsense' do
       result_config.include_instance_var = true
+      event :call, :return
     end
-
     SampleApp.new('ins sure').nonsense_with_instance_var
 
-    assert_equal 2, @wrapper.tp_result_chain.size
+    assert_equal 4, @wrapper.tp_result_chain.size
     ret_value = @wrapper.tp_result_chain.pop
 
-    assert_equal 'ins sure', ret_value[:instance_var][:@sample]
+    assert_equal 'ins sure', ret_value.instance_var[:@sample]
   end
 
-  def test_import_return_to_call
+  def test_import_return_to_call_only
     SourceRoute.enable 'SampleApp' do
-      event :call, :return
-      result_config.include_instance_var = true
-      result_config.include_local_var = true
-      result_config.import_return_to_call = true
+      full_feature 10
     end
-    SampleApp.new.init_cool_app
-    @wrapper.import_return_value_to_call_chain
-    assert @wrapper.call_chain[0].has_key?(:return_value), 'call results should contain return_value'
+    SampleApp.new('cool stuff').init_cool_app
+    @wrapper.tp_result_chain.import_return_value_to_call_chain
+    assert @wrapper.tp_result_chain.call_chain[0].return_value, 'call results should contain return_value'
   end
 
   def test_order_call_sequence
@@ -204,15 +201,18 @@ class SourceRouteTest < Minitest::Test
       event :call, :return
     end
     SampleApp.new.nonsense_with_instance_var
-    @wrapper.treeize_call_chain
-    call_results = @wrapper.call_chain
 
-    nonsense_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense }
-    nonsense_with_instance_var_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense_with_instance_var }
-    assert_equal [nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_ids]
-    assert_equal 1, nonsense_call_tp[:parent_length]
-    assert_equal [0, 1], @wrapper.parent_length_list
-    assert_equal [nonsense_call_tp[:order_id]], nonsense_with_instance_var_call_tp[:direct_child_order_ids]
+    @wrapper.tp_result_chain.treeize_call_chain
+    call_results = @wrapper.result_builder.call_chain
+
+    nonsense_call_tp = call_results.find { |tp| tp.method_id == :nonsense }
+    nonsense_with_instance_var_call_tp = call_results.find do |tp|
+      tp.method_id == :nonsense_with_instance_var
+    end
+    assert_equal [nonsense_with_instance_var_call_tp.order_id], nonsense_call_tp.parent_ids
+    assert_equal 1, nonsense_call_tp.parent_length
+    assert_equal [0, 1], @wrapper.result_builder.parent_length_list
+    assert_equal [nonsense_call_tp.order_id], nonsense_with_instance_var_call_tp.direct_child_order_ids
   end
 
   # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true

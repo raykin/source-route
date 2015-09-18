@@ -1,17 +1,23 @@
 module SourceRoute
   # How it work
   # 0. Config collect route options
-  # 1. Proxy Generate TracePoint Filter
-  # 2. Proxy Generate TracePoint Monitor Block
-  # 3. Collect wanted TracePoint
+  # 1. Proxy generate TracePoint Filter
+  # 2. Proxy generate TracePoint Monitor Block
+  # 3. Generator collect Wanted TracePoint
   # 4. Parse and Generate Useful data from wanted TracePoint
   # 5. Output data with correct format
   class GenerateResult
 
+    attr_reader :tp_result_chain, :tp_self_caches, :collected_data
+
+    extend Forwardable
+
+    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain, :call_chain, :return_chain, :parent_length_list
+
     Config = Struct.new(:format, :show_additional_attrs,
                         :include_local_var, :include_instance_var,
                         :filename, :import_return_to_call) do
-      def initialize(f="silence", s=[], ilr=false, iiv=false)
+      def initialize(f=:test, s=[], ilr=false, iiv=false)
         super(f, s, ilr, iiv)
       end
     end
@@ -38,40 +44,47 @@ module SourceRoute
 
       @config = @wrapper.condition.result_config
 
-      @tp_events = @wrapper.condition.events
+      @tp_result_chain = TpResultChain.new
+
+      @tp_self_caches = []
+      @wanted_attributes = {}
     end
 
-    def output_attributes(event)
-      attrs = DEFAULT_ATTRS[event] + Array(@config.show_additional_attrs)
-      attrs.push(:event) if @tp_events.size > 1
-      attrs.uniq
+    # it cached and only calculate once for one trace point block round
+    def self.wanted_attributes(event)
+      @wanted_attributes.fetch event do
+        attrs = DEFAULT_ATTRS[event] + Array(SourceRoute.wrapper.condition.result_config.show_additional_attrs)
+        attrs.push(:event)
+        @wanted_attributes[event] = attrs.uniq
+        @wanted_attributes[event]
+      end
     end
 
-    def build(trace_point_instance)
-      @tp = trace_point_instance
-      collect_tp_data
-      collect_tp_self # NEED more check. Does TracePoint support self for all events?
-      collect_local_var_data if @config[:include_local_var]
-      collect_instance_var_data if @config[:include_instance_var]
-      @collect_data
+    def self.clear_wanted_attributes
+      @wanted_attributes = {}
     end
 
     def output(tp_ins)
-
       format = @config.format
       format = format.to_sym if format.respond_to? :to_sym
 
-      case format
-      when :console # need @collect_data
-        console_put
-      when :html
-      # we cant generate html right now becase the tp collection is still in process
-      # so we collect tp here
+      assign_tp_self_caches(tp_ins)
+      # we cant call method on tp_ins outside of track block,
+      # so we have to run it immediately
 
-        # I cant solve the problem: to generate html at the end,
-        # I have to know when the application is end
-      when :test, :silence, :none
-        # do nothing at now
+      @collected_data = TpResult.new(tp_ins)
+
+      case format
+      when :console
+        console_put(tp_ins)
+      when :html
+        # we cant generate html right now becase the tp collection is still in process
+        # so we collect tp here
+        @tp_result_chain.push(TpResult.new(tp_ins))
+      when :silence, :none
+      # do nothing at now
+      when :test
+        @tp_result_chain.push(TpResult.new(tp_ins))
       when :stack_overflow
         console_stack_overflow
       when Proc
@@ -82,52 +95,92 @@ module SourceRoute
       end
     end
 
-    private
+    # def build(trace_point_instance)
+    #   TpResult.new(trace_point_instance)
+    #   # tp_result.collect_self
 
-    def collect_tp_data
-      tp_data = output_attributes(@tp.event).inject({}) do |memo, key|
-        memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
-        memo
-      end
-      @collect_data = TpResult.new(tp_data)
-      puts @collect_data.inspect if @wrapper.condition.is_debug?
-    end
+    #   # @tp = trace_point_instance
+    #   # collect_tp_data
+    #   # collect_tp_self # NEED more check. Does TracePoint support self for all events?
+    #   # collect_local_var_data if @config[:include_local_var]
+    #   # collect_instance_var_data if @config[:include_instance_var]
+    #   # @collected_data
+    # end
+
+    # def collect_tp_result
+    #   tp_result = TpResult.new(tp)
+    # end
 
     # include? will evaluate @tp.self, if @tp.self is AR::Relation, it could cause problems
     # So that's why I use object_id as replace
-    def collect_tp_self
-      unless @wrapper.tp_self_caches.find { |tp_cache| tp_cache.object_id.equal? @tp.self.object_id }
-        @wrapper.tp_self_caches.push @tp.self
-      end
-      @collect_data[:tp_self_refer] = @wrapper.tp_self_caches.map(&:__id__).index(@tp.self.__id__)
-    end
-
-    def collect_local_var_data
-      local_var_hash = {}
-      # Warn: @tp.binding.eval('local_variables') =! @tp.binding.send('local_variables')
-      @tp.binding.eval('local_variables').each do |v|
-        # I need rememeber why i need source_route_display
-        local_var_hash[v] = @tp.binding.local_variable_get(v).source_route_display
-      end
-      if local_var_hash != {}
-        @collect_data.merge!(local_var: local_var_hash)
+    def assign_tp_self_caches(tp_ins)
+      unless tp_self_caches.find { |tp_cache| tp_cache.object_id.equal? tp_ins.self.object_id }
+        tp_self_caches.push tp_ins.self
       end
     end
 
-    def collect_instance_var_data
-      instance_var_hash = {}
-      @tp.self.instance_variables.each do |key|
-        instance_var_hash[key] = @tp.self.instance_variable_get(key).source_route_display
-      end
-      if instance_var_hash != {}
-        @collect_data.merge!(instance_var: instance_var_hash)
-      end
+    def jsonify_events
+      Oj.dump(@wrapper.condition.events.map(&:to_s))
     end
 
-    def console_put
+    def jsonify_tp_result_chain
+      json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
+      '[ ' + json_array.join(',') + ' ]'
+    end
+
+    def jsonify_tp_self_caches
+      Oj.dump(tp_self_caches.clone
+               .map(&:to_s))
+    end
+
+    private
+
+    # def collect_tp_data
+    #   tp_data = wanted_attributes(@tp.event).inject({}) do |memo, key|
+    #     memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
+    #     memo
+    #   end
+    #   @collected_data = TpResult.new(tp_data)
+    #   puts @collected_data.inspect if @wrapper.condition.is_debug?
+    # end
+
+    # def collect_tp_self(tp)
+    #   unless tp_self_caches.find { |tp_cache| tp_cache.object_id.equal? tp.self.object_id }
+    #     tp_self_caches.push tp.self
+    #   end
+    #   @collected_data[:tp_self_refer] = tp_self_caches.map(&:__id__).index(tp.self.__id__)
+    # end
+
+    # def collect_local_var_data
+    #   local_var_hash = {}
+    #   # Warn: @tp.binding.eval('local_variables') =! @tp.binding.send('local_variables')
+    #   @tp.binding.eval('local_variables').each do |v|
+    #     # I need rememeber why i need source_route_display
+    #     local_var_hash[v] = @tp.binding.local_variable_get(v).source_route_display
+    #   end
+    #   if local_var_hash != {}
+    #     @collected_data.merge!(local_var: local_var_hash)
+    #   end
+    # end
+
+    # def collect_instance_var_data
+    #   instance_var_hash = {}
+    #   @tp.self.instance_variables.each do |key|
+    #     instance_var_hash[key] = @tp.self.instance_variable_get(key).source_route_display
+    #   end
+    #   if instance_var_hash != {}
+    #     @collected_data.merge!(instance_var: instance_var_hash)
+    #   end
+    # end
+
+    def console_put(tp)
       ret = []
-      ret << "#{@collect_data[:defined_class].inspect}##{@collect_data[:method_id]}"
-      left_values = @collect_data.reject { |k, v| %w[defined_class method_id].include? k.to_s }
+      ret << "#{collected_data.defined_class.inspect}##{collected_data.method_id}"
+      left_attrs = self.class.wanted_attributes(tp.event) - [:defined_class, :method_id]
+      left_values = left_attrs.inject({}) do |memo, key|
+        memo[key] = collected_data.send(key)
+        memo
+      end
       unless left_values == {}
         ret << left_values
       end
@@ -135,7 +188,7 @@ module SourceRoute
     end
 
     def console_stack_overflow
-      ap "#{@collect_data[:defined_class].inspect}##{@collect_data[:method_id]}"
+      ap "#{collected_data.defined_class.inspect}##{collected_data.method_id}"
     end
 
   end # END GenerateResult

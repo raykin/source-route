@@ -5,11 +5,7 @@ module SourceRoute
 
     TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
 
-    attr_accessor :condition, :tp
-    attr_reader :tp_result_chain, :tp_self_caches
-
-    extend Forwardable
-    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain, :call_chain, :return_chain, :parent_length_list
+    attr_accessor :condition, :tp, :result_builder
 
     Condition = Struct.new(:events, :negatives, :positive, :result_config) do
       def initialize(e=[:call], n={}, p={}, r=GenerateResult::Config.new)
@@ -74,14 +70,14 @@ module SourceRoute
     def reset
       @tp.disable if defined? @tp
       @condition = Condition.new
-      @tp_result_chain = TpResultChain.new
-      @tp_self_caches = []
+      @result_builder = GenerateResult.new(self)
+      GenerateResult.clear_wanted_attributes
       self
     end
 
     def trace
       # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
-      build_result = GenerateResult.new(self)
+
       tp_filter = TpFilter.new(condition)
 
       track = TracePoint.new *condition.events do |tp|
@@ -91,35 +87,25 @@ module SourceRoute
         # immediate output trace point result
         # here is confused. todo
         # should move tp_result_chain to result generator
-        if condition.result_config.format == :console
-          ret_data = build_result.build(tp)
-          @tp_result_chain.push(ret_data)
-          build_result.output(tp)
-        elsif condition.result_config.format.is_a? Proc
-          build_result.output(tp)
-        else
-          # why not push the tp to result chain
-          ret_data = build_result.build(tp)
-          @tp_result_chain.push(ret_data)
-        end
+        @result_builder.output(tp)
+        # if condition.result_config.format == :console
+        #   ret_data = build_result.build(tp)
+        #   @tp_result_chain.push(ret_data)
+        #   build_result.output(tp)
+        # elsif condition.result_config.format.is_a? Proc
+        #   build_result.output(tp)
+        # else
+        #   # why not push the tp to result chain
+        #   ret_data = build_result.build(tp)
+        #   @tp_result_chain.push(ret_data)
+        # end
       end
       track.enable
       self.tp = track
     end
 
-    def jsonify_events
-      Oj.dump(@condition.events.map(&:to_s))
-    end
-
-    def jsonify_tp_result_chain
-      # puts tp_result_chain.stringify
-      json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
-      '[ ' + json_array.join(',') + ' ]'
-    end
-
-    def jsonify_tp_self_caches
-      Oj.dump(tp_self_caches.clone
-                .map(&:to_s))
+    def tp_result_chain
+      result_builder.tp_result_chain
     end
   end # END Wrapper
 
