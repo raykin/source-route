@@ -1,15 +1,18 @@
 module SourceRoute
   class TpResult
     # attrs from TracePoint object
-    attr_accessor :event, :defined_class, :event, :lineno, :method_id,
-                  :path, :raised_exception, :return_value
+    TP_ATTRS = [:event, :defined_class, :event, :lineno, :method_id,
+                :path, :raised_exception, :return_value].freeze
+    attr_accessor *TP_ATTRS
 
     # attrs generated from TracePoint.binding
-    attr_accessor :local_var, :instance_var, :params_var
+    INNER_ATTRS = [:local_var, :instance_var, :params_var].freeze
+    attr_accessor *INNER_ATTRS
 
     # customized attrs
-    attr_accessor :order_id, :parent_ids, :direct_child_order_ids,
-                  :has_return_value, :parent_length, :tp_self_refer
+    CUSTOM_ATTRS = [:order_id, :parent_ids, :direct_child_order_ids,
+                   :has_return_value, :parent_length, :tp_self_refer].freeze
+    attr_accessor *CUSTOM_ATTRS
 
     # extend Forwardable
     # def_delegators :@ret_data, :[], :merge, :merge!, :reject, :has_key?, :values, :[]=
@@ -57,6 +60,15 @@ module SourceRoute
     # why we need wrapper?
     # it's nonsense
     def to_hash
+      stringify
+      ret_hash = GenerateResult.wanted_attributes(event).inject({}) do |memo, k|
+        memo[k.to_s] = send(k)
+        memo
+      end
+      (INNER_ATTRS + CUSTOM_ATTRS).each do |k|
+        ret_hash[k.to_s] = send(k) if send(k)
+      end
+      ret_hash
     end
 
     # def stringify
@@ -69,6 +81,8 @@ module SourceRoute
     # end
 
     # this is a mutable method
+    # not a good solution.
+    # we should use it on the return hash of method to_hash
     def stringify
       if GenerateResult.wanted_attributes(event).include?(:defined_class)
         self.defined_class = defined_class.to_s
@@ -82,6 +96,8 @@ module SourceRoute
           self.return_value = return_value.to_s
         end
       end
+      self.event = event.to_s
+      self.method_id = method_id.to_s
       self
     end
 

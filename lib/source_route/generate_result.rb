@@ -51,7 +51,8 @@ module SourceRoute
     end
 
     # it cached and only calculate once for one trace point block round
-    def self.wanted_attributes(event)
+    def self.wanted_attributes(eve)
+      event = eve.to_sym
       @wanted_attributes.fetch event do
         attrs = DEFAULT_ATTRS[event] + Array(SourceRoute.wrapper.condition.result_config.show_additional_attrs)
         attrs.push(:event)
@@ -124,8 +125,10 @@ module SourceRoute
     end
 
     def jsonify_tp_result_chain
-      json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
-      '[ ' + json_array.join(',') + ' ]'
+      Oj.dump(tp_result_chain.chain.map(&:to_hash))
+      # tp_result_chain.to_json
+      # json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
+      # '[ ' + json_array.join(',') + ' ]'
     end
 
     def jsonify_tp_self_caches
