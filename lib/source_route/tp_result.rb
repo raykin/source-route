@@ -10,6 +10,14 @@ module SourceRoute
       @core = data
     end
 
+    def found_opposite
+      @opposite_exist = true
+    end
+
+    def locate_opposite?
+      @opposite_exist
+    end
+
     def return_event?
       @core[:event] == :return
     end

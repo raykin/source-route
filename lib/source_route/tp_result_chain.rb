@@ -33,13 +33,15 @@ module SourceRoute
     def treeize_call_chain
       init_order_id_and_parent_ids
       call_chain.each do |tpr|
-        return_tpr = return_chain.reject { |c| c[:record_parent] }.find { |rtpr| rtpr == tpr }
-
+        # find the return trace point for the call trace point
+        return_tpr = return_chain.reject(&:locate_opposite?).find { |rtpr| rtpr == tpr }
+        # so trace points between the call trace point and its return trace point
+        # are all children of it
         unless return_tpr.nil?
-          return_tpr[:record_parent] = true
+          return_tpr.found_opposite
           start_index, end_index = tpr[:order_id], return_tpr[:order_id]
           unless end_index == start_index + 1
-            values_at(start_index+1 ... end_index).select { |t| t[:event] == :call }.each do |ct|
+            values_at(start_index+1 ... end_index).select(&:call_event?).each do |ct|
               ct[:parent_ids].push start_index
               tpr[:direct_child_order_ids].push ct[:order_id]
             end
