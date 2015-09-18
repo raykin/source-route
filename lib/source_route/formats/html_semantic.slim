@@ -77,6 +77,9 @@ html
                   .ui.segment(ng-if="::containsOtherAttrs(trace)")
                     .ui.orange.right.ribbon.label Trace Attrs
                     json-formatter(open="1" json="::plusTraceAttrs[trace.order_id]")
+                  .ui.segment(ng-if="::trace.params_var")
+                    .ui.teal.right.ribbon.label Params Var
+                    json-formatter(open="1" json="::trace.params_var")
                   .ui.segment(ng-if="::trace.local_var")
                     .ui.teal.right.ribbon.label Local Var
                     json-formatter(open="1" json="::trace.local_var")
