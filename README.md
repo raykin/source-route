@@ -93,6 +93,12 @@ Finally, I expect my working style can changes from searching workaround from in
 
 ### TODO
 
+Correctly json parse array of objects.
+Ex:  [<ActiveModel::AttributeMethods::ClassMethods::AttributeMethodMatcher:0x007fe2f3972380> ....]
+Parse it will get a better result
+
+Change tp_self to tp_self_refer
+
 Event should removed from trace object.
 
 Dynamic indent when new child level comes.
