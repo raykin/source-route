@@ -60,7 +60,6 @@ module SourceRoute
     wrapper.trace
   end
 
-  # Not implemented. used in irb or pry.
   def trace(opt, &block)
     opt[:output_format] ||= :silence
     wrapper.reset

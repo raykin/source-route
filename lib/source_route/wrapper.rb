@@ -88,12 +88,20 @@ module SourceRoute
 
         next if tp_filter.block_it?(tp)
 
-        unless condition.result_config.format.is_a? Proc
+        # immediate output trace point result
+        # here is confused. todo
+        # should move tp_result_chain to result generator
+        if condition.result_config.format == :console
+          ret_data = build_result.build(tp)
+          @tp_result_chain.push(ret_data)
+          build_result.output(tp)
+        elsif condition.result_config.format.is_a? Proc
+          build_result.output(tp)
+        else
+          # why not push the tp to result chain
           ret_data = build_result.build(tp)
           @tp_result_chain.push(ret_data)
         end
-
-        build_result.output(tp)
       end
       track.enable
       self.tp = track

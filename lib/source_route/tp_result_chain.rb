@@ -33,9 +33,8 @@ module SourceRoute
     def treeize_call_chain
       init_order_id_and_parent_ids
       call_chain.each do |tpr|
-        return_tpr = return_chain.reject { |c| c[:record_parent] }.find do |rtpr|
-          rtpr[:tp_self_refer] == tpr[:tp_self_refer] and rtpr[:defined_class] == tpr[:defined_class] and rtpr[:method_id] == tpr[:method_id]
-        end
+        return_tpr = return_chain.reject { |c| c[:record_parent] }.find { |rtpr| rtpr == tpr }
+
         unless return_tpr.nil?
           return_tpr[:record_parent] = true
           start_index, end_index = tpr[:order_id], return_tpr[:order_id]

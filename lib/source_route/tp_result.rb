@@ -1,5 +1,5 @@
 module SourceRoute
-  # delegate to hash
+  # TracePoint Wrapper delegated to hash
   class TpResult
     attr_accessor :core
 

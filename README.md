@@ -97,14 +97,9 @@ Correctly json parse array of objects.
 Ex:  [<ActiveModel::AttributeMethods::ClassMethods::AttributeMethodMatcher:0x007fe2f3972380> ....]
 Parse it will get a better result
 
-Event should removed from trace object.
+Event should removed from trace object when monitor single event
 
 Dynamic indent when new child level comes.
-
-Is it possible to easily open only direct child
-Animation when child was click.
-
-Show loading when click clear. (when $apply() take more than 1 seconds to run)
 
 Add debug option to provide more verbose messages of what has happened
 

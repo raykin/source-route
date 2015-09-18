@@ -1,5 +1,11 @@
 module SourceRoute
-
+  # How it work
+  # 0. Config collect route options
+  # 1. Proxy Generate TracePoint Filter
+  # 2. Proxy Generate TracePoint Monitor Block
+  # 3. Collect wanted TracePoint
+  # 4. Parse and Generate Useful data from wanted TracePoint
+  # 5. Output data with correct format
   class GenerateResult
 
     Config = Struct.new(:format, :show_additional_attrs,
@@ -56,14 +62,15 @@ module SourceRoute
       format = format.to_sym if format.respond_to? :to_sym
 
       case format
-      when :none
-        # do nothing
       when :console # need @collect_data
         console_put
       when :html
+      # we cant generate html right now becase the tp collection is still in process
+      # so we collect tp here
+
         # I cant solve the problem: to generate html at the end,
         # I have to know when the application is end
-      when :test, :silence
+      when :test, :silence, :none
         # do nothing at now
       when :stack_overflow
         console_stack_overflow
