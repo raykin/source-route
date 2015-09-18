@@ -64,8 +64,8 @@ html
                   i.info.icon
                   span Details
                 button.ui.labeled.icon.button(ng-if="::hasChild()" ng-click="toggleChild()" ng-class="{loading: togglingChild}")
-                  i.icon.angle.down(ng-hide="trace.childClosed")
-                  i.icon.angle.right(ng-show="trace.childClosed")
+                  i.icon.angle.down(ng-show="trace.childOpened")
+                  i.icon.angle.right(ng-hide="trace.childOpened")
                   span Child
                 pulse-spinner(ng-show="togglingChild")
 
@@ -121,7 +121,7 @@ html
         $scope.expandAllTrace = function() {
           $scope.expandAllTraceLoading = true
           $timeout(function() {
-            _.each($scope.traces, function(trace) { trace.childClosed = false; });
+            _.each($scope.traces, function(trace) { trace.childOpened = true; });
             $scope.childParentFilter.hide_trace_ids = [];
             $scope.expandAllTraceLoading = false
             $scope.expandAllTraceLoading = false
@@ -133,7 +133,8 @@ html
           $scope.childParentFilter.hide_trace_ids = [];
           _.chain($scope.traces).filter({parent_length: 0, event: $scope.traceFilter.event})
             .each(function(trace) {
-              trace.childClosed = true; $scope.childParentFilter.hide_trace_ids.push(trace.order_id) }
+              trace.childOpened = false;
+              $scope.childParentFilter.hide_trace_ids.push(trace.order_id) }
             ).value()
           $scope.outlineTraceLoading = false
         }
@@ -195,24 +196,33 @@ html
         $scope.toggleChild = function() {
           $scope.togglingChild = true
           $timeout(function() {
-            if ($scope.trace.childClosed) {
-              $scope.showChild();
+            if ($scope.trace.childOpened) {
+              $scope.hideChild();
               $scope.togglingChild = false
             } else {
-              $scope.hideChild();
+              $scope.showChild();
               $scope.togglingChild = false
             }
           }, 0)
         }
 
         $scope.showChild = function() {
-          $scope.trace.childClosed = false;
+          $scope.trace.childOpened = true;
           _.pull($scope.childParentFilter.hide_trace_ids, $scope.trace.order_id);
+          if ($scope.trace.direct_child_order_ids.length > 0) {
+            $scope.childParentFilter.hide_trace_ids.push($scope.trace.direct_child_order_ids);
+            $scope.childParentFilter.hide_trace_ids = _.chain($scope.childParentFilter.hide_trace_ids).flatten().uniq().value();
+          }
         }
 
         $scope.hideChild = function() {
-          $scope.trace.childClosed = true;
+          $scope.trace.childOpened = false;
           $scope.childParentFilter.hide_trace_ids.push($scope.trace.order_id);
+          if ($scope.trace.direct_child_order_ids.length > 0) {
+            _.each($scope.trace.direct_child_order_ids, function(ele) {
+              _.pull($scope.childParentFilter.hide_trace_ids, ele);
+            });
+          }
         }
 
         $scope.hasChild = function() {

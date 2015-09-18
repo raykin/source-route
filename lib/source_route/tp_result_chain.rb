@@ -40,8 +40,9 @@ module SourceRoute
           return_tpr[:record_parent] = true
           start_index, end_index = tpr[:order_id], return_tpr[:order_id]
           unless end_index == start_index + 1
-            values_at(start_index+1 ... end_index).select { |tpr| tpr[:event] == :call }.each do |tpr|
-              tpr[:parent_ids].push start_index
+            values_at(start_index+1 ... end_index).select { |t| t[:event] == :call }.each do |ct|
+              ct[:parent_ids].push start_index
+              tpr[:direct_child_order_ids].push ct[:order_id]
             end
           end
         end
@@ -50,6 +51,7 @@ module SourceRoute
       cal_parent_length
     end
 
+    # seems not used in html template now 2015.9.17
     def parent_length_list
       call_chain.map { |tp| tp[:parent_length] }.uniq.sort
     end
@@ -79,7 +81,7 @@ module SourceRoute
     private
     def init_order_id_and_parent_ids
       each_with_index do |tpr, index|
-        tpr[:order_id], tpr[:parent_ids] = index, []
+        tpr[:order_id], tpr[:parent_ids], tpr[:direct_child_order_ids] = index, [], []
       end
     end
 

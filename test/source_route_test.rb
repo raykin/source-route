@@ -209,10 +209,10 @@ class SourceRouteTest < Minitest::Test
 
     nonsense_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense }
     nonsense_with_instance_var_call_tp = call_results.find { |tp| tp[:method_id] == :nonsense_with_instance_var }
-
     assert_equal [nonsense_with_instance_var_call_tp[:order_id]], nonsense_call_tp[:parent_ids]
     assert_equal 1, nonsense_call_tp[:parent_length]
     assert_equal [0, 1], @wrapper.parent_length_list
+    assert_equal [nonsense_call_tp[:order_id]], nonsense_with_instance_var_call_tp[:direct_child_order_ids]
   end
 
   # Nothing has tested really when run rake cause ENV['ignore_html_generation'] was set to true

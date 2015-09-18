@@ -1,8 +1,8 @@
 class Object
   def source_route_display
+    # to_s # cause crash?
     self
   end
-
 end
 
 class NilClass
