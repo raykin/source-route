@@ -70,7 +70,7 @@ module SourceRoute
     wrapper.trace
     yield
     wrapper.tp.disable
-    SourceRoute.build_html_output if opt[:output_format].to_sym == :html
+    SourceRoute.output_html if opt[:output_format].to_sym == :html
   end
 
   def output_html

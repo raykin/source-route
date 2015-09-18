@@ -12,5 +12,5 @@ end
 Rails.application.load_tasks
 
 at_exit do
-  SourceRoute.build_html_output
+  SourceRoute.output_html
 end
