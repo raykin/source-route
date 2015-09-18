@@ -1,4 +1,5 @@
 module SourceRoute
+  # what solution is good for summarize attrs that required to be included
   class TpResult
     # attrs from TracePoint object
     TP_ATTRS = [:event, :defined_class, :event, :lineno, :method_id,
@@ -64,6 +65,9 @@ module SourceRoute
       ret_hash = GenerateResult.wanted_attributes(event).inject({}) do |memo, k|
         memo[k.to_s] = send(k)
         memo
+      end
+      if SourceRoute.wrapper.condition.events.include?(:return)
+        ret_hash['return_value'] = return_value.nil? ? return_value.inspect : return_value
       end
       (INNER_ATTRS + CUSTOM_ATTRS).each do |k|
         ret_hash[k.to_s] = send(k) if send(k)
