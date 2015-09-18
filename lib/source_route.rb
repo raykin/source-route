@@ -61,7 +61,7 @@ module SourceRoute
   end
 
   def trace(opt, &block)
-    opt[:output_format] ||= :silence
+    opt[:output_format] ||= :test
     wrapper.reset
     opt.each do |k, v|
       wrapper.condition.send(k, v)
@@ -85,9 +85,7 @@ module SourceRoute
   # Not implement yet
   class Logger < Logger
   end
-end
 
-module SourceRoute
   module Formats
     autoload :Html, 'source_route/formats/html'
   end
