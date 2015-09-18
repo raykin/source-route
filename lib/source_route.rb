@@ -73,13 +73,9 @@ module SourceRoute
     SourceRoute.build_html_output if opt[:output_format].to_sym == :html
   end
 
-  def build_html_output
+  def output_html
     SourceRoute.disable
     SourceRoute::Formats::Html.slim_render(wrapper)
-  end
-
-  def output_html
-    build_html_output
   end
 
   # Not implement yet

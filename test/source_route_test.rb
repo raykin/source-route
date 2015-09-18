@@ -123,7 +123,7 @@ class SourceRouteTest < Minitest::Test
   #   assert @wrapper.tp_self_caches.first.is_a? SampleApp
   # end
 
-  def test_stringify_tp_result_chain
+  def test_stringify_tp_result_chain_only
     SourceRoute.trace method_id: 'nonsense', full_feature: true do
       SampleApp.new.nonsense
     end
@@ -220,12 +220,8 @@ class SourceRouteTest < Minitest::Test
     @source_route = SourceRoute.enable do
       defined_class 'SampleApp'
       event :call, :return
-      result_config.include_instance_var = true
-      result_config.include_local_var = true
-      result_config.show_additional_attrs = [:path, :lineno]
-
+      full_feature 10
       result_config.filename = 'call_and_return_in_sample_app.html'
-      result_config.import_return_to_call = true
     end
 
     SampleApp.new.init_cool_app
@@ -234,7 +230,7 @@ class SourceRouteTest < Minitest::Test
       # do nothing. cause it was set to false in Rakefile.
       # So Run rake test will not generate html file, run ruby -Itest test/source_route.rb will generate output file
     else
-      SourceRoute.build_html_output
+      SourceRoute.output_html
     end
   end
 
