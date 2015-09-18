@@ -51,7 +51,7 @@ html
           .content(ng-init="showMoreDetail = false")
             .ui.segment.left.floated.padded
               .header
-                span(ng-bind="::tpSelfList[trace.tp_self]")
+                span(ng-bind="::tpSelfList[trace.tp_self_refer]")
                 i.circle.icon.grey(style="font-size: 0.3em")
                 span.method-value(ng-bind="::trace.method_id")
               / workaround for return_value is 'false' and return_value always to be string when existed

@@ -92,7 +92,7 @@ module SourceRoute
       unless @wrapper.tp_self_caches.find { |tp_cache| tp_cache.object_id.equal? @tp.self.object_id }
         @wrapper.tp_self_caches.push @tp.self
       end
-      @collect_data[:tp_self] = @wrapper.tp_self_caches.map(&:__id__).index(@tp.self.__id__)
+      @collect_data[:tp_self_refer] = @wrapper.tp_self_caches.map(&:__id__).index(@tp.self.__id__)
     end
 
     def collect_local_var_data

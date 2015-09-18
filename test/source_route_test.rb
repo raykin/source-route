@@ -109,7 +109,7 @@ class SourceRouteTest < Minitest::Test
       SampleApp.new.nonsense
     end
     first_result = @wrapper.tp_result_chain.first
-    assert_equal first_result[:tp_self], 0
+    assert_equal first_result[:tp_self_refer], 0
   end
 
   # def test_trace_include_tp_self

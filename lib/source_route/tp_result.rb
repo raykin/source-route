@@ -19,7 +19,7 @@ module SourceRoute
     end
 
     def ==(other)
-      @core[:tp_self] == other[:tp_self] and @core[:method_id] == other[:method_id] and
+      @core[:tp_self_refer] == other[:tp_self_refer] and @core[:method_id] == other[:method_id] and
         @core[:defined_class] == other[:defined_class]
     end
 
