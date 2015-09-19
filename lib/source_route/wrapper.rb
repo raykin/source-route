@@ -1,12 +1,11 @@
 module SourceRoute
 
-  class Wrapper
+  class Wrapper # todo Rename it to Proxy
     include Singleton
-
-    TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
 
     attr_accessor :condition, :tp, :result_builder
 
+    # TODO: rename it to config and move it to a single file
     Condition = Struct.new(:events, :negatives, :positive, :result_config) do
       def initialize(e=[:call], n={}, p={}, r=GenerateResult::Config.new)
         @debug = false
@@ -15,6 +14,8 @@ module SourceRoute
     end
 
     class Condition
+
+      TRACE_POINT_METHODS = [:defined_class, :method_id, :path, :lineno]
 
       TRACE_POINT_METHODS.each do |m|
         define_method m do |*v|
@@ -38,6 +39,7 @@ module SourceRoute
         events.include? :return and events.include? :call
       end
 
+      # todo. value equal 10 is not a good params
       def full_feature(value=true)
         return unless value
 
@@ -70,35 +72,17 @@ module SourceRoute
     def reset
       @tp.disable if defined? @tp
       @condition = Condition.new
+      # only init once, so its @collected_data seems not useful
       @result_builder = GenerateResult.new(self)
       GenerateResult.clear_wanted_attributes
       self
     end
 
     def trace
-      # dont wanna init it in tp block, cause tp block could run thousands of times in one cycle trace
-
       tp_filter = TpFilter.new(condition)
-
-      track = TracePoint.new *condition.events do |tp|
-
+      track = TracePoint.new(*condition.events) do |tp|
         next if tp_filter.block_it?(tp)
-
-        # immediate output trace point result
-        # here is confused. todo
-        # should move tp_result_chain to result generator
         @result_builder.output(tp)
-        # if condition.result_config.format == :console
-        #   ret_data = build_result.build(tp)
-        #   @tp_result_chain.push(ret_data)
-        #   build_result.output(tp)
-        # elsif condition.result_config.format.is_a? Proc
-        #   build_result.output(tp)
-        # else
-        #   # why not push the tp to result chain
-        #   ret_data = build_result.build(tp)
-        #   @tp_result_chain.push(ret_data)
-        # end
       end
       track.enable
       self.tp = track

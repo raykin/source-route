@@ -12,8 +12,9 @@ module SourceRoute
 
     extend Forwardable
 
-    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain, :call_chain, :return_chain, :parent_length_list
+    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain
 
+    # Conbined into Wrapper config
     Config = Struct.new(:format, :show_additional_attrs,
                         :include_local_var, :include_instance_var,
                         :filename, :import_return_to_call) do
@@ -45,9 +46,7 @@ module SourceRoute
       @config = @wrapper.condition.result_config
 
       @tp_result_chain = TpResultChain.new
-
       @tp_self_caches = []
-      @wanted_attributes = {}
     end
 
     # it cached and only calculate once for one trace point block round
@@ -72,15 +71,14 @@ module SourceRoute
       assign_tp_self_caches(tp_ins)
       # we cant call method on tp_ins outside of track block,
       # so we have to run it immediately
-
       @collected_data = TpResult.new(tp_ins)
 
       case format
       when :console
         console_put(tp_ins)
       when :html
-        # we cant generate html right now becase the tp collection is still in process
-        # so we collect tp here
+        # we cant generate html right now becase the tp callback is still in process
+        # so we gather data into array
         @tp_result_chain.push(TpResult.new(tp_ins))
       when :silence, :none
       # do nothing at now
@@ -92,25 +90,9 @@ module SourceRoute
         format.call(tp_ins)
       else
         klass = "SourceRoute::Formats::#{format.to_s.capitalize}"
-        ::SourceRoute.const_get(klass).render(self, tp_ins)
+        ::SourceRoute.const_get(klass).render(self, tp_ins, @collected_data)
       end
     end
-
-    # def build(trace_point_instance)
-    #   TpResult.new(trace_point_instance)
-    #   # tp_result.collect_self
-
-    #   # @tp = trace_point_instance
-    #   # collect_tp_data
-    #   # collect_tp_self # NEED more check. Does TracePoint support self for all events?
-    #   # collect_local_var_data if @config[:include_local_var]
-    #   # collect_instance_var_data if @config[:include_instance_var]
-    #   # @collected_data
-    # end
-
-    # def collect_tp_result
-    #   tp_result = TpResult.new(tp)
-    # end
 
     # include? will evaluate @tp.self, if @tp.self is AR::Relation, it could cause problems
     # So that's why I use object_id as replace
@@ -137,44 +119,6 @@ module SourceRoute
     end
 
     private
-
-    # def collect_tp_data
-    #   tp_data = wanted_attributes(@tp.event).inject({}) do |memo, key|
-    #     memo[key.to_sym] = @tp.send(key) if @tp.respond_to?(key)
-    #     memo
-    #   end
-    #   @collected_data = TpResult.new(tp_data)
-    #   puts @collected_data.inspect if @wrapper.condition.is_debug?
-    # end
-
-    # def collect_tp_self(tp)
-    #   unless tp_self_caches.find { |tp_cache| tp_cache.object_id.equal? tp.self.object_id }
-    #     tp_self_caches.push tp.self
-    #   end
-    #   @collected_data[:tp_self_refer] = tp_self_caches.map(&:__id__).index(tp.self.__id__)
-    # end
-
-    # def collect_local_var_data
-    #   local_var_hash = {}
-    #   # Warn: @tp.binding.eval('local_variables') =! @tp.binding.send('local_variables')
-    #   @tp.binding.eval('local_variables').each do |v|
-    #     # I need rememeber why i need source_route_display
-    #     local_var_hash[v] = @tp.binding.local_variable_get(v).source_route_display
-    #   end
-    #   if local_var_hash != {}
-    #     @collected_data.merge!(local_var: local_var_hash)
-    #   end
-    # end
-
-    # def collect_instance_var_data
-    #   instance_var_hash = {}
-    #   @tp.self.instance_variables.each do |key|
-    #     instance_var_hash[key] = @tp.self.instance_variable_get(key).source_route_display
-    #   end
-    #   if instance_var_hash != {}
-    #     @collected_data.merge!(instance_var: instance_var_hash)
-    #   end
-    # end
 
     def console_put(tp)
       ret = []

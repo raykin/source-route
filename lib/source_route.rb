@@ -1,5 +1,4 @@
 require 'ostruct'
-require 'logger'
 require 'singleton'
 require 'forwardable'
 require 'oj'
@@ -18,7 +17,7 @@ require 'source_route/json_overrides/activerecord_associations_association'
 begin
   if Rails
     ActiveSupport.on_load(:after_initialize, yield: true) do
-      # make it respond to to_s. IN rails source, almost all of its methods are removed, including to_s.
+      # make it respond to to_s. In rails source, almost all of its methods are removed, including to_s.
       module ActiveSupport
         class OptionMerger
           def to_s
@@ -76,10 +75,6 @@ module SourceRoute
   def output_html
     SourceRoute.disable
     SourceRoute::Formats::Html.slim_render(wrapper)
-  end
-
-  # Not implement yet
-  class Logger < Logger
   end
 
   module Formats

@@ -56,20 +56,6 @@ module SourceRoute
       call_chain.map { |tp| tp.parent_length }.uniq.sort
     end
 
-    # def deep_cloned
-    #   chain.map { |r| r.clone }
-    # end
-
-    # def stringify
-    #   deep_cloned.map do |tr|
-    #     # to_s is safer than inspect
-    #     # ex: inspect on ActiveRecord_Relation may crash
-    #     # should moved to tr object
-    #     tr.stringify
-    #     tr
-    #   end
-    # end
-
     private
     def init_order_id_and_parent_ids
       each_with_index do |tpr, index|

@@ -10,19 +10,18 @@ module SourceRoute
     INNER_ATTRS = [:local_var, :instance_var, :params_var].freeze
     attr_accessor *INNER_ATTRS
 
-    # customized attrs
+    # customized attrs for build html output
     CUSTOM_ATTRS = [:order_id, :parent_ids, :direct_child_order_ids,
                    :has_return_value, :parent_length, :tp_self_refer].freeze
     attr_accessor *CUSTOM_ATTRS
 
-    # extend Forwardable
-    # def_delegators :@ret_data, :[], :merge, :merge!, :reject, :has_key?, :values, :[]=
-
     # The tricky part is
-    # cant call @core after trace block finished
+    # can't call method on @tp_ins outside trace block finished
+    # it could be a security limitation in ruby TracePoint object
+    # so collect_required_data can only run once and immediately
     def initialize(tp_ins)
-      @tp_ins = tp_ins # it only workable in TracePoint block
-      collect_required_data # so this method can only called once
+      @tp_ins = tp_ins
+      collect_required_data
     end
 
     def found_opposite
@@ -57,9 +56,6 @@ module SourceRoute
       call_tp.instance_var = instance_var unless instance_var.nil?
     end
 
-    # to_hash
-    # why we need wrapper?
-    # it's nonsense
     def to_hash
       stringify
       ret_hash = GenerateResult.wanted_attributes(event).inject({}) do |memo, k|
@@ -75,16 +71,7 @@ module SourceRoute
       ret_hash
     end
 
-    # def stringify
-    #   # why dup it?
-    #   # dup_core = ret_data.dup
-    #   # to_s is safer than inspect
-    #   # ex: inspect on ActiveRecord_Relation may crash
-    #   ret_data[:defined_class] = ret_data[:defined_class].to_s if ret_data.has_key?(:defined_class)
-    #   ret_data[:return_value] = ret_data[:return_value].source_route_display if ret_data.has_key?(:return_value)
-    # end
-
-    # this is a mutable method
+    # todo: this is a mutable method
     # not a good solution.
     # we should use it on the return hash of method to_hash
     def stringify
@@ -114,22 +101,13 @@ module SourceRoute
       self
     end
 
-    # Becare. we cal @tp_ins.event here
-    # but in stringify method we jsut call event
     def get_attrs
-      attrs_data = GenerateResult.wanted_attributes(
-        @tp_ins.event).each do |key|
+      GenerateResult.wanted_attributes(@tp_ins.event).each do |key|
         if @tp_ins.respond_to?(key)
           send("#{key}=", @tp_ins.send(key))
         end
       end
     end
-
-    # def get_additional_attributes
-    #   [:order_id, :parent_ids, :direct_child_order_ids, :parent_length].each do |k|
-    #     @ret_data[k] = send(k) unless send(k).nil?
-    #   end
-    # end
 
     def get_self_refer
       self.tp_self_refer = SourceRoute.wrapper.result_builder.tp_self_caches
