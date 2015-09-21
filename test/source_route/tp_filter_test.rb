@@ -14,39 +14,45 @@ module SourceRoute
       @warden_tp = FakeTp.new(:auth, Warden, 6)
       @user_tp = FakeTp.new(:new, User, 8)
       @tps = [@devise_tp, @warden_tp, @user_tp]
-      @result_config = GenerateResult::Config.new('silence', [], false, false)
+      super
     end
 
     def test_filter_method_not_auth
-      cond = Proxy::Condition.new([:call], {method_id: 'auth'}, {}, @result_config)
+      cond = Config.new
+      cond.negatives[:method_id] = 'auth'
       @tp_filter = TpFilter.new(cond)
       filtered = @tps.reject { |tp| @tp_filter.block_it?(tp) }
       assert_equal [@user_tp], filtered
     end
 
     def test_filter_class_is_admin
-      cond = Proxy::Condition.new([:call], {}, {defined_class: 'Admin'}, @result_config)
+      cond = Config.new
+      cond.positives[:defined_class] = 'Admin'
       @tp_filter = TpFilter.new(cond)
       filtered = @tps.reject { |tp| @tp_filter.block_it?(tp) }
       assert_equal [], filtered
     end
 
     def test_filter_method_is_auth
-      cond = Proxy::Condition.new([:call], {}, {method_id: 'auth'}, @result_config)
+      cond = Config.new
+      cond.positives[:method_id] = 'auth'
       @tp_filter = TpFilter.new(cond)
       filtered = @tps.reject { |tp| @tp_filter.block_it?(tp) }
       assert_equal [@devise_tp, @warden_tp], filtered
     end
 
     def test_filter_method_is_new_class_is_devise
-      cond = Proxy::Condition.new([:call], {}, {defined_class: 'Devise', method_id: 'new'}, @result_config)
+      cond = Config.new
+      cond.positives[:defined_class] = 'Devise'
+      cond.positives[:method_id] = 'new'
       @tp_filter = TpFilter.new(cond)
       filtered = @tps.reject { |tp| @tp_filter.block_it?(tp) }
       assert_equal [@devise_tp, @user_tp], filtered
     end
 
     def test_filter_class_is_devise_or_warden
-      cond = Proxy::Condition.new([:call], {}, {defined_class: 'Warden|User'}, @result_config)
+      cond = Config.new
+      cond.positives[:defined_class] = 'Warden|User'
       @tp_filter = TpFilter.new(cond)
       filtered = @tps.reject { |tp| @tp_filter.block_it?(tp) }
       assert_equal [@warden_tp, @user_tp], filtered

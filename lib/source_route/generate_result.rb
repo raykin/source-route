@@ -11,17 +11,7 @@ module SourceRoute
     attr_reader :tp_result_chain, :tp_self_caches, :collected_data
 
     extend Forwardable
-
     def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain
-
-    # Conbined into Proxy config
-    Config = Struct.new(:format, :show_additional_attrs,
-                        :include_local_var, :include_instance_var,
-                        :filename, :import_return_to_call) do
-      def initialize(f=:test, s=[], ilr=false, iiv=false)
-        super(f, s, ilr, iiv)
-      end
-    end
 
     # see event description in TracePoint API Doc
     DEFAULT_ATTRS = {
@@ -42,9 +32,6 @@ module SourceRoute
 
     def initialize(proxy)
       @proxy = proxy
-
-      @config = @proxy.condition.result_config
-
       @tp_result_chain = TpResultChain.new
       @tp_self_caches = []
     end
@@ -53,7 +40,7 @@ module SourceRoute
     def self.wanted_attributes(eve)
       event = eve.to_sym
       @wanted_attributes.fetch event do
-        attrs = DEFAULT_ATTRS[event] + Array(SourceRoute.proxy.condition.result_config.show_additional_attrs)
+        attrs = DEFAULT_ATTRS[event] + Array(SourceRoute.proxy.config.show_additional_attrs)
         attrs.push(:event)
         @wanted_attributes[event] = attrs.uniq
         @wanted_attributes[event]
@@ -65,8 +52,7 @@ module SourceRoute
     end
 
     def output(tp_ins)
-      format = @config.format
-      format = format.to_sym if format.respond_to? :to_sym
+      format = @config.output_format
 
       assign_tp_self_caches(tp_ins)
       # we cant call method on tp_ins outside of track block,
@@ -103,7 +89,7 @@ module SourceRoute
     end
 
     def jsonify_events
-      Oj.dump(@proxy.condition.events.map(&:to_s))
+      Oj.dump(@proxy.config.event.map(&:to_s))
     end
 
     def jsonify_tp_result_chain
