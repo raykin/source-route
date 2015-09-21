@@ -14,7 +14,7 @@ module SourceRoute
 
     def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain
 
-    # Conbined into Wrapper config
+    # Conbined into Proxy config
     Config = Struct.new(:format, :show_additional_attrs,
                         :include_local_var, :include_instance_var,
                         :filename, :import_return_to_call) do
@@ -40,10 +40,10 @@ module SourceRoute
       thread_end: [:defined_class, :method_id]
     }
 
-    def initialize(wrapper)
-      @wrapper = wrapper
+    def initialize(proxy)
+      @proxy = proxy
 
-      @config = @wrapper.condition.result_config
+      @config = @proxy.condition.result_config
 
       @tp_result_chain = TpResultChain.new
       @tp_self_caches = []
@@ -53,7 +53,7 @@ module SourceRoute
     def self.wanted_attributes(eve)
       event = eve.to_sym
       @wanted_attributes.fetch event do
-        attrs = DEFAULT_ATTRS[event] + Array(SourceRoute.wrapper.condition.result_config.show_additional_attrs)
+        attrs = DEFAULT_ATTRS[event] + Array(SourceRoute.proxy.condition.result_config.show_additional_attrs)
         attrs.push(:event)
         @wanted_attributes[event] = attrs.uniq
         @wanted_attributes[event]
@@ -103,7 +103,7 @@ module SourceRoute
     end
 
     def jsonify_events
-      Oj.dump(@wrapper.condition.events.map(&:to_s))
+      Oj.dump(@proxy.condition.events.map(&:to_s))
     end
 
     def jsonify_tp_result_chain

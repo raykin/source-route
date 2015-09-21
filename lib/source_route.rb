@@ -6,7 +6,7 @@ require 'awesome_print'
 
 require "source_route/core_ext"
 require "source_route/version"
-require "source_route/wrapper"
+require "source_route/proxy"
 require "source_route/jsonify"
 require "source_route/generate_result"
 require "source_route/tp_result"
@@ -34,47 +34,47 @@ end
 module SourceRoute
   extend self
 
-  def wrapper
-    @@wrapper ||= Wrapper.instance
+  def proxy
+    @@proxy ||= Proxy.instance
   end
 
   def reset
-    wrapper.reset
+    proxy.reset
   end
 
   def disable
-    wrapper.tp.disable
+    proxy.tp.disable
   end
 
   def enable(match = nil, &block)
-    wrapper.reset
+    proxy.reset
 
     if match
-      wrapper.condition.method_id(match)
-      wrapper.condition.defined_class(match)
+      proxy.condition.method_id(match)
+      proxy.condition.defined_class(match)
     end
 
-    wrapper.condition.instance_eval(&block) if block_given?
+    proxy.condition.instance_eval(&block) if block_given?
 
-    wrapper.trace
+    proxy.trace
   end
 
   def trace(opt, &block)
     opt[:output_format] ||= :test
-    wrapper.reset
+    proxy.reset
     opt.each do |k, v|
-      wrapper.condition.send(k, v)
+      proxy.condition.send(k, v)
     end
 
-    wrapper.trace
+    proxy.trace
     yield
-    wrapper.tp.disable
+    proxy.tp.disable
     SourceRoute.output_html if opt[:output_format].to_sym == :html
   end
 
   def output_html
     SourceRoute.disable
-    SourceRoute::Formats::Html.slim_render(wrapper)
+    SourceRoute::Formats::Html.slim_render(proxy)
   end
 
   module Formats

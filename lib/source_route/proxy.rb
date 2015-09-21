@@ -1,6 +1,6 @@
 module SourceRoute
 
-  class Wrapper # todo Rename it to Proxy
+  class Proxy # todo Rename it to Proxy
     include Singleton
 
     attr_accessor :condition, :tp, :result_builder
@@ -91,6 +91,6 @@ module SourceRoute
     def tp_result_chain
       result_builder.tp_result_chain
     end
-  end # END Wrapper
+  end # END Proxy
 
 end
