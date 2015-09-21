@@ -6,6 +6,7 @@ require 'awesome_print'
 
 require "source_route/core_ext"
 require "source_route/version"
+require "source_route/config"
 require "source_route/proxy"
 require "source_route/jsonify"
 require "source_route/generate_result"
@@ -49,27 +50,18 @@ module SourceRoute
   def enable(match = nil, &block)
     proxy.reset
 
-    if match
-      proxy.condition.method_id(match)
-      proxy.condition.defined_class(match)
-    end
-
-    proxy.condition.instance_eval(&block) if block_given?
+    proxy.config = BlockConfigParser.new.run(match, &block)
 
     proxy.trace
   end
 
   def trace(opt, &block)
-    opt[:output_format] ||= :test
     proxy.reset
-    opt.each do |k, v|
-      proxy.condition.send(k, v)
-    end
-
+    proxy.config = ParamsConfigParser.run(opt)
     proxy.trace
     yield
     proxy.tp.disable
-    SourceRoute.output_html if opt[:output_format].to_sym == :html
+    SourceRoute.output_html if proxy.config.output_format == :html
   end
 
   def output_html

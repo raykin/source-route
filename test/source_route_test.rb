@@ -13,7 +13,7 @@ class SourceRouteTest < Minitest::Test
   end
 
   def test_enable_return_true
-    @source_route = SourceRoute.enable /nnnonsense/
+    @source_route = SourceRoute.enable 'nnnonsense'
     assert @source_route
     assert_equal @proxy, SourceRoute.proxy
   end
@@ -31,7 +31,7 @@ class SourceRouteTest < Minitest::Test
 
   def test_show_addtional_attrs
     SourceRoute.enable 'nonsense' do
-      result_config.show_additional_attrs = :path
+      show_additional_attrs :path
       full_feature
     end
     SampleApp.new.nonsense
@@ -151,7 +151,7 @@ class SourceRouteTest < Minitest::Test
   # but local var didnt displayed
   def test_show_local_variables
     SourceRoute.enable 'nonsense_with_params' do
-      result_config.include_local_var = true
+      include_local_var true
       output_format :console
     end
 
@@ -163,7 +163,7 @@ class SourceRouteTest < Minitest::Test
   def test_track_local_var_when_event_is_return
     SourceRoute.enable 'nonsense_with_params' do
       event :return
-      result_config.include_local_var = true
+      include_local_var true
     end
 
     SampleApp.new.nonsense_with_params(88)
@@ -176,7 +176,7 @@ class SourceRouteTest < Minitest::Test
 
   def test_show_instance_vars_only
     SourceRoute.enable 'nonsense' do
-      result_config.include_instance_var = true
+      include_instance_var true
       event :call, :return
     end
     SampleApp.new('ins sure').nonsense_with_instance_var
@@ -221,7 +221,7 @@ class SourceRouteTest < Minitest::Test
       defined_class 'SampleApp'
       event :call, :return
       full_feature 10
-      result_config.filename = 'call_and_return_in_sample_app.html'
+      filename 'call_and_return_in_sample_app.html'
     end
 
     SampleApp.new.init_cool_app

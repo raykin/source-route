@@ -52,13 +52,12 @@ module SourceRoute
     end
 
     def output(tp_ins)
-      format = @config.output_format
+      format = @proxy.config.output_format
 
       assign_tp_self_caches(tp_ins)
       # we cant call method on tp_ins outside of track block,
       # so we have to run it immediately
       @collected_data = TpResult.new(tp_ins)
-
       case format
       when :console
         console_put(tp_ins)

@@ -41,9 +41,16 @@ module SourceRoute
 
     def test_block_parser_with_params
       block_parser = BlockConfigParser.new
-      config = block_parser.run 'wanted_class' do
+      config = block_parser.run 'wanted' do
       end
-      assert_equal 'wanted_class', config.positives[:defined_class]
+      assert_equal 'wanted', config.positives[:defined_class]
+      assert_equal 'wanted', config.positives[:method_id]
+    end
+
+    def test_block_parser_without_block
+      block_parser = BlockConfigParser.new
+      config = block_parser.run 'ActiveSupport'
+      assert_equal 'ActiveSupport', config.positives[:defined_class]
     end
 
     def test_full_feature_of_params_parser

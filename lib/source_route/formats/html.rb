@@ -6,13 +6,13 @@ module SourceRoute
     module Html
 
       def self.slim_render(proxy)
-        result_config = proxy.condition.result_config
+
         template_path = File.expand_path "../html_semantic.slim", __FILE__
         slim_template = Slim::Template.new(template_path, pretty: true)
 
-        filename = result_config[:filename] || "#{Time.now.strftime('%H')}-source-route.html"
+        filename = proxy.config.filename || "#{Time.now.strftime('%H')}-source-route.html"
 
-        if result_config.import_return_to_call and proxy.condition.has_call_and_return_event
+        if proxy.config.import_return_to_call and proxy.config.has_call_and_return_event
           proxy.result_builder.import_return_value_to_call_chain
           proxy.result_builder.treeize_call_chain
         end

@@ -5,7 +5,7 @@ require 'source_route'
 SourceRoute.enable do
   method_id 'base_decorate', 'prepare_decorate'
   defined_class 'ActiveSupport::Callbacks', 'House', 'Filters'
-  result_config.filename = 'trace_callback.html'
+  filename = 'trace_callback.html'
   full_feature 10
 end
 

@@ -62,7 +62,7 @@ module SourceRoute
         memo[k.to_s] = send(k)
         memo
       end
-      if SourceRoute.proxy.condition.events.include?(:return)
+      if SourceRoute.proxy.config.event.include?(:return)
         ret_hash['return_value'] = return_value.nil? ? return_value.inspect : return_value
       end
       (INNER_ATTRS + CUSTOM_ATTRS).each do |k|
@@ -96,8 +96,8 @@ module SourceRoute
       get_attrs
       get_self_refer
 
-      get_local_or_params_var if SourceRoute.proxy.condition.result_config[:include_local_var]
-      get_instance_var if SourceRoute.proxy.condition.result_config[:include_instance_var] and return_event?
+      get_local_or_params_var if SourceRoute.proxy.config.include_local_var
+      get_instance_var if SourceRoute.proxy.config.include_instance_var and return_event?
       self
     end
 

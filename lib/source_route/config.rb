@@ -47,9 +47,12 @@ module SourceRoute
       @ret_params = {}
     end
 
-    def run(cname = nil, &block)
-      ret_params[:defined_class] = cname unless cname.nil?
-      instance_eval(&block)
+    def run(match_str = nil, &block)
+      unless match_str.nil?
+        ret_params[:defined_class] = match_str
+        ret_params[:method_id] = match_str
+      end
+      instance_eval(&block) if block_given?
       ParamsConfigParser.run(@ret_params)
     end
 
