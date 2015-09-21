@@ -18,10 +18,10 @@ module SourceRoute
         defined_class 'ActiveRecord::Callback'
         output_format 'silence'
       end
-      assert_equal [:call, 'c_call'], config.event
+      assert_equal [:call, :c_call], config.event
       assert_equal 'exception_method_name', config.negatives[:method_id]
       assert_equal 'ActiveRecord::Callback', config.positives[:defined_class]
-      assert_equal 'silence', config.output_format
+      assert_equal :silence, config.output_format
     end
 
     def test_block_parser_with_full_feature
@@ -52,8 +52,8 @@ module SourceRoute
                 method_id_not: ['initialize', 'nonsense']
                }
       config = ParamsConfigParser.run(params)
-      assert_equal 'html', config.output_format
-      assert_equal :c_call, config.event
+      assert_equal :html, config.output_format
+      assert_equal [:c_call], config.event
       assert_equal 'ActiveRecord::Base', config.positives[:defined_class]
       assert_equal 'initialize|nonsense', config.negatives[:method_id]
     end

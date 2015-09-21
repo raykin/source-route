@@ -20,9 +20,11 @@ module SourceRoute
       @negatives = {}
     end
 
+    # mutable method
     def formulize
       symbolize_output_format
       event_becomes_array
+      self
     end
 
     def symbolize_output_format
@@ -96,7 +98,7 @@ module SourceRoute
         @config.send("#{k}=", v) if Config::DIRECT_ATTRS.include? k.to_sym
         send(k, v) if (TP_FILTER_METHODS + [:full_feature]).include? k.to_sym
       end
-      @config
+      @config.formulize
     end
 
     # todo. value equal 10 may not be a good params
