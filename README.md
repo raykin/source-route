@@ -40,6 +40,7 @@ you will get a different trace file.
     SourceRoute.enable do
       method_id :wanted_method_name
       full_feature
+      filename 'tmp/capture_wanted.html'
     end
     .... # here is your code
     ....
