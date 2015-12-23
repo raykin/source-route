@@ -4,12 +4,12 @@ html
     title Source Route Result
     link rel="stylesheet" href="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.css"
     link rel="stylesheet" href="https://cdn.rawgit.com/mohsen1/json-formatter/master/dist/json-formatter.css"
-    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.1.4/semantic.min.css"
+    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.1.7/semantic.min.css"
 
     script async=true src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.js"
     script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
     script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"
-    script async=true src="http://oss.maxcdn.com/semantic-ui/2.1.4/semantic.min.js"
+    script async=true src="http://oss.maxcdn.com/semantic-ui/2.1.7/semantic.min.js"
 
     css:
       .call-level-0 {}
@@ -57,7 +57,7 @@ html
               / workaround for return_value is 'false' and return_value always to be string when existed
               .meta(ng-if="trace.hasOwnProperty('return_value')")
                 i.icon.pointing.right.small
-                json-formatter(open="1" json="::trace.return_value" style="display: inline-block")
+                json-formatter(open="1" key="::trace.defined_class" json="::trace.return_value" style="display: inline-block")
             .description
               .ui.vertical.buttons.basic
                 button.ui.labeled.icon.button(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
