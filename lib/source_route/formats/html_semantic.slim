@@ -47,7 +47,7 @@ html
     .ui.container
       .row
       .ui.relaxed.items(ng-class="{{traceFilter.event}}")
-        .item.trace(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
+        .item.trace(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn track by $index" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
           .content(ng-init="showMoreDetail = false")
             .ui.segment.left.floated.padded
               .header
