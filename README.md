@@ -94,6 +94,10 @@ Finally, I expect my working style can changes from searching workaround from in
 
 ### TODO
 
+does Rails 4.1.8 support failed? 
+
+Add debug log to help debugging (ex: stack level too deep)
+
 Cleanup Code and remove useless comments.
 
 Dynamic indent when new child level comes.
