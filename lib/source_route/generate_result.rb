@@ -92,7 +92,9 @@ module SourceRoute
     end
 
     def jsonify_tp_result_chain
-      Oj.dump(tp_result_chain.chain.map(&:to_hash))
+      value = tp_result_chain.chain.map(&:to_hash)
+      Oj.dump(value, mode: :compat)
+
       # tp_result_chain.to_json
       # json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
       # '[ ' + json_array.join(',') + ' ]'
