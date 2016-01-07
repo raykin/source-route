@@ -20,6 +20,11 @@ html
       .item.trace.call-level-5 { padding-left: 250px }
       .item.trace.call-level-6 { padding-left: 300px }
       .item.trace.call-level-7 { padding-left: 300px }
+      .tree-level {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+      }
       // level more than 7 seems not reasonable
 
   body(ng-app="SourceRoute" ng-controller="MainCtrl" ng-cloak)
@@ -46,8 +51,9 @@ html
 
     .ui.container
       .row
-      .ui.relaxed.items(ng-class="{{traceFilter.event}}")
-        .item.trace(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn track by $index" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
+      / .ui.relaxed.items(ng-class="{{traceFilter.event}}")
+      .ui.segment.tree-level(ng-repeat="level in lengthLevel")
+        .item.trace(ng-repeat="trace in traces | filter:{parent_length: level, event: traceFilter.event}" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
           .content(ng-init="showMoreDetail = false")
             .ui.segment.left.floated.padded
               .header
@@ -106,7 +112,6 @@ html
         $scope.tpEvents = angular.element("#trace-data").data('tp-events')
         $scope.childParentFilter = { hide_trace_ids: [] }
 
-        // deprecated
         $scope.lengthLevel = $scope.traces.reduce(function(pre, cur) {
           if (_.includes(pre, cur.parent_length)) {
             // return pre; // do nothing
