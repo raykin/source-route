@@ -20,6 +20,9 @@ html
       .item.trace.call-level-5 { padding-left: 250px }
       .item.trace.call-level-6 { padding-left: 300px }
       .item.trace.call-level-7 { padding-left: 300px }
+      .trace .main .ui.label .icon {
+        margin-right: 0;
+      }
       // level more than 7 seems not reasonable
 
   body(ng-app="SourceRoute" ng-controller="MainCtrl" ng-cloak)
@@ -48,27 +51,23 @@ html
       .row
       .ui.relaxed.items(ng-class="{{traceFilter.event}}")
         .item.trace(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn track by $index" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
-          .content(ng-init="showMoreDetail = false")
-            .ui.segment.left.floated.padded
+          .content(ng-init="showMoreDetail = false" style="display: flex; justify-content: space-between; align-items: center;")
+            .ui.segment.padded.main
+              a.ui.top.right.attached.label.mini(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
+                i.sidebar.icon
               .header
                 span(ng-bind="::tpSelfList[trace.tp_self_refer]")
                 i.circle.icon.grey(style="font-size: 0.3em")
                 span.method-value(ng-bind="::trace.method_id")
+              a.ui.bottom.right.attached.label.mini(ng-if="::hasChild()" ng-click="toggleChild()" ng-class="{loading: togglingChild}")
+                i.icon.angle.down(ng-show="trace.childOpened" style="font-size: 10px")
+                i.icon.angle.right(ng-hide="trace.childOpened" style="font-size: 14px")
+                / pulse-spinner(ng-show="togglingChild")
               / workaround for return_value is 'false' and return_value always to be string when existed
               .meta(ng-if="trace.hasOwnProperty('return_value')")
                 i.icon.pointing.right.small
                 json-formatter(open="1" json="::trace.return_value" style="display: inline-block")
             .description
-              .ui.vertical.buttons.basic
-                button.ui.labeled.icon.button(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
-                  i.browser.icon
-                  span Details
-                button.ui.labeled.icon.button(ng-if="::hasChild()" ng-click="toggleChild()" ng-class="{loading: togglingChild}")
-                  i.icon.angle.down(ng-show="trace.childOpened")
-                  i.icon.angle.right(ng-hide="trace.childOpened")
-                  span Child
-                pulse-spinner(ng-show="togglingChild")
-
               .details.right.floated(ng-if="showMoreDetail")
                 .ui.segments(style="border-color: blue")
                   .ui.segment(ng-if="::trace.params_var")
