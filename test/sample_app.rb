@@ -4,6 +4,7 @@ class SampleApp
 
   def initialize(sample=nil)
     @sample = sample if sample
+    @ret_obj = {temp: 'testing'}
   end
 
   def nonsense
@@ -34,6 +35,16 @@ class SampleApp
     def foo
       cool_in_foo = 'foo data'
       @cool_ins_after = 'will shown in result?'
+    end
+  end
+
+  class RetObj
+
+    def initialize
+    end
+
+    def source_route_display
+      {temp: 'testing'}
     end
   end
 end

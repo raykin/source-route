@@ -62,12 +62,18 @@ module SourceRoute
         memo[k.to_s] = send(k)
         memo
       end
+
       if SourceRoute.proxy.config.event.include?(:return)
         ret_hash['return_value'] = return_value.nil? ? return_value.inspect : return_value
       end
+
       (INNER_ATTRS + CUSTOM_ATTRS).each do |k|
         ret_hash[k.to_s] = send(k) if send(k)
       end
+      ret_hash['return_value_class'] = ret_hash['return_value'].class.name
+      ret_hash['params_var_class'] = ret_hash['params_var'].class.name if ret_hash['params_var']
+      ret_hash['local_var_class'] = ret_hash['local_var'].class.name if ret_hash['local_var']
+      ret_hash['instance_var_class'] = ret_hash['instance_var'].class.name if ret_hash['instance_var']
       ret_hash
     end
 
