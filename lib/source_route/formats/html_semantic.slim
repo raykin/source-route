@@ -67,7 +67,7 @@ html
               .meta(ng-if="trace.hasOwnProperty('return_value')")
                 i.icon.pointing.right.small
                 json-formatter(json="::trace.return_value" title="{{::trace.return_value_class}}" style="display: inline-block")
-            .description
+            .description(style="margin-left: 20px")
               .details.right.floated(ng-if="showMoreDetail")
                 .ui.segments(style="border-color: blue")
                   .ui.segment(ng-if="::trace.params_var")
