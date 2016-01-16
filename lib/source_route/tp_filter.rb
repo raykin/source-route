@@ -22,7 +22,11 @@ module SourceRoute
     def positives_check(tp)
       return true if cond.positives == {}
       cond.positives.any? do |method_key, value|
-        tp.send(method_key).to_s =~ Regexp.new(value)
+        if method_key.to_sym == :defined_class
+          tp.send(method_key).name =~ Regexp.new(value)
+        else
+          tp.send(method_key).to_s =~ Regexp.new(value)
+        end
       end
     end
 
