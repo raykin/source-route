@@ -23,6 +23,18 @@ class SampleApp
     CoolApp.new.foo
   end
 
+  # todo:
+  # this method should return 25
+  # but the tracer may return nil, need test confirm
+  def method_return_from_loop
+    (1..10).each do |n|
+      if n == 5
+        return 5 * 5
+      end
+    end
+    nil
+  end
+
   class CoolApp
     def initialize
       @cool = ['test', 'data']
