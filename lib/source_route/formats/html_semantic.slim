@@ -57,7 +57,7 @@ html
               a.ui.top.right.attached.label.mini(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
                 i.sidebar.icon
               .header
-                span.bold>(ng-bind="::trace.order_id")
+                span.bold.ui.label>(ng-bind="::trace.order_id")
                 span(ng-bind="::tpSelfList[trace.tp_self_refer]")
                 i.circle.icon.grey(style="font-size: 0.3em")
                 span.method-value(ng-bind="::trace.method_id")
