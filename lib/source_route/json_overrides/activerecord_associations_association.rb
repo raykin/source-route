@@ -1,25 +1,31 @@
 if defined? ActiveRecord
-  class ActiveRecord::Associations::Association
-
-    # dump association can trigger ActiveSupport::JSON::Encoding::CircularReferenceError when use rails ~> 4.0.1
-    # I try other json gems to fix it, but all failed. That's why I override it here.
-    def to_json(options = nil)
-      Oj.dump(to_s)
+  module ActiveRecord
+    module Associations
+      class Association
+        # dump association can trigger ActiveSupport::JSON::Encoding::CircularReferenceError when use rails ~> 4.0.1
+        # I try other json gems to fix it, but all failed. That's why I override it here.
+        def to_json(options = nil)
+          Oj.dump(to_s)
+        end
+      end
     end
-  end
 
-  class ActiveRecord::Relation
+    class Relation
 
-    # Override original method.
-    # becasue it trigger SystemStackError: stack level too deep when use rails ~> 4.1.0
-    # def as_json(options = nil) #:nodoc:
-    #   binding.pry
-    #   Json.dump(inspect)
-    # end
+      # Override original method.
+      # becasue it trigger SystemStackError: stack level too deep when use rails ~> 4.1.0
+      # def as_json(options = nil) #:nodoc:
+      #   binding.pry
+      #   Json.dump(inspect)
+      # end
 
-  end
+    end
 
-  class ActiveRecord::Base
+    class Base
+
+      def source_route_display
+      to_s
+    end
 
     # dump association can trigger ActiveSupport::JSON::Encoding::CircularReferenceError when use rails ~> 4.0.1
     # I try other json gems to fix it, but all failed. That's why I override it here.
@@ -30,4 +36,9 @@ if defined? ActiveRecord
     # end
   end
 
+
+
+
+
+end
 end
