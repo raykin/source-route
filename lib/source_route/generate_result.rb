@@ -88,21 +88,22 @@ module SourceRoute
     end
 
     def jsonify_events
-      Oj.dump(@proxy.config.event.map(&:to_s))
+      JSON.dump(@proxy.config.event.map(&:to_s))
     end
 
     def jsonify_tp_result_chain
       value = tp_result_chain.chain.map(&:to_hash)
-      Oj.dump(value, mode: :compat)
+      JSON.dump(value)
 
+      # not worked
       # tp_result_chain.to_json
-      # json_array = tp_result_chain.map { |result| Jsonify.dump(result) }
+      # json_array = tp_result_chain.map { |result| JSON.dump(result) }
       # '[ ' + json_array.join(',') + ' ]'
     end
 
     def jsonify_tp_self_caches
-      Oj.dump(tp_self_caches.clone
-               .map(&:to_s))
+      JSON.dump(tp_self_caches.clone
+                 .map(&:to_s))
     end
 
     private
