@@ -97,10 +97,6 @@ call and return event combined together is no useful. So traces data structure n
 
 global disable some class from monitor
 
-does Rails 4.1.8 support failed?
-
-Add debug log to help debugging (ex: stack level too deep)
-
 Cleanup Code and remove useless comments.
 
 Dynamic indent when new child level comes.
