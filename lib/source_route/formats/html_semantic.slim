@@ -4,12 +4,12 @@ html
     title Source Route Result
     link rel="stylesheet" href="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.css"
     link rel="stylesheet" href="https://cdn.rawgit.com/raykin/json-formatter/dist/dist/json-formatter.css"
-    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.1.7/semantic.min.css"
+    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.css"
 
     script async=true src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.js"
     script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
     script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"
-    script async=true src="http://oss.maxcdn.com/semantic-ui/2.1.7/semantic.min.js"
+    script async=true src="http://oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.js"
 
     css:
       .call-level-0 {}
@@ -50,12 +50,13 @@ html
     .ui.container
       .row
       .ui.relaxed.items(ng-class="{{traceFilter.event}}")
-        .item.trace(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn track by $index" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
+        .item.trace(ng-repeat="trace in traces | filter:traceFilter:true | filter:childParentFilterFn track by trace.order_id" ng-class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
           .content(ng-init="showMoreDetail = false" style="display: flex; justify-content: space-between; align-items: center;")
             .ui.segment.padded.main
               a.ui.top.right.attached.label.mini(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
                 i.sidebar.icon
               .header
+                span.bold>(ng-bind="::trace.order_id")
                 span(ng-bind="::tpSelfList[trace.tp_self_refer]")
                 i.circle.icon.grey(style="font-size: 0.3em")
                 span.method-value(ng-bind="::trace.method_id")

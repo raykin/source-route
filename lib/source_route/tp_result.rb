@@ -41,8 +41,8 @@ module SourceRoute
     end
 
     def ==(other)
-      tp_self_refer == other.tp_self_refer and method_id == other.method_id and
-        defined_class == other.defined_class
+      tp_self_refer == other.tp_self_refer and # path == other.path and lineno == other.lineno
+        method_id == other.method_id and defined_class == other.defined_class
     end
 
     def matched?
