@@ -7,7 +7,7 @@ module SourceRoute
     DIRECT_ATTRS = [:event, :full_feature, :debug,
                     :output_format, :show_additional_attrs,
                     :filename, :include_local_var, :include_instance_var,
-                    :import_return_to_call
+                    :import_return_to_call, :use_tree_version2
                    ]
 
     attr_accessor *DIRECT_ATTRS
@@ -104,7 +104,7 @@ module SourceRoute
       @config.formulize
     end
 
-    # todo. value equal 10 may not be a good params
+    # todo. value equal is not a good params
     def full_feature(value=true)
       return unless value
       @config.formulize
@@ -113,9 +113,12 @@ module SourceRoute
       @config.show_additional_attrs = [:path, :lineno]
       # JSON serialize trigger many problems when handle complicated object(in rails?)
       # a Back Door to open more data. but be care it could trigger weird crash when Jsonify these vars
-      if value == 10
+      if value.is_a? Fixnum and value >= 10
         @config.include_instance_var = true
         @config.include_local_var = true
+      end
+      if value == 11
+        @config.use_tree_version2 = true
       end
     end
   end # END ParamsConfigParser

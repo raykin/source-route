@@ -11,7 +11,7 @@ module SourceRoute
     attr_reader :trace_chain, :tp_self_caches, :collected_data
 
     extend Forwardable
-    def_delegators :@trace_chain, :import_return_value_to_call_chain, :treeize_call_chain
+    def_delegators :@trace_chain, :import_return_value_to_call_chain, :treeize_call_chain, :treeize_call_chain2
 
     # see event description in TracePoint API Doc
     DEFAULT_ATTRS = {
@@ -104,6 +104,10 @@ module SourceRoute
     def jsonify_tp_self_caches
       JSON.dump(tp_self_caches.clone
                  .map(&:to_s))
+    end
+
+    def jsonify_call_forest
+      JSON.dump(trace_chain.call_tree.data)
     end
 
     private

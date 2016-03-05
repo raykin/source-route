@@ -32,6 +32,10 @@ module SourceRoute
       @opposite_exist
     end
 
+    def as_tree
+      {nodeid: order_id, children: direct_child_order_ids }
+    end
+
     def return_event?
       event == :return
     end
@@ -40,9 +44,12 @@ module SourceRoute
       event == :call
     end
 
+    # used to match call tracepoint and return tracepoint
+    # so path and lineno cant used for compare
     def ==(other)
-      tp_self_refer == other.tp_self_refer and # path == other.path and lineno == other.lineno
-        method_id == other.method_id and defined_class == other.defined_class
+      tp_self_refer == other.tp_self_refer and
+        method_id == other.method_id and
+        defined_class == other.defined_class
     end
 
     def matched?

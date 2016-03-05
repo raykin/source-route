@@ -196,6 +196,17 @@ class SourceRouteTest < Minitest::Test
     assert @proxy.trace_chain.call_chain[0].return_value, 'call results should contain return_value'
   end
 
+  def test_treeize_call_chain_version2
+    SourceRoute.enable 'SampleApp' do
+      full_feature 11
+    end
+    SampleApp.new('cool stuff').init_cool_app
+    @proxy.trace_chain.treeize_call_chain2
+    ap @proxy.trace_chain.call_tree.data
+    first_node = @proxy.trace_chain.call_tree.data.find {|ele| ele[:nodeid] == 0}
+    assert first_node[:children]
+  end
+
   def test_order_call_sequence
     SourceRoute.enable 'SampleApp' do
       event :call, :return
@@ -229,6 +240,24 @@ class SourceRouteTest < Minitest::Test
     if ENV['ignore_html_generation'] == 'true'
       # do nothing. cause it was set to false in Rakefile.
       # So Run rake test will not generate html file, run ruby -Itest test/source_route.rb will generate output file
+    else
+      SourceRoute.output_html
+    end
+  end
+
+  def test_html_format_output_with_two_events_and_filename_with_version2
+    @source_route = SourceRoute.enable do
+      defined_class 'SampleApp'
+      event :call, :return
+      full_feature 11
+      filename 'call_and_return_in_sample_app2.html'
+    end
+
+    SampleApp.new.init_cool_app
+
+    if ENV['ignore_html_generation'] == 'true'
+    # do nothing. cause it was set to false in Rakefile.
+    # So Run rake test will not generate html file, run ruby -Itest test/source_route.rb will generate output file
     else
       SourceRoute.output_html
     end
