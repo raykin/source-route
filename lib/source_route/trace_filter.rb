@@ -1,6 +1,6 @@
 module SourceRoute
 
-  class TpFilter
+  class TraceFilter
     attr_accessor :cond
     def initialize(condition)
       @cond = condition

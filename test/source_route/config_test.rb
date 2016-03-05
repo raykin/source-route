@@ -3,11 +3,11 @@ require 'test_helper'
 module SourceRoute
   class ConfigTest < Minitest::Test
 
-    def test_tp_filter_methods
-      assert TP_FILTER_METHODS.include?(:defined_class_not)
-      assert TP_FILTER_METHODS.include?(:method_id_not)
-      assert TP_FILTER_METHODS.include?(:path)
-      assert TP_FILTER_METHODS.frozen?
+    def test_trace_filter_methods
+      assert TRACE_FILTER_METHODS.include?(:defined_class_not)
+      assert TRACE_FILTER_METHODS.include?(:method_id_not)
+      assert TRACE_FILTER_METHODS.include?(:path)
+      assert TRACE_FILTER_METHODS.frozen?
     end
 
     def test_block_parser

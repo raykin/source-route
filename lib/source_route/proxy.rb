@@ -19,9 +19,9 @@ module SourceRoute
     end
 
     def trace
-      tp_filter = TpFilter.new(config)
+      trace_filter = TraceFilter.new(config)
       track = TracePoint.new(*config.event) do |tp|
-        next if tp_filter.block_it?(tp)
+        next if trace_filter.block_it?(tp)
         @result_builder.output(tp)
       end
       track.enable

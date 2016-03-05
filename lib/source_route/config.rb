@@ -1,6 +1,6 @@
 module SourceRoute
-  TP_FILTER = [:defined_class, :method_id, :path, :lineno].freeze
-  TP_FILTER_METHODS = (TP_FILTER + TP_FILTER.map { |tpf| "#{tpf}_not".to_sym }).freeze
+  TRACE_FILTER = [:defined_class, :method_id, :path, :lineno].freeze
+  TRACE_FILTER_METHODS = (TRACE_FILTER + TRACE_FILTER.map { |tpf| "#{tpf}_not".to_sym }).freeze
 
   class Config
 
@@ -74,7 +74,7 @@ module SourceRoute
       ret_params[:output_format] = block_given? ? block : data
     end
 
-    TP_FILTER_METHODS.each do |m|
+    TRACE_FILTER_METHODS.each do |m|
       define_method m do |*v|
         ret_params[m] = v
       end
@@ -85,7 +85,7 @@ module SourceRoute
   module ParamsConfigParser
     extend self
 
-    TP_FILTER.each do |m|
+    TRACE_FILTER.each do |m|
       define_method m do |v|
         @config.positives[m] = Array(v).flatten.map(&:to_s).join('|')
       end
@@ -99,7 +99,7 @@ module SourceRoute
       @config = Config.new
       params.each do |k, v|
         @config.send("#{k}=", v) if Config::DIRECT_ATTRS.include? k.to_sym
-        send(k, v) if (TP_FILTER_METHODS + [:full_feature]).include? k.to_sym
+        send(k, v) if (TRACE_FILTER_METHODS + [:full_feature]).include? k.to_sym
       end
       @config.formulize
     end
