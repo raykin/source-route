@@ -93,6 +93,8 @@ Finally, I expect my working style can changes from searching workaround from in
 
 ### TODO
 
+use concurrent-ruby to speed up
+
 call and return event combined together is no useful. So traces data structure need changed.
 
 global disable some class from monitor
