@@ -96,12 +96,9 @@ Finally, I expect my working style can changes from searching workaround from in
 use concurrent-ruby to speed up
 
 call and return event combined together is no useful. So traces data structure need changed.
+Dynamic indent when new child level comes.
 
 global disable some class from monitor
-
-Cleanup Code and remove useless comments.
-
-Dynamic indent when new child level comes.
 
 Add debug option to provide more verbose messages of what has happened
 

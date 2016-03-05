@@ -1,6 +1,6 @@
 module SourceRoute
   # delegate to Array
-  class TpResultChain
+  class TraceChain
     attr_reader :chain
 
     extend Forwardable
@@ -69,5 +69,5 @@ module SourceRoute
       end
     end
 
-  end # END TpResultChain
+  end # END TraceChain
 end

@@ -238,6 +238,6 @@ html
 
     .data-collect
       / dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
-      #trace-data(data-trace="#{jsonify_tp_result_chain}"
+      #trace-data(data-trace="#{jsonify_trace_chain}"
         data-tp-events="#{jsonify_events}"
         data-tp-self-caches="#{jsonify_tp_self_caches}")

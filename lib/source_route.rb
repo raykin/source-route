@@ -11,7 +11,7 @@ require "source_route/proxy"
 require "source_route/jsonify"
 require "source_route/generate_result"
 require "source_route/tp_result"
-require "source_route/tp_result_chain"
+require "source_route/trace_chain"
 require "source_route/tp_filter"
 require 'source_route/json_overrides/activerecord_associations_association'
 

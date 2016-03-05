@@ -36,14 +36,14 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense
 
-    assert_includes @proxy.tp_result_chain.first.path, 'test'
+    assert_includes @proxy.trace_chain.first.path, 'test'
   end
 
   def test_match_class_name_by_first_parameter
     @source_route = SourceRoute.enable 'SampleApp'
     SampleApp.new.nonsense
 
-    assert @proxy.tp_result_chain.size > 0
+    assert @proxy.trace_chain.size > 0
   end
 
   def test_not_match
@@ -52,7 +52,7 @@ class SourceRouteTest < Minitest::Test
       method_id_not 'nonsense'
     end
     SampleApp.new.nonsense
-    refute_includes @proxy.tp_result_chain.map(&:method_id).flatten, 'nonsense'
+    refute_includes @proxy.trace_chain.map(&:method_id).flatten, 'nonsense'
   end
 
   def test_match_multiple_class_name
@@ -61,8 +61,8 @@ class SourceRouteTest < Minitest::Test
     end
 
     SampleApp.new.nonsense
-    assert @proxy.tp_result_chain.size > 0
-    assert_equal SampleApp, @proxy.tp_result_chain.last.defined_class
+    assert @proxy.trace_chain.size > 0
+    assert_equal SampleApp, @proxy.trace_chain.last.defined_class
   end
 
   def test_source_route_with_one_parameter
@@ -71,19 +71,19 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense
 
-    ret_tp = @proxy.tp_result_chain.last
+    ret_tp = @proxy.trace_chain.last
     assert_equal SampleApp, ret_tp.defined_class
   end
 
   def test_proxy_reset
     SourceRoute.enable 'nonsense'
     SampleApp.new.nonsense
-    assert_equal 1, @proxy.tp_result_chain.size
+    assert_equal 1, @proxy.trace_chain.size
 
     SourceRoute.reset
     SampleApp.new.nonsense
 
-    assert_equal 0, @proxy.tp_result_chain.size
+    assert_equal 0, @proxy.trace_chain.size
   end
 
   def test_source_route_with_block
@@ -96,7 +96,7 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense
 
-    assert_equal 0, @proxy.tp_result_chain.size
+    assert_equal 0, @proxy.trace_chain.size
     assert_equal 1, paths.size
     assert_includes paths.first, 'sample_app'
   end
@@ -104,14 +104,14 @@ class SourceRouteTest < Minitest::Test
   def test_trace_with_c_call
     SourceRoute.trace(event: :c_call) { 'abc'.upcase }
 
-    assert_equal 2, @proxy.tp_result_chain.size
+    assert_equal 2, @proxy.trace_chain.size
   end
 
   def test_trace_with_full_feature
     SourceRoute.trace method_id: 'nonsense', full_feature: 10 do
       SampleApp.new.nonsense
     end
-    first_result = @proxy.tp_result_chain.first
+    first_result = @proxy.trace_chain.first
     assert_equal first_result.tp_self_refer, 0
   end
 
@@ -123,20 +123,20 @@ class SourceRouteTest < Minitest::Test
   #   assert @proxy.tp_self_caches.first.is_a? SampleApp
   # end
 
-  def test_stringify_tp_result_chain_only
+  def test_stringify_trace_chain_only
     SourceRoute.trace method_id: 'nonsense', full_feature: true do
       SampleApp.new.nonsense
     end
-    origin_tp_result_chain = @proxy.tp_result_chain
-    assert @proxy.tp_result_chain.first.stringify.defined_class.is_a? String
-    assert_equal origin_tp_result_chain, @proxy.tp_result_chain
+    origin_trace_chain = @proxy.trace_chain
+    assert @proxy.trace_chain.first.stringify.defined_class.is_a? String
+    assert_equal origin_trace_chain, @proxy.trace_chain
   end
 
   def test_trace_without_first_hash_option
     SourceRoute.trace output_format: :test do
       SampleApp.new.nonsense
     end
-    assert @proxy.tp_result_chain.size > 0
+    assert @proxy.trace_chain.size > 0
     refute @proxy.tp.enabled?
   end
 
@@ -145,7 +145,7 @@ class SourceRouteTest < Minitest::Test
       event :call, :return
     end
     SampleApp.new.nonsense
-    assert_equal 2, @proxy.tp_result_chain.size
+    assert_equal 2, @proxy.trace_chain.size
   end
 
   # but local var didnt displayed
@@ -157,7 +157,7 @@ class SourceRouteTest < Minitest::Test
 
     SampleApp.new.nonsense_with_params(88)
 
-    ret_value = @proxy.tp_result_chain.last
+    ret_value = @proxy.trace_chain.last
   end
 
   def test_track_local_var_when_event_is_return
@@ -167,9 +167,9 @@ class SourceRouteTest < Minitest::Test
     end
 
     SampleApp.new.nonsense_with_params(88)
-    assert_equal 1, @proxy.tp_result_chain.size
+    assert_equal 1, @proxy.trace_chain.size
 
-    ret_value_for_return_event = @proxy.tp_result_chain.last
+    ret_value_for_return_event = @proxy.trace_chain.last
     assert_equal 88, ret_value_for_return_event.local_var[:param1]
     assert_equal 5, ret_value_for_return_event.local_var[:param2]
   end
@@ -181,8 +181,8 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new('ins sure').nonsense_with_instance_var
 
-    assert_equal 4, @proxy.tp_result_chain.size
-    ret_value = @proxy.tp_result_chain.pop
+    assert_equal 4, @proxy.trace_chain.size
+    ret_value = @proxy.trace_chain.pop
 
     assert_equal 'ins sure', ret_value.instance_var[:@sample]
   end
@@ -192,8 +192,8 @@ class SourceRouteTest < Minitest::Test
       full_feature 10
     end
     SampleApp.new('cool stuff').init_cool_app
-    @proxy.tp_result_chain.import_return_value_to_call_chain
-    assert @proxy.tp_result_chain.call_chain[0].return_value, 'call results should contain return_value'
+    @proxy.trace_chain.import_return_value_to_call_chain
+    assert @proxy.trace_chain.call_chain[0].return_value, 'call results should contain return_value'
   end
 
   def test_order_call_sequence
@@ -202,8 +202,8 @@ class SourceRouteTest < Minitest::Test
     end
     SampleApp.new.nonsense_with_instance_var
 
-    @proxy.tp_result_chain.treeize_call_chain
-    call_results = @proxy.result_builder.tp_result_chain.call_chain
+    @proxy.trace_chain.treeize_call_chain
+    call_results = @proxy.result_builder.trace_chain.call_chain
 
     nonsense_call_tp = call_results.find { |tp| tp.method_id == :nonsense }
     nonsense_with_instance_var_call_tp = call_results.find do |tp|
@@ -211,7 +211,7 @@ class SourceRouteTest < Minitest::Test
     end
     assert_equal [nonsense_with_instance_var_call_tp.order_id], nonsense_call_tp.parent_ids
     assert_equal 1, nonsense_call_tp.parent_length
-    assert_equal [0, 1], @proxy.result_builder.tp_result_chain.parent_length_list
+    assert_equal [0, 1], @proxy.result_builder.trace_chain.parent_length_list
     assert_equal [nonsense_call_tp.order_id], nonsense_with_instance_var_call_tp.direct_child_order_ids
   end
 

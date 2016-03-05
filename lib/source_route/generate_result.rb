@@ -8,10 +8,10 @@ module SourceRoute
   # 5. Output data with correct format
   class GenerateResult
 
-    attr_reader :tp_result_chain, :tp_self_caches, :collected_data
+    attr_reader :trace_chain, :tp_self_caches, :collected_data
 
     extend Forwardable
-    def_delegators :@tp_result_chain, :import_return_value_to_call_chain, :treeize_call_chain
+    def_delegators :@trace_chain, :import_return_value_to_call_chain, :treeize_call_chain
 
     # see event description in TracePoint API Doc
     DEFAULT_ATTRS = {
@@ -32,7 +32,7 @@ module SourceRoute
 
     def initialize(proxy)
       @proxy = proxy
-      @tp_result_chain = TpResultChain.new
+      @trace_chain = TraceChain.new
       @tp_self_caches = []
     end
 
@@ -64,11 +64,11 @@ module SourceRoute
       when :html
         # we cant generate html right now becase the tp callback is still in process
         # so we gather data into array
-        @tp_result_chain.push(TpResult.new(tp_ins))
+        @trace_chain.push(TpResult.new(tp_ins))
       when :silence, :none
       # do nothing at now
       when :test
-        @tp_result_chain.push(TpResult.new(tp_ins))
+        @trace_chain.push(TpResult.new(tp_ins))
       when :stack_overflow
         console_stack_overflow
       when Proc
@@ -91,13 +91,13 @@ module SourceRoute
       JSON.dump(@proxy.config.event.map(&:to_s))
     end
 
-    def jsonify_tp_result_chain
-      value = tp_result_chain.chain.map(&:to_hash)
+    def jsonify_trace_chain
+      value = trace_chain.chain.map(&:to_hash)
       JSON.dump(value)
 
       # not worked
-      # tp_result_chain.to_json
-      # json_array = tp_result_chain.map { |result| JSON.dump(result) }
+      # trace_chain.to_json
+      # json_array = trace_chain.map { |result| JSON.dump(result) }
       # '[ ' + json_array.join(',') + ' ]'
     end
 

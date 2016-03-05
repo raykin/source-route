@@ -28,8 +28,8 @@ module SourceRoute
       self.tp = track
     end
 
-    def tp_result_chain
-      result_builder.tp_result_chain
+    def trace_chain
+      result_builder.trace_chain
     end
   end # END Proxy
 
