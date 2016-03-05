@@ -1,7 +1,7 @@
 require 'ostruct'
 require 'singleton'
 require 'forwardable'
-require 'oj'
+require 'oj' # Not sure how to correct use it with Rails
 require 'awesome_print'
 
 require "source_route/core_ext"
@@ -12,24 +12,9 @@ require "source_route/generate_result"
 require "source_route/tp_result"
 require "source_route/trace_chain"
 require "source_route/trace_filter"
+require "source_route/call_trace_tree"
 require 'source_route/json_overrides/activerecord_associations_association'
-
-begin
-  if Rails
-    ActiveSupport.on_load(:after_initialize, yield: true) do
-      # make it respond to to_s. In rails source, almost all of its methods are removed, including to_s.
-      module ActiveSupport
-        class OptionMerger
-          def to_s
-            "<#ActiveSupport #{__id__}>"
-          end
-        end
-      end # END ActiveSupport
-    end
-  end
-rescue NameError
-  nil
-end
+require 'source_route/override_rails'
 
 module SourceRoute
   extend self
