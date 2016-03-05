@@ -21,6 +21,7 @@ module SourceRoute
     def trace
       trace_filter = TraceFilter.new(config)
       track = TracePoint.new(*config.event) do |tp|
+        # todo: how about run in concurrent
         next if trace_filter.block_it?(tp)
         @result_builder.output(tp)
       end
