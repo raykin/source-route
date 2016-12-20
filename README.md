@@ -42,10 +42,11 @@ you will get a different trace file.
       full_feature
       filename 'tmp/capture_wanted.html'
     end
-    .... # here is your code
+    # Following is your code
     ....
     ....
-    # add it after your tracked code, it will output the trace into a html file
+    ....
+    # add it after your tracked code, it output the trace into a html file
     SourceRoute.output_html
 
 Same as the previous example, you will get a html file showing the code trace.
@@ -83,6 +84,8 @@ Help me read source code and solve problem directly.
 5. Create a new Pull Request
 
 ### TODO
+
+animation when node hide
 
 use concurrent-ruby to speed up
 
