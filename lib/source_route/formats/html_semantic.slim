@@ -4,12 +4,12 @@ html
     title Source Route Result
     link rel="stylesheet" href="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.css"
     link rel="stylesheet" href="https://cdn.rawgit.com/raykin/json-formatter/dist/dist/json-formatter.css"
-    link rel="stylesheet" href="http://oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.css"
+    link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.css"
 
-    script async=true src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.js"
+    script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.js"
     script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"
-    script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js"
-    script async=true src="http://oss.maxcdn.com/semantic-ui/2.1.8/semantic.min.js"
+    script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js"
+    script async=true src="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.js"
 
     css:
       .call-level-0 {}
@@ -68,7 +68,7 @@ html
               / workaround for return_value is 'false' and return_value always to be string when existed
               .meta(ng-if="trace.hasOwnProperty('return_value')")
                 i.icon.pointing.right.small
-                json-formatter(json="::trace.return_value" title="{{::trace.return_value_class}}" style="display: inline-block")
+                json-formatter(json="::trimString(trace.return_value, 30)" title="{{::trace.return_value_class}}" style="display: inline-block")
             .description(style="margin-left: 20px")
               .details.right.floated(ng-if="showMoreDetail")
                 .ui.segments(style="border-color: blue")
@@ -179,10 +179,11 @@ html
 
         combinedAttrs = function(trace) {
           var attrs = {}
+
           if (trace.hasOwnProperty('lineno') && trace.hasOwnProperty('path')) {
-            attrs.method_defined_on = trace.path + ":" + trace.lineno;
+            attrs.method_defined_on = _.replace(trace.path, /.*gems\//, '') + ":" + trace.lineno;
           } else if (trace.hasOwnProperty('path')) {
-            attrs.method_defined_on = trace.path;
+            attrs.method_defined_on = _.replace(trace.path, /.*gems\//, '');
           }
           if (trace.hasOwnProperty('defined_class')) {
             attrs.method_defined_in = trace.defined_class;
@@ -231,7 +232,7 @@ html
 
         $scope.hasChild = function() {
           return _.find($scope.traces, function(trace) {
-            return _.contains(trace.parent_ids, $scope.trace.order_id)
+            return _.includes(trace.parent_ids, $scope.trace.order_id)
           });
         }
       })
