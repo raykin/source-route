@@ -16,6 +16,7 @@ require 'source_route/json_overrides/activerecord_associations_association'
 
 begin
   if Rails
+    require 'source_route/rails_plugins/source_track_middleware'
     ActiveSupport.on_load(:after_initialize, yield: true) do
       # make it respond to to_s. In rails source, almost all of its methods are removed, including to_s.
       module ActiveSupport
@@ -43,7 +44,11 @@ module SourceRoute
   end
 
   def disable
-    proxy.tp.disable
+    if proxy.tp.nil?
+      puts 'Error: You try to call disable on nil object, do you define SourceRoute ?'
+    else
+      proxy.tp.disable
+    end
   end
 
   def enable(match = nil, &block)
