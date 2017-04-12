@@ -3,7 +3,7 @@ html
   head
     title Source Route Result
     link rel="stylesheet" href="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.css"
-    link rel="stylesheet" href="https://cdn.rawgit.com/raykin/json-formatter/dist/dist/json-formatter.css"
+    link rel="stylesheet" href="https://cdn.rawgit.com/raykin/json-formatter/master/dist/json-formatter.min.css"
     link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.css"
 
     script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.js"
@@ -57,7 +57,7 @@ html
               a.ui.top.right.attached.label.mini(ng-show="::containsDetail(trace)" ng-click="showMoreDetail = !showMoreDetail")
                 i.sidebar.icon
               .header
-                span.bold.ui.label>(ng-bind="::trace.order_id")
+                span.bold.ui.label>(ng-bind="::(trace.order_id || '>')")
                 span(ng-bind="::tpSelfList[trace.tp_self_refer]")
                 i.circle.icon.grey(style="font-size: 0.3em")
                 span.method-value(ng-bind="::trace.method_id")
@@ -89,7 +89,7 @@ html
                     json-formatter(open="1" json="::plusTraceAttrs[trace.order_id]" title="TracePoint")
 
     script src="https://cdn.rawgit.com/Urigo/angular-spinkit/master/build/angular-spinkit.min.js"
-    script src="https://cdn.rawgit.com/raykin/json-formatter/dist/dist/json-formatter.js"
+    script src="https://cdn.rawgit.com/raykin/json-formatter/master/dist/json-formatter.js"
     // script async src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-sanitize.js"
 
     javascript:

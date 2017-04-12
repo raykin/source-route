@@ -26,7 +26,7 @@ Or install it yourself as:
 
     SourceRoute.trace(output_format: :console, event: :c_call) { 'abc'.upcase }
 
-#### In rails console
+#### In rails console or test code
 
     SourceRoute.trace(defined_class: :ActiveRecord, output_format: :html) { User.new }
 
