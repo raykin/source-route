@@ -2,12 +2,14 @@ module SourceRoute
   TRACE_FILTER = [:defined_class, :method_id, :path, :lineno].freeze
   TRACE_FILTER_METHODS = (TRACE_FILTER + TRACE_FILTER.map { |tpf| "#{tpf}_not".to_sym }).freeze
 
+  # todo: Here is not good. Tried to compatible with different options
+  # but code becomes hard to maintenance
   class Config
 
     DIRECT_ATTRS = [:event, :full_feature, :debug,
                     :output_format, :show_additional_attrs,
                     :filename, :include_local_var, :include_instance_var,
-                    :import_return_to_call
+                    :import_return_to_call, :track_params
                    ]
 
     attr_accessor *DIRECT_ATTRS
@@ -38,6 +40,7 @@ module SourceRoute
     def has_call_and_return_event
       event.include? :return and event.include? :call
     end
+
   end # END Config
 
   class BlockConfigParser
@@ -67,6 +70,14 @@ module SourceRoute
       define_method attr do |*v|
         ret_params[attr] = v unless v == []
       end
+    end
+
+    # Track when the value was passed into method
+    def track_params(value)
+      ret_params[:track_params] = value.object_id
+      ret_params[:show_additional_attrs] = :path
+      ret_params[:include_local_var] = true
+      ret_params[:event] = :call
     end
 
     # override

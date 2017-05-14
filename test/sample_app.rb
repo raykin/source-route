@@ -48,6 +48,14 @@ class SampleApp
       cool_in_foo = 'foo data'
       @cool_ins_after = 'will shown in result?'
     end
+
+    def reverse_hash(h)
+      ret = {}
+      h.each do |k, v|
+        ret[v] = k
+      end
+      ret
+    end
   end
 
   class RetObj
@@ -59,4 +67,5 @@ class SampleApp
       {temp: 'testing'}
     end
   end
+
 end

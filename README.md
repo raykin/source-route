@@ -85,6 +85,8 @@ Help me read source code and solve problem directly.
 
 ### TODO
 
+add syntax to monitor when obj was passed into method
+
 animation when node hide
 
 use concurrent-ruby to speed up

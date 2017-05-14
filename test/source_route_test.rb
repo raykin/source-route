@@ -196,6 +196,18 @@ class SourceRouteTest < Minitest::Test
     assert @proxy.trace_chain.call_chain[0].return_value, 'call results should contain return_value'
   end
 
+  def test_trace_when_value_was_passed_to_method
+    hash = {x: 1, y: 2}
+    SourceRoute.enable do
+      track_params hash
+    end
+    SampleApp.new
+    ca = SampleApp::CoolApp.new
+    ca.reverse_hash(hash)
+    SourceRoute.output_html
+    assert_equal 1, @proxy.trace_chain.size
+  end
+
   def test_order_call_sequence
     SourceRoute.enable 'SampleApp' do
       event :call, :return

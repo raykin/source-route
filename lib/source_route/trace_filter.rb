@@ -8,9 +8,18 @@ module SourceRoute
 
     # to improve performance, we didnt assign tp as instance variable
     def block_it?(tp)
-      return true if negative_check(tp)
-      return false if positives_check(tp)
-      true
+      if @cond.track_params
+        return true if negative_check(tp)
+        if positives_check(tp)
+          return !tp.binding.eval('local_variables').any? do |v|
+            tp.binding.local_variable_get(v).object_id == @cond.track_params
+          end
+        end
+      else
+        return true if negative_check(tp)
+        return false if positives_check(tp)
+      end
+      true # default is blocked the tp
     end
 
     def negative_check(tp)

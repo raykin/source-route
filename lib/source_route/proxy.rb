@@ -1,6 +1,6 @@
 module SourceRoute
 
-  class Proxy # todo Rename it to Proxy
+  class Proxy
     include Singleton
 
     attr_accessor :config, :tp, :result_builder
