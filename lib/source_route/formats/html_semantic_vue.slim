@@ -1,0 +1,105 @@
+doctype html
+html
+  head
+    title Source Route Result
+    link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"
+
+    script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.js"
+    script src="https://unpkg.com/vue"
+    script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    script async=true src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"
+
+    css:
+      .call-level-0 {}
+      .item.trace.call-level-1 { padding-left: 50px }
+      .item.trace.call-level-2 { padding-left: 100px }
+      .item.trace.call-level-3 { padding-left: 150px }
+      .item.trace.call-level-4 { padding-left: 200px }
+      .item.trace.call-level-5 { padding-left: 250px }
+      .item.trace.call-level-6 { padding-left: 300px }
+      .item.trace.call-level-7 { padding-left: 300px }
+      .trace .main .ui.label .icon {
+        margin-right: 0;
+      }
+      // level more than 7 seems not reasonable
+
+  body
+
+    .ui.menu.pointing.stackable.attached#top-menu
+      .ui.container
+        // .item
+        //   a.navbar-brand(href="#" @click="resetTraceFilter()") ALL
+        .item(v-for="event in tpEvents" :class="{active: event == traceFilter.event}")
+          a(href="#" @click="traceFilter.event = event" v-text="event")
+        .item
+          .ui.buttons
+            button.ui.labeled.icon.button.olive(@click="outlineTrace()" :class="{loading: outlineTraceLoading}")
+              i.angle.double.right.icon
+              span OutLine
+            .or
+            button.ui.right.labeled.icon.button.green(@click="expandAllTrace()" :class="{loading: expandAllTraceLoading}")
+              i.angle.double.down.icon
+              span Expand
+        .right.menu
+          .item
+            span Trace Count
+            .ui.teal.left.pointing.label(v-text="currentCounter()")
+
+    .ui.container#traces
+      .row
+      .ui.relaxed.items(:class="{{traceFilter.event}}")
+        // track by trace.order_id doesn't always work. because order_id doesn't always exists
+        .item.trace(v-for="trace in traces | filter:traceFilter:true | filter:childParentFilterFn" :class="callLevelClass(trace)" ng-controller="TpTraceCtrl")
+          .content(ng-init="showMoreDetail = false" style="display: flex; justify-content: space-between; align-items: center;")
+            .ui.segment.padded.main
+              a.ui.top.right.attached.label.mini(v-show="containsDetail(trace)" @click="showMoreDetail = !showMoreDetail")
+                i.sidebar.icon
+              .header
+                span.bold.ui.label>(v-text="(trace.order_id || '>')")
+                span(v-text="tpSelfList[trace.tp_self_refer]")
+                i.circle.icon.grey(style="font-size: 0.3em")
+                span.method-value(v-text="trace.method_id")
+              a.ui.bottom.right.attached.label.mini(v-if="hasChild()" @click="toggleChild()" :class="{loading: togglingChild}")
+                i.icon.angle.down(v-show="trace.childOpened" style="font-size: 10px")
+                i.icon.angle.right(ng-hide="trace.childOpened" style="font-size: 14px")
+                / pulse-spinner(v-show="togglingChild")
+              / workaround for return_value is 'false' and return_value always to be string when existed
+              .meta(v-if="trace.hasOwnProperty('return_value')")
+                i.icon.pointing.right.small
+                json-formatter(json="trimString(trace.return_value, 30)" title="{{trace.return_value_class}}" style="display: inline-block")
+            .description(style="margin-left: 20px")
+              .details.right.floated(v-if="showMoreDetail")
+                .ui.segments(style="border-color: blue")
+                  .ui.segment(v-if="trace.params_var")
+                    .ui.teal.left.ribbon.label Parameters
+                    json-formatter(open="1" json="trace.params_var" title="{{trace.params_var_class}}")
+                  .ui.segment(v-if="trace.hasOwnProperty('return_value')")
+                    .ui.grey.left.ribbon.label Return Value
+                    json-formatter(open="1" json="trace.return_value" title="{{trace.return_value_class}}")
+                  .ui.segment(v-if="trace.local_var")
+                    .ui.teal.left.ribbon.label Local Variables
+                    json-formatter(open="1" json="trace.local_var" title="{{trace.local_var_class}}")
+                  .ui.segment(v-if="trace.instance_var")
+                    .ui.blue.left.ribbon.label Instance Variables
+                    json-formatter(open="1" json="trace.instance_var" title="{{trace.instance_var_class}}")
+                  .ui.segment(v-if="containsOtherAttrs(trace)")
+                    .ui.orange.left.ribbon.label Trace Attributes
+                    json-formatter(open="1" json="plusTraceAttrs[trace.order_id]" title="TracePoint")
+
+    javascript:
+      var top_menu = new Vue({
+        el: '#top-menu',
+        data: $("#trace-data").data('tp-events')
+      });
+
+      // var traces = new Vue({
+      //   el: '#traces',
+      //   data: $("#trace-data").data('trace')
+
+      // });
+
+    .data-collect
+      // dont use local_trace_data.to_json, because ActiveSupport override it and can introduce unexpected crash for some data
+      #trace-data(data-trace="#{jsonify_trace_chain}"
+        data-tp-events="#{jsonify_events}"
+        data-tp-self-caches="#{jsonify_tp_self_caches}")
