@@ -123,6 +123,8 @@ module SourceRoute
     def get_local_or_params_var
       local_var_hash = {}
       # Warn: @tp_ins.binding.eval('local_variables') =! @tp_ins.binding.send('local_variables')
+      # Params var is complex, see https://alexcastano.com/everything-about-ruby-splats/ for more details
+      # so actually here just get local variables which includes params
       @tp_ins.binding.eval('local_variables').each do |v|
         # I need comment out why i need source_route_display
         # must be some strange variables require it
