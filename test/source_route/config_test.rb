@@ -56,11 +56,13 @@ module SourceRoute
     def test_full_feature_of_params_parser
       params = {output_format: 'html', event: :c_call,
                 defined_class: 'ActiveRecord::Base',
-                method_id_not: ['initialize', 'nonsense']
+                method_id_not: ['initialize', 'nonsense'],
+                full_feature: true
                }
       config = ParamsConfigParser.run(params)
       assert_equal :html, config.output_format
-      assert_equal [:c_call], config.event
+      assert_equal [:c_call, :call, :return], config.event
+      assert config.full_feature
       assert_equal 'ActiveRecord::Base', config.positives[:defined_class]
       assert_equal 'initialize|nonsense', config.negatives[:method_id]
     end
