@@ -18,9 +18,7 @@ module SourceRoute
         end
         # TODO: any exception triggered in render method will be absorb totally, how to fix it?
         html_output_str = slim_template.render(proxy.result_builder)
-        File.open(filename, 'w') do |f|
-          f << html_output_str
-        end
+        File.write(filename, html_output_str)
       end
 
     end # END Html
