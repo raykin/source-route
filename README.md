@@ -28,7 +28,7 @@ Or install it yourself as:
 
 #### In rails console or test code
 
-    SourceRoute.trace(defined_class: :ActiveRecord, output_format: :html) { User.new }
+    SourceRoute.trace(defined_class: 'ActiveRecord::Attribute', output_format: :html) { User.new }
 
 It will generate a html file, open it and you can get the trace of User.new
 
