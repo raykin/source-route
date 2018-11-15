@@ -28,6 +28,7 @@ module SourceRoute
       end
     end
 
+    # TODO: value should defined by user? Either is string or Reg, it should defined by user?
     def positives_check(tp)
       return true if cond.positives == {}
       cond.positives.any? do |method_key, value|
